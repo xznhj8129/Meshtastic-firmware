@@ -559,6 +559,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MESHTASTIC_EXCLUDE_ADMIN 1
 #endif
 
+// MAVLink serial bridge (see MAVLINK.md): opt-in while flash/RAM cost is evaluated.
+// Enable per-env with -DMESHTASTIC_EXCLUDE_MAVLINK=0
+#ifndef MESHTASTIC_EXCLUDE_MAVLINK
+#define MESHTASTIC_EXCLUDE_MAVLINK 1
+#endif
+
 // // Turn off wifi even if HW supports wifi (webserver relies on wifi and is also disabled)
 #ifdef MESHTASTIC_EXCLUDE_WIFI
 #define MESHTASTIC_EXCLUDE_WEBSERVER 1

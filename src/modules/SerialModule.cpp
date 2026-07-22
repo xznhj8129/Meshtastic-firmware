@@ -52,6 +52,11 @@
 #if (defined(ARCH_ESP32) || defined(ARCH_NRF52) || defined(ARCH_RP2040) || defined(ARCH_STM32WL)) &&                             \
     !defined(CONFIG_IDF_TARGET_ESP32S2) && !defined(CONFIG_IDF_TARGET_ESP32C3)
 
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+#include "Mavlink/MavlinkBridge.h"
+#include "airtime.h"
+#endif
+
 #define RX_BUFFER 256
 #define TIMEOUT 250
 #define BAUD 38400
@@ -85,6 +90,20 @@ static Print *serialPrint = &SERIAL_PRINT_OBJECT;
 
 char serialBytes[512];
 size_t serialPayloadSize;
+
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+// The UART instance the serial module configures, mirroring the init-time selection
+static HardwareSerial *serialModuleUart()
+{
+#if defined(CONFIG_IDF_TARGET_ESP32C6)
+    return &Serial1;
+#elif defined(RAK3172)
+    return &Serial1;
+#else
+    return &Serial2;
+#endif
+}
+#endif
 
 bool SerialModule::isValidConfig(const meshtastic_ModuleConfig_SerialConfig &config)
 {
@@ -198,7 +217,12 @@ int32_t SerialModule::runOnce()
 #elif defined(ARCH_ESP32)
 
             if (moduleConfig.serial.rxd && moduleConfig.serial.txd) {
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+                // MAVLink bursts must survive the 10 ms polling cadence
+                Serial2.setRxBufferSize(moduleConfig.serial.mode == Serial_Mode_MAVLINK ? 1024 : RX_BUFFER);
+#else
                 Serial2.setRxBufferSize(RX_BUFFER);
+#endif
                 Serial2.begin(baud, SERIAL_8N1, moduleConfig.serial.rxd, moduleConfig.serial.txd);
             } else {
                 Serial.begin(baud);
@@ -229,6 +253,13 @@ int32_t SerialModule::runOnce()
             Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
 #endif
             serialModuleRadio = new SerialModuleRadio();
+
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+            if (moduleConfig.serial.mode == Serial_Mode_MAVLINK && moduleConfig.serial.rxd && moduleConfig.serial.txd) {
+                mavlinkBridge = new MavlinkBridge(serialModuleUart());
+                LOG_INFO("MAVLink serial bridge enabled");
+            }
+#endif
 
             firstTime = 0;
 
@@ -263,6 +294,29 @@ int32_t SerialModule::runOnce()
                     }
                 }
             }
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+            else if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
+                if (mavlinkBridge) {
+                    HardwareSerial *uart = serialModuleUart();
+                    uint8_t buf[64];
+                    while (uart->available() > 0) {
+                        size_t n = 0;
+                        while (n < sizeof(buf) && uart->available() > 0) {
+                            int c = uart->read();
+                            if (c < 0)
+                                break;
+                            buf[n++] = (uint8_t)c;
+                        }
+                        if (!n)
+                            break;
+                        mavlinkBridge->ingestSerialBytes(buf, n, millis());
+                    }
+                    mavlinkBridge->processOutput(millis());
+                    if (serialModuleRadio)
+                        serialModuleRadio->sendMavlinkChunk();
+                }
+            }
+#endif
 
 #if SERIAL_PRINT_PORT != 0
             else if ((moduleConfig.serial.mode == meshtastic_ModuleConfig_SerialConfig_Serial_Mode_WS85)) {
@@ -356,6 +410,55 @@ void SerialModuleRadio::sendPayload(NodeNum dest, bool wantReplies)
     service->sendToMesh(p);
 }
 
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+bool SerialModuleRadio::sendMavlinkChunk()
+{
+    uint32_t now = millis();
+    if (!mavlinkBridge || !mavlinkBridge->wantsMeshSend(now))
+        return false;
+    if (Throttle::isWithinTimespanMs(mavlinkBackoffStartMs, mavlinkBackoffMs))
+        return false;
+
+    if (!airTime->isTxAllowedChannelUtil(true)) {
+        mavlinkBackoffStartMs = now;
+        mavlinkBackoffMs = 250; // isTxAllowedChannelUtil logs on denial; don't hammer it
+        return false;
+    }
+    if (router->getQueueStatus().free == 0) {
+        mavlinkBackoffStartMs = now;
+        mavlinkBackoffMs = 100;
+        return false;
+    }
+    meshtastic_MeshPacket *p = allocDataPacket();
+    if (!p) {
+        mavlinkBackoffStartMs = now;
+        mavlinkBackoffMs = 100;
+        return false;
+    }
+
+    size_t len = mavlinkBridge->peekMeshPayload(p->decoded.payload.bytes, sizeof(p->decoded.payload.bytes));
+    if (len == 0) {
+        packetPool.release(p);
+        return false;
+    }
+
+    // Direct-message the locked peer once known (gets ACK/retransmit); broadcast only for discovery
+    NodeNum peer = mavlinkBridge->getPeer();
+    p->to = peer ? peer : NODENUM_BROADCAST;
+    p->want_ack = peer != 0;
+    const meshtastic_Channel *ch = (boundChannel != NULL) ? &channels.getByName(boundChannel) : NULL;
+    if (ch != NULL)
+        p->channel = ch->index;
+    p->decoded.payload.size = len;
+    p->decoded.want_response = false;
+
+    service->sendToMesh(p);
+    mavlinkBridge->commitMeshPayload(len, now);
+    mavlinkBackoffMs = 0;
+    return true;
+}
+#endif
+
 /**
  * Handle a received mesh packet.
  *
@@ -380,7 +483,11 @@ ProcessMessage SerialModuleRadio::handleReceived(const meshtastic_MeshPacket &mp
              * If moduleConfig.serial.echo is true, then echo the packets that are sent out
              * back to the TX of the serial interface.
              */
-            if (moduleConfig.serial.echo) {
+            if (moduleConfig.serial.echo
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+                && moduleConfig.serial.mode != Serial_Mode_MAVLINK // echoing raw chunks would corrupt the byte stream
+#endif
+            ) {
 
                 // For some reason, we get the packet back twice when we send out of the radio.
                 //   TODO: need to find out why.
@@ -393,6 +500,13 @@ ProcessMessage SerialModuleRadio::handleReceived(const meshtastic_MeshPacket &mp
             }
         } else {
 
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+            if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
+                if (mavlinkBridge)
+                    mavlinkBridge->ingestMeshPayload(getFrom(&mp), p.payload.bytes, p.payload.size);
+                return ProcessMessage::CONTINUE;
+            }
+#endif
             if (moduleConfig.serial.mode == meshtastic_ModuleConfig_SerialConfig_Serial_Mode_DEFAULT ||
                 moduleConfig.serial.mode == meshtastic_ModuleConfig_SerialConfig_Serial_Mode_SIMPLE) {
                 serialPrint->write(p.payload.bytes, p.payload.size);

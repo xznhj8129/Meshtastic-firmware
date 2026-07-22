@@ -11,6 +11,10 @@
 #if (defined(ARCH_ESP32) || defined(ARCH_NRF52) || defined(ARCH_RP2040) || defined(ARCH_STM32WL)) &&                             \
     !defined(CONFIG_IDF_TARGET_ESP32S2) && !defined(CONFIG_IDF_TARGET_ESP32C3)
 
+// Pending Serial_Mode.MAVLINK = 11 in meshtastic/protobufs; nanopb UENUM fields decode and
+// persist out-of-range values, so the raw value works end to end on the device side.
+static constexpr auto Serial_Mode_MAVLINK = static_cast<meshtastic_ModuleConfig_SerialConfig_Serial_Mode>(11);
+
 class SerialModule : public StreamAPI, private concurrency::OSThread
 {
     bool firstTime = 1;
@@ -52,6 +56,17 @@ class SerialModuleRadio : public SinglePortModule
      * Send our payload into the mesh
      */
     void sendPayload(NodeNum dest = NODENUM_BROADCAST, bool wantReplies = false);
+
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+    /// Send one raw MAVLink chunk from the bridge input FIFO, if due and the mesh has capacity
+    bool sendMavlinkChunk();
+
+  private:
+    uint32_t mavlinkBackoffStartMs = 0;
+    uint32_t mavlinkBackoffMs = 0;
+
+  public:
+#endif
 
   protected:
     /** Called to handle a particular incoming message
