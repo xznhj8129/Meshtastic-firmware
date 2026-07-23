@@ -1,8 +1,10 @@
 # MAVLink Bridge - Session State / Handoff
 
-**As of:** Stages 1-3 code-complete, all builds green, committed as one checkpoint (this commit).
-**Branch:** `mavlink` · **Parent commit:** `444c1691e` "MAVLink serial bridge stage 1: transparent transport"
-**Working tree:** clean (Stages 1-3 + this doc committed together).
+**As of:** Stages 1-3 committed (`b6eb7069e`). UDP server endpoint (MAVLINK.md section 4.4 /
+Phase 5) code-complete in this checkpoint commit - **deliberately not built yet** (user
+direction: "finish code, commit as checkpoint, do not build").
+**Branch:** `mavlink` · **Parent of this checkpoint:** `b6eb7069e`
+**Working tree:** clean.
 
 ---
 
@@ -28,9 +30,16 @@
    with a 120 s staleness cutoff; PowerStatus untouched.
 4. **Builds**: `pio run -e heltec-v3` green with feature on (Flash 2306399 B, RAM 130792 B static)
    AND green with `PLATFORMIO_BUILD_FLAGS=-DMESHTASTIC_EXCLUDE_MAVLINK=1` (feature off).
-5. **Next**: Stage 4 (size table, board confirm, flash, loopback smoke test, SITL follow-up).
-   Codex review of the full diff can be run at any point; per house rules, ask before committing
-   or flashing.
+5. **UDP server endpoint (new, this checkpoint)**: `MavlinkUdpServer` binds UDP 14550 when the
+   network is up (WiFi STA/AP or ESP-IDF Ethernet; mirrors MQTT's isConnectedToNetwork + AP
+   mode). Wait-for-client: first datagram registers IP/port, latest sender wins, 30 s timeout.
+   Datagram bytes feed `ingestSerialBytes` (same FIFO/snoop path as UART); every completed local
+   frame is teed from `flushPending` as one datagram. With no UART pins configured the bridge
+   runs on a `NullStream` sink = UDP-only ground node. Gate: `MESHTASTIC_MAVLINK_UDP`
+   (HAS_NETWORKING && ARCH_ESP32, central in MavlinkBridge.h).
+6. **Pending**: build verification of the UDP feature (skipped on purpose), then Stage 4
+   (size table, board confirm, flash, loopback smoke test, SITL follow-up). Codex review of the
+   checkpoint can be re-run any time; per house rules, ask before committing or flashing.
 
 ## Key design notes (don't re-derive)
 
@@ -49,9 +58,11 @@
 
 ## Still open from PLAN.md
 
+- **Build the UDP checkpoint** (feature on AND off) before flashing anything - not yet done.
 - **Stage 4**: size table vs develop, board confirm (heltec-v3 vs heltec-wsl-v3 from live devices),
   flash 2 nodes, `serial`-named channel + PSK config, one-sided loopback smoke test, then full
-  SITL/GCS validation (needs wiring - explicit user follow-up).
+  SITL/GCS validation (needs wiring - explicit user follow-up). UDP path: GCS over WiFi against
+  the two-node bench link.
 - Native test suite `test/test_mavlink/` - deferred per user; also blocked locally by missing
   `libyaml-cpp-dev` (pre-existing PortduinoGlue.h failure).
 - Upstream protobufs PR (Serial_Mode.MAVLINK=11 + peer-node field) - shipping prerequisite,

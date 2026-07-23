@@ -131,6 +131,35 @@ A separate "MavlinkRadio" module is not required.
 
 Likewise, "MavlinkBridge" can ask the existing serial radio object to transmit raw chunks.
 
+4.4 UDP server endpoint
+
+When networking is enabled and up, either Ethernet or WiFi, the device opens a UDP server on port 14550 that serves as an additional local MAVLink connection point alongside the UART.
+
+Typical arrangement: the ground node is a Meshtastic stick with no wiring; the GCS reaches it over the LAN.
+
+The scheme is "wait for client", not "connect to provided client address":
+
+1. The device binds UDP port 14550 and waits.
+2. The first datagram received registers the client (source IP and port).
+3. Every later datagram refreshes the registration; a new sender re-points the registration. One client at a time; latest sender wins.
+4. The client registration expires after 30 s of silence, after which egress to UDP stops.
+
+Transport rules:
+
+- Ingress: datagram payload bytes enter the same bridge input FIFO as UART bytes. Mesh transport is unchanged; datagram boundaries do not need to match MAVLink frame boundaries.
+- Egress: every completed MAVLink frame written to the local UART is also sent to the registered client as one UDP datagram (one frame per datagram). Locally generated RADIO_STATUS frames are included.
+- Both endpoints are active simultaneously. When no UART RX/TX pins are configured, the device runs as a UDP-only endpoint: frame bytes are discarded to a null stream and the UDP client is the only local consumer.
+- Snooping applies to UDP-ingress bytes exactly as to UART bytes; a GCS heartbeat arriving over UDP correctly marks the node GROUND.
+
+Implementation notes:
+
+- On ESP32, WiFiUDP is lwIP-based and works over WiFi STA, WiFi AP, and ESP-IDF Ethernet (USE_WS5500, CH390) alike. Network-up detection mirrors MQTT's isConnectedToNetwork(), extended to accept WiFi AP mode.
+- Non-ESP32 networking targets are out of scope for the first implementation.
+- The GCS must actively send to be discovered. QGroundControl: add the device IP as a server address on the UDP link. MAVProxy: --master=udp:<device-ip>:14550.
+- The socket lifecycle is managed lazily from the main scheduler: opened when the network is up, closed when it goes down. No ISR or task touches the socket.
+
+Non-goals for this iteration: TCP transport, multiple simultaneous clients, broadcast or multicast discovery beacons, and any client keepalive beyond the receive timeout.
+
 5. MAVLink implementation
 
 5.1 Generated C headers
@@ -515,6 +544,8 @@ protobufs repository:
 firmware repository:
   src/modules/Mavlink/MavlinkBridge.h
   src/modules/Mavlink/MavlinkBridge.cpp
+  src/modules/Mavlink/MavlinkUdpServer.h
+  src/modules/Mavlink/MavlinkUdpServer.cpp
   src/modules/SerialModule.h
   src/modules/SerialModule.cpp
   src/modules/SerialModuleRadio implementation, if separated
@@ -654,6 +685,15 @@ Only after one-to-one operation is stable:
 3. Handle "target_system == 0" broadcasts.
 4. Detect duplicate sysids.
 5. Add explicit mapping configuration where automatic discovery is ambiguous.
+
+Phase 5: UDP server endpoint
+
+1. Open UDP 14550 when networking is up; manage the socket from the main scheduler.
+2. Register the client from incoming datagrams with a 30 s timeout.
+3. Feed datagram bytes into the bridge input FIFO.
+4. Tee every completed local frame to the client as one datagram.
+5. Allow UDP-only operation when no UART pins are configured.
+6. Validate with a GCS over WiFi against a two-node bench link.
 
 16. Open decisions
 

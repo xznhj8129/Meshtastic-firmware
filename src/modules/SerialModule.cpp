@@ -54,7 +54,7 @@
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
 #include "Mavlink/MavlinkBridge.h"
-#if !MESHTASTIC_EXCLUDE_MAVLINK
+#include "Mavlink/MavlinkUdpServer.h"
 #include "PositionModule.h"
 
 /// Deliver a snooped aircraft position exactly like the GPS path does: refresh the global
@@ -217,7 +217,14 @@ int32_t SerialModule::runOnce()
     if (!moduleConfig.serial.enabled)
         return disable();
 
-    if (moduleConfig.serial.override_console_serial_port || (moduleConfig.serial.rxd && moduleConfig.serial.txd)) {
+    bool haveLocalPort = moduleConfig.serial.override_console_serial_port || (moduleConfig.serial.rxd && moduleConfig.serial.txd);
+#if MESHTASTIC_MAVLINK_UDP
+    // MAVLink mode also runs with no UART pins at all: the UDP server is the local endpoint
+    if (moduleConfig.serial.mode == Serial_Mode_MAVLINK)
+        haveLocalPort = true;
+#endif
+
+    if (haveLocalPort) {
         if (firstTime) {
             // Interface with the serial peripheral from in here.
             LOG_INFO("Init serial peripheral interface");
@@ -265,7 +272,13 @@ int32_t SerialModule::runOnce()
                 Serial2.setRxBufferSize(RX_BUFFER);
 #endif
                 Serial2.begin(baud, SERIAL_8N1, moduleConfig.serial.rxd, moduleConfig.serial.txd);
-            } else {
+            }
+#if MESHTASTIC_MAVLINK_UDP
+            else if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
+                // UDP-only endpoint: leave the console UART alone
+            }
+#endif
+            else {
                 Serial.begin(baud);
                 Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
             }
@@ -296,9 +309,14 @@ int32_t SerialModule::runOnce()
             serialModuleRadio = new SerialModuleRadio();
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
-            if (moduleConfig.serial.mode == Serial_Mode_MAVLINK && moduleConfig.serial.rxd && moduleConfig.serial.txd) {
-                mavlinkBridge = new MavlinkBridge(serialModuleUart());
-                LOG_INFO("MAVLink serial bridge enabled");
+            bool mavlinkUart = moduleConfig.serial.rxd && moduleConfig.serial.txd;
+            if (moduleConfig.serial.mode == Serial_Mode_MAVLINK && (mavlinkUart || MESHTASTIC_MAVLINK_UDP)) {
+                mavlinkBridge = new MavlinkBridge(mavlinkUart ? serialModuleUart() : nullptr);
+#if MESHTASTIC_MAVLINK_UDP
+                if (!mavlinkUdpServer)
+                    mavlinkUdpServer = new MavlinkUdpServer();
+#endif
+                LOG_INFO("MAVLink serial bridge enabled%s", mavlinkUart ? "" : " (UDP only)");
             }
 #endif
 
@@ -338,20 +356,26 @@ int32_t SerialModule::runOnce()
 #if !MESHTASTIC_EXCLUDE_MAVLINK
             else if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
                 if (mavlinkBridge) {
-                    HardwareSerial *uart = serialModuleUart();
-                    uint8_t buf[64];
-                    while (uart->available() > 0) {
-                        size_t n = 0;
-                        while (n < sizeof(buf) && uart->available() > 0) {
-                            int c = uart->read();
-                            if (c < 0)
+                    if (moduleConfig.serial.rxd && moduleConfig.serial.txd) {
+                        HardwareSerial *uart = serialModuleUart();
+                        uint8_t buf[64];
+                        while (uart->available() > 0) {
+                            size_t n = 0;
+                            while (n < sizeof(buf) && uart->available() > 0) {
+                                int c = uart->read();
+                                if (c < 0)
+                                    break;
+                                buf[n++] = (uint8_t)c;
+                            }
+                            if (!n)
                                 break;
-                            buf[n++] = (uint8_t)c;
+                            mavlinkBridge->ingestSerialBytes(buf, n, millis());
                         }
-                        if (!n)
-                            break;
-                        mavlinkBridge->ingestSerialBytes(buf, n, millis());
                     }
+#if MESHTASTIC_MAVLINK_UDP
+                    if (mavlinkUdpServer)
+                        mavlinkUdpServer->poll(millis());
+#endif
                     mavlinkBridge->processOutput(millis());
                     mavlinkBridge->serviceFlowControl(millis());
                     applyMavlinkPosition();

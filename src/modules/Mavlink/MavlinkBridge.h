@@ -7,6 +7,14 @@
 #include "mesh/MeshTypes.h"
 #include <Arduino.h>
 
+// UDP server endpoint (MAVLINK.md section 4.4): ESP32 lwIP UDP covers WiFi and ESP-IDF
+// Ethernet alike; other networking targets are out of scope for now.
+#if HAS_NETWORKING && defined(ARCH_ESP32)
+#define MESHTASTIC_MAVLINK_UDP 1
+#else
+#define MESHTASTIC_MAVLINK_UDP 0
+#endif
+
 // Only the caller-owned buffer API (mavlink_frame_char_buffer) is used; one channel buffer set is plenty
 #ifndef MAVLINK_COMM_NUM_BUFFERS
 #define MAVLINK_COMM_NUM_BUFFERS 1
@@ -72,7 +80,7 @@ struct MavlinkBridgeStats {
     uint32_t uartRxBytes = 0;
     uint32_t meshTxBytes = 0;
     uint32_t meshRxBytes = 0;
-    uint32_t framesToUart = 0;  // complete frames written to UART
+    uint32_t framesToUart = 0;  // complete frames delivered to the local endpoint(s)
     uint32_t corruptFrames = 0; // known msgid, bad CRC - discarded
     uint32_t framingErrors = 0; // parser-level errors (bad flags, overruns)
     uint32_t inputOverflowBytes = 0;
@@ -120,6 +128,22 @@ struct MavlinkPositionSnapshot {
 #endif
 
 /**
+ * Discard sink used as the bridge UART when no RX/TX pins are configured (UDP-only
+ * endpoint). Writes succeed immediately so frames complete and reach the UDP client.
+ */
+class NullStream : public Stream
+{
+  public:
+    int available() override { return 0; }
+    int read() override { return -1; }
+    int peek() override { return -1; }
+    size_t write(uint8_t) override { return 1; }
+    size_t write(const uint8_t *, size_t n) override { return n; }
+    int availableForWrite() override { return 1024; }
+    void flush() override {}
+};
+
+/**
  * Transparent MAVLink <-> mesh byte bridge (see MAVLINK.md).
  *
  * UART bytes go into a bounded input FIFO and leave as raw chunks in SERIAL_APP
@@ -145,7 +169,8 @@ class MavlinkBridge
     static constexpr uint32_t BATTERY_STALENESS_MS = 120000;  // hardware readings resume after this
     static constexpr uint32_t SYS_STATUS_DEFER_MS = 10000;    // SYS_STATUS yields to recent BATTERY_STATUS
 
-    explicit MavlinkBridge(Stream *uart) : uart(uart) {}
+    /// uart may be nullptr: a NullStream sink is substituted (UDP-only endpoint, no pins)
+    explicit MavlinkBridge(Stream *uart);
 
     void ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now);
 

@@ -3,9 +3,16 @@
 #if !MESHTASTIC_EXCLUDE_MAVLINK
 
 #include "DebugConfiguration.h"
+#if MESHTASTIC_MAVLINK_UDP
+#include "MavlinkUdpServer.h"
+#endif
 #include <Throttle.h>
 
 MavlinkBridge *mavlinkBridge;
+
+static NullStream mavlinkNullStream;
+
+MavlinkBridge::MavlinkBridge(Stream *serial) : uart(serial ? serial : &mavlinkNullStream) {}
 
 void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now)
 {
@@ -166,6 +173,11 @@ void MavlinkBridge::flushPending(uint32_t now)
             pendingSinceMs = now;
     }
     if (pendingOff >= pendingLen) {
+#if MESHTASTIC_MAVLINK_UDP
+        // One completed frame per datagram to the registered UDP client (MAVLINK.md section 4.4)
+        if (mavlinkUdpServer)
+            mavlinkUdpServer->writeFrame(pendingFrame, pendingLen, now);
+#endif
         pendingLen = pendingOff = 0;
         stats.framesToUart++;
     } else if ((now - pendingSinceMs) >= UART_TX_STALL_MS) {
