@@ -90,7 +90,6 @@ static void applyMavlinkPosition()
 }
 #endif
 #include "airtime.h"
-#endif
 
 #define RX_BUFFER 256
 #define TIMEOUT 250
