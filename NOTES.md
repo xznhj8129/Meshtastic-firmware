@@ -1004,3 +1004,45 @@ ce813f2a6 Enable MAVLink on original T-LoRa V1
 ```
 
 `NOTES.md` itself is new and uncommitted unless a later commit explicitly includes it.
+
+## RESOLUTION (2026-07-23) — root cause found and fixed, verified end-to-end
+
+The complete-bridge failure was **not** INAV, wiring, PKI, crystals, or the loopback: it was a
+firmware bug in the mesh send path.
+
+### Root cause
+
+`MavlinkBridge::MAX_CHUNK` was `meshtastic_Constants_DATA_PAYLOAD_LEN` (233) — the raw payload
+*buffer* size, not a wire-safe payload size. A full 233-byte SERIAL_APP payload, once wrapped in
+the `Data` protobuf (portnum + length-prefixed payload + the always-set bitfield) and prepended
+with the 16-byte mesh header, encodes to ~256 B > `MAX_LORA_PAYLOAD_LEN` (255). `perhapsEncode()`
+returns `TOO_LARGE` (routing error 7); `sendMavlinkChunk()` only drains the FIFO on `ERRNO_OK`, so
+it retried the identical oversized chunk forever — a NAK storm, **no SERIAL_APP ever reaching the
+wire, and the peer never locking.** Small chunks (partial flushes) sometimes squeaked through, which
+is why local RADIO_STATUS looked healthy while bulk transport was dead.
+
+Confirmed on the live air node: firmware log showed `Error=7, return NAK` + `Alloc an err=7
+idFrom=<the exact SERIAL_APP packet id>`, and zero SERIAL_APP on the wire.
+
+### Fix (commit `12069c4e9`)
+
+- `src/modules/Mavlink/MavlinkBridge.h`: `MAX_CHUNK` = `DATA_PAYLOAD_LEN - 32` (201), leaving
+  headroom for the Data wrapper + header so every emitted chunk fits a LoRa frame.
+- `src/modules/SerialModule.cpp`: permanent send errors (`TOO_LARGE` / `NO_CHANNEL`) now drop the
+  head chunk instead of retrying forever, so an unsendable chunk can never head-of-line-block the
+  bridge again.
+
+### Verification
+
+- Host harness compiling the real `MavlinkBridge.cpp` round-trips a heartbeat byte-exact.
+- Rebuilt `heltec-wsl-v3`, flashed **both** nodes (air local, ground on pc2, app-partition only,
+  configs preserved). err=7 storm gone.
+- **Full bidirectional end-to-end** with a CP2102 driving the air's GPIO47/48 directly (no FC/INAV)
+  as the local endpoint and a pymavlink GCS on the ground's UDP 14550:
+  - FC→air→LoRa→ground→UDP: 99 heartbeats injected on the UART, 52 received cross-mesh at the GCS.
+  - GCS→UDP→ground→LoRa→air→UART: GCS heartbeats emerged on the air's GPIO48.
+  - No TOO_LARGE, no storm. ~52/99 delivery is normal for SF11/MediumFast real-time streaming.
+
+The original bench "nothing works" was this bug **plus** the FC never actually feeding the air's
+GPIO47 (an FC-side wiring/INAV-UART issue, independent of firmware) — proven by the instant success
+once a real byte source hit the RX pin.
