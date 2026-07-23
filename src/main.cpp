@@ -55,6 +55,9 @@
 
 #ifdef ARCH_ESP32
 #include "freertosinc.h"
+#ifdef TLORA_V1
+#include <soc/rtc.h>
+#endif
 #if !MESHTASTIC_EXCLUDE_WEBSERVER
 #include "mesh/http/WebServer.h"
 #endif
@@ -356,6 +359,10 @@ void printInfo()
 #ifndef PIO_UNIT_TESTING
 void setup()
 {
+#if defined(ARCH_ESP32) && defined(TLORA_V1)
+    // The packaged ESP32 bootloader records a 40 MHz crystal, but the original T-LoRa V1 uses 26 MHz.
+    rtc_clk_xtal_freq_update(SOC_XTAL_FREQ_26M);
+#endif
 
     // initialize power HAL layer as early as possible
     powerHAL_init();
