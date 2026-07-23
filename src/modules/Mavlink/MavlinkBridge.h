@@ -222,6 +222,7 @@ class MavlinkBridge
     void snoopHeartbeat(const mavlink_message_t &msg);
     void snoopPosition(const mavlink_message_t &msg, uint32_t now);
     void snoopBattery(const mavlink_message_t &msg, uint32_t now);
+    void snoopHighLatency2(const mavlink_message_t &msg, uint32_t now);
     bool fromAutopilot(const mavlink_message_t &msg) const;
 
     ByteFifo<INPUT_FIFO_SIZE> inputFifo;

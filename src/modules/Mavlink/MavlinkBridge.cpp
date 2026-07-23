@@ -251,6 +251,9 @@ void MavlinkBridge::handleSnoopedMessage(const mavlink_message_t &msg, uint32_t 
     case MAVLINK_MSG_ID_SYS_STATUS:
         snoopBattery(msg, now);
         break;
+    case MAVLINK_MSG_ID_HIGH_LATENCY2:
+        snoopHighLatency2(msg, now); // one frame carries both a fix and battery %
+        break;
     default:
         break;
     }
@@ -378,6 +381,32 @@ void MavlinkBridge::snoopBattery(const mavlink_message_t &msg, uint32_t now)
         battSnap.hasLevel = (s.battery_remaining >= 0);
         if (battSnap.hasLevel)
             battSnap.level = (uint8_t)min((int)s.battery_remaining, 100);
+        lastBatteryMs = now;
+    }
+}
+
+void MavlinkBridge::snoopHighLatency2(const mavlink_message_t &msg, uint32_t now)
+{
+    // HIGH_LATENCY2 is the compact whole-vehicle frame low-bandwidth links use. It carries a full
+    // fix (lat/lon/alt) and battery % in one message, so treat it as a first-class position and
+    // battery source alongside GLOBAL_POSITION_INT / BATTERY_STATUS.
+    mavlink_high_latency2_t hl;
+    mavlink_msg_high_latency2_decode(&msg, &hl);
+
+    posSnap.latI = hl.latitude;
+    posSnap.lonI = hl.longitude;
+    posSnap.altM = hl.altitude; // already meters MSL (int16), unlike GLOBAL_POSITION_INT's mm
+    posSnap.hasFix = true;
+    if (hl.heading <= 180) { // uint8 in units of 2 deg (0..180 spans 0..360)
+        posSnap.groundTrack1e5 = (uint32_t)hl.heading * 2 * 100000;
+        posSnap.hasGroundTrack = true;
+    }
+    lastGlobalPosMs = now; // authoritative fix; keeps GPS_RAW_INT as fallback only
+    positionDirty = true;
+
+    if (hl.battery >= 0) { // -1 = autopilot does not estimate; HL2 carries no per-cell voltage
+        battSnap.hasLevel = true;
+        battSnap.level = (uint8_t)min((int)hl.battery, 100);
         lastBatteryMs = now;
     }
 }

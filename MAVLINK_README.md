@@ -39,7 +39,7 @@ not for video, and not for anything that needs hard real-time delivery.
 Following the ExpressLRS MAVLink serial transport model:
 
 1. UART (or UDP) bytes go into a bounded 1024-byte input FIFO.
-2. Up to 233 bytes at a time leave as raw chunks in direct `SERIAL_APP` mesh packets to the
+2. Up to 201 bytes at a time leave as raw chunks in direct `SERIAL_APP` mesh packets to the
    locked peer (broadcast only until a peer is heard). Chunk boundaries ignore frame boundaries.
 3. Received chunks go into a 512-byte output FIFO and are fed through the generated MAVLink C
    parser (`mavlink/c_library_v2`, pinned). Only complete frames are written to the local
@@ -129,6 +129,31 @@ starting point, then watch `RADIO_STATUS.txbuf`: persistent drops below ~80 mean
 over-driving the link. The bridge never sets rates for you (by design); it reports congestion
 via `txbuf`, counts overflow, and drops only when its bounded FIFOs are exhausted.
 
+### Verified ShortFast rate envelope
+
+A two-node Wireless Stick Lite V3 bench test used a CP2102 as the fake aircraft UART and the
+ground node's UDP 14550 endpoint as the GCS. Air WiFi and network transport were disabled, so
+the inter-node path could only be UART -> LoRa `SERIAL_APP` -> UDP. The fixed background load
+was an aircraft heartbeat at 1 Hz, a GCS heartbeat every 5 s, and a
+`MAV_CMD_DO_REPOSITION` ("goto") every 5 s with an aircraft-side `COMMAND_ACK`.
+
+| `HIGH_LATENCY2` rate | Delivery | In order | Minimum `txbuf` |
+| ---: | ---: | :---: | ---: |
+| 0.2 Hz | 4/4 | yes | 98 |
+| 0.5 Hz | 10/10 | yes | 95 |
+| 1 Hz | 20/20 | no | 98 |
+| 2 Hz | 40/40 | no | 40 |
+| 4 Hz | 52/80 | no | 0 |
+| 8 Hz | 46/156 | no | 0 |
+| 16 Hz | 65/300 | no | 0 |
+
+The conservative clean profile from this hardware is therefore: aircraft heartbeat at 1 Hz,
+`HIGH_LATENCY2` at 0.5 Hz, and GCS heartbeat/command traffic at 0.2 Hz. At 1 Hz the HL2 frames
+all arrived but mesh ACK/retry scheduling reordered some frames. At 4 Hz the input FIFO filled
+and hard loss began. These are bench results, not guaranteed limits: range, interference, hop
+count, region, preset, concurrent Meshtastic traffic, and frame sizes all change the envelope.
+Use `RADIO_STATUS.txbuf` on the actual installation.
+
 ## What you should see
 
 - GCS receives heartbeats and telemetry; parameter reads and low-rate commands work.
@@ -162,15 +187,21 @@ via `txbuf`, counts overflow, and drops only when its bounded FIFOs are exhauste
 
 ## Status
 
-Done and committed: transparent transport with byte-exact raw-frame forwarding (incl. signed
-and unknown-dialect frames), transactional mesh submission, RADIO_STATUS flow control, position
-and battery snooping, UDP server endpoint. Stages 1-3 build-verified on `heltec-v3` with the
-feature on and off; the UDP checkpoint compiles-gated but is not build-verified yet.
+Done and committed: transparent transport with byte-exact raw-frame forwarding (including
+signed and unknown-dialect frames), transactional mesh submission, RADIO_STATUS flow control,
+position and battery snooping, and the UDP server endpoint. The original hardware blocker was
+fixed in commit `12069c4e9`: a 233-byte raw chunk exceeded the LoRa wire limit after protobuf
+and mesh headers, causing a permanent `TOO_LARGE` retry loop. The wire-safe maximum is now 201
+bytes and permanent size/channel errors cannot head-of-line-block the FIFO.
 
-Pending: build verification of the UDP commit, native unit tests (`test/test_mavlink/`, also
-blocked locally by a missing system lib), hardware-in-the-loop validation on two sticks
-(one-sided loopback smoke test, then full SITL/GCS), flash/RAM size table, and the upstream
-protobufs PR. See STATE.md for the live list.
+The bridge is verified bidirectionally on two Wireless Stick Lite V3 nodes: fake-aircraft UART
+telemetry crossed LoRa and decoded at the ground UDP GCS, while GCS heartbeats and
+`MAV_CMD_DO_REPOSITION` crossed back to the aircraft UART and produced `COMMAND_ACK` replies.
+The ShortFast rate envelope above was measured with no LAN path available to the air node.
+
+Pending: native unit tests where the required host libraries are available, validation against
+the physical INAV UART/FC rather than the CP2102 simulator, flash/RAM size table, and the
+upstream protobufs PR. See STATE.md for older checkpoint history.
 
 ## Where things live
 

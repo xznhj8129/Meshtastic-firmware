@@ -944,7 +944,7 @@ meshtastic \
 meshtastic \
   --port /dev/ttyUSB0 \
   --set lora.region 1 \
-  --set lora.modem_preset 4 \
+  --set lora.modem_preset 6 \
   --set serial.rxd 47 \
   --set serial.txd 48 \
   --set serial.baud 10 \
@@ -1046,3 +1046,83 @@ idFrom=<the exact SERIAL_APP packet id>`, and zero SERIAL_APP on the wire.
 The original bench "nothing works" was this bug **plus** the FC never actually feeding the air's
 GPIO47 (an FC-side wiring/INAV-UART issue, independent of firmware) — proven by the instant success
 once a real byte source hit the RX pin.
+
+## ShortFast recovery and measured MAVLink envelope (2026-07-23)
+
+### Configuration persistence recovery
+
+Both active Wireless Stick Lite V3 nodes repeatedly acknowledged a live
+`lora.modem_preset = SHORT_FAST` write but read back enum 4 (`MEDIUM_FAST`). Repeating the
+write with `lora.use_preset = true`, including the primary channel in the same transaction,
+and using the CLI's dedicated `--ch-shortfast` operation did not fix persistence.
+
+A configuration-only factory reset was then applied to both nodes. This preserved their
+identities and PKI keys. Their complete configurations were rebuilt:
+
+- Both nodes: US region, ShortFast enum 6, primary `Airmesh`, secondary `serial` with matching
+  non-default keys, serial enabled in raw MAVLink mode 11.
+- Air: RX GPIO47, TX GPIO48, baud enum 10 (57600), WiFi and network transport disabled.
+- Ground: RX/TX unset for UDP-only operation, WiFi enabled, UDP MAVLink endpoint on port 14550.
+
+Readback after reboot reported `lora.modem_preset: 6` on both nodes. The air node's disabled
+WiFi/network transport is important: the hardware tests below had no possible LAN path between
+nodes. UDP was only the local GCS connection on the ground node.
+
+### HIGH_LATENCY2 baseline comparisons
+
+The fake aircraft was connected through a CP2102 on the air node's GPIO47/GPIO48 UART. The GCS
+registered with the ground node's UDP 14550 endpoint.
+
+An overloaded MediumFast run sent `HIGH_LATENCY2` at 1 Hz and aircraft heartbeat at 0.5 Hz,
+while the GCS unnecessarily sent heartbeat at 1 Hz. By the 62-second deadline:
+
+- `HIGH_LATENCY2`: 23/60 (38.3%).
+- Aircraft heartbeat: 12/30 (40%).
+- Received frames decoded correctly; there was no MAVLink downgrade or CRC corruption.
+
+An instrumented MediumFast repeat reduced the GCS heartbeat to one every 20 seconds and allowed
+a long drain:
+
+- `HIGH_LATENCY2`: 45/60.
+- Aircraft heartbeat: 23/30.
+- Air `txbuf` first fell below 20 at 43.7 seconds and reached 0.
+- The FIFO later drained to 100, but frames arrived in delayed bursts and out of order.
+
+The requested operational profile was then tested on ShortFast:
+
+- GCS heartbeat: every 5 seconds.
+- Aircraft heartbeat: every 1 second.
+- `HIGH_LATENCY2`: every 5 seconds.
+- Result: 12/12 HL2 and 60/60 aircraft heartbeats, all ordered.
+- Minimum air `txbuf`: 95; final `txbuf`: 100.
+- Parser errors: zero.
+- Observed HL2 latency: approximately 30-340 ms.
+
+### Incremental load test with GCS goto commands
+
+The GCS sent a `MAV_CMD_DO_REPOSITION` ("goto") every 5 seconds. The fake aircraft decoded each
+received command on its UART and returned `COMMAND_ACK`. Aircraft heartbeat remained at 1 Hz
+and GCS heartbeat remained at 0.2 Hz. HL2 was raised in 20-second stages with a 5-second drain
+between stages:
+
+| HL2 rate | Air sent | GCS received | Ordered | Minimum `txbuf` |
+| ---: | ---: | ---: | :---: | ---: |
+| 0.2 Hz | 4 | 4 | yes | 98 |
+| 0.5 Hz | 10 | 10 | yes | 95 |
+| 1 Hz | 20 | 20 | no | 98 |
+| 2 Hz | 40 | 40 | no | 40 |
+| 4 Hz | 80 | 52 | no | 0 |
+| 8 Hz | 156 | 46 | no | 0 |
+| 16 Hz | 300 | 65 | no | 0 |
+
+Across the complete ramp:
+
+- Aircraft heartbeats received by the GCS: 139/175.
+- Goto commands sent: 37.
+- Goto commands received at the aircraft UART: 34.
+- Command ACKs returned to the GCS: 24.
+
+The conservative clean ShortFast operating point on this bench is aircraft heartbeat at 1 Hz,
+HL2 at 0.5 Hz, and GCS heartbeat/goto at 0.2 Hz. Soft failure begins at 1 Hz HL2 through
+reordering even without loss. At 4 Hz the 1024-byte input FIFO fills and hard loss begins.
+This is not suitable for manual RC control or any safety-critical real-time control.
