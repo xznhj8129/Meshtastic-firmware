@@ -4,8 +4,8 @@
 # ═══════════════════════ CONFIG (edit me) ═══════════════════════
 GROUND_IP   = "192.168.0.244"   # the ground node's IP (WiFi). Repoint if you moved networks.
 GROUND_PORT = 14550
-DURATION_S  = 62
-GCS_HEARTBEAT_HZ = 1.0          # keepalive holding the ground's wait-for-client registration
+DURATION_S  = 1e10
+GCS_HEARTBEAT_HZ = 0.2          # keepalive holding the ground's wait-for-client registration
 # ════════════════════════════════════════════════════════════════
 
 import time, collections

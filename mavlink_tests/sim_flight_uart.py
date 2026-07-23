@@ -7,7 +7,7 @@ streams) - LoRa is slow, so keep the rates modest."""
 # ═══════════════════════ CONFIG (edit me) ═══════════════════════
 UART_PORT = "/dev/ttyUSB1"   # CP2102 wired to the air node's GPIO47(RX)/GPIO48(TX)
 UART_BAUD = 57600            # must match serial.baud on the air node
-DURATION_S = 60
+DURATION_S = 1e10
 
 # --- per-message stream rates, Hz (set any to 0 to disable that stream) ---
 RATES_HZ = {

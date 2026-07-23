@@ -10,8 +10,8 @@ UART_BAUD = 57600            # must match serial.baud on the air node
 DURATION_S = 60              # how long to fly
 
 # --- stream rates, Hz (set 0 to disable a stream) ---
-HEARTBEAT_HZ = 1.0           # vehicle heartbeat (also what makes the bridge learn role=AIR)
-HL2_HZ       = 1.0           # HIGH_LATENCY2 full-state frame
+HEARTBEAT_HZ = 0.2           # vehicle heartbeat (also what makes the bridge learn role=AIR)
+HL2_HZ       = 0.2           # HIGH_LATENCY2 full-state frame
 # NOTE (from bench notes): on ShortFast, HL2 @0.5Hz stays perfectly ordered;
 # @1Hz starts to reorder under load. Drop HL2_HZ to 0.5 for the rock-solid profile.
 
@@ -22,7 +22,7 @@ CRUISE_ALT_M    = 120.0      # level off here
 GROUND_SPEED_MS = 15.0       # forward speed (flies due north)
 TAKEOFF_DELAY_S = 3.0        # hover before moving
 BATT_START_V    = 12.6
-BATT_DRAIN_VPS  = 0.02       # volts/sec
+BATT_DRAIN_VPS  = 0.002       # volts/sec
 # ════════════════════════════════════════════════════════════════
 
 import time
