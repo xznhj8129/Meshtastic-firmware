@@ -54,6 +54,41 @@
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
 #include "Mavlink/MavlinkBridge.h"
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+#include "PositionModule.h"
+
+/// Deliver a snooped aircraft position exactly like the GPS path does: refresh the global
+/// local position, then let PositionModule apply its normal smart-broadcast scheduling.
+static void applyMavlinkPosition()
+{
+    MavlinkPositionSnapshot snap;
+    if (!mavlinkBridge || !positionModule || !mavlinkBridge->takePositionSnapshot(millis(), snap) || !snap.hasFix)
+        return;
+    meshtastic_Position p = meshtastic_Position_init_zero;
+    p.latitude_i = snap.latI;
+    p.has_latitude_i = true;
+    p.longitude_i = snap.lonI;
+    p.has_longitude_i = true;
+    p.altitude = snap.altM;
+    p.has_altitude = true;
+    p.location_source = meshtastic_Position_LocSource_LOC_EXTERNAL;
+    if (snap.hasGroundSpeed) {
+        p.ground_speed = snap.groundSpeedKmh;
+        p.has_ground_speed = true;
+    }
+    if (snap.hasGroundTrack) {
+        p.ground_track = snap.groundTrack1e5;
+        p.has_ground_track = true;
+    }
+    if (snap.hasSats)
+        p.sats_in_view = snap.sats;
+    p.fix_type = snap.fixType;
+    p.time = getTime();
+    p.timestamp = getTime();
+    nodeDB->setLocalPosition(p);
+    positionModule->handleNewPosition();
+}
+#endif
 #include "airtime.h"
 #endif
 
@@ -107,6 +142,12 @@ static HardwareSerial *serialModuleUart()
 
 bool SerialModule::isValidConfig(const meshtastic_ModuleConfig_SerialConfig &config)
 {
+#if MESHTASTIC_EXCLUDE_MAVLINK
+    if (config.mode == Serial_Mode_MAVLINK) {
+        LOG_ERROR("Invalid Serial config: MAVLink mode is not compiled into this build");
+        return false;
+    }
+#endif
     if (config.override_console_serial_port && !IS_ONE_OF(config.mode, meshtastic_ModuleConfig_SerialConfig_Serial_Mode_NMEA,
                                                           meshtastic_ModuleConfig_SerialConfig_Serial_Mode_CALTOPO,
                                                           meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MS_CONFIG)) {
@@ -312,6 +353,8 @@ int32_t SerialModule::runOnce()
                         mavlinkBridge->ingestSerialBytes(buf, n, millis());
                     }
                     mavlinkBridge->processOutput(millis());
+                    mavlinkBridge->serviceFlowControl(millis());
+                    applyMavlinkPosition();
                     if (serialModuleRadio)
                         serialModuleRadio->sendMavlinkChunk();
                 }
@@ -447,12 +490,27 @@ bool SerialModuleRadio::sendMavlinkChunk()
     p->to = peer ? peer : NODENUM_BROADCAST;
     p->want_ack = peer != 0;
     const meshtastic_Channel *ch = (boundChannel != NULL) ? &channels.getByName(boundChannel) : NULL;
-    if (ch != NULL)
+    if (ch != NULL) {
         p->channel = ch->index;
+        // getByName() silently falls back to primary when "serial" doesn't exist, and the
+        // receiver rejects such packets on the name check - that black-holes every chunk.
+        if (strcasecmp(ch->settings.name, boundChannel) != 0 &&
+            (mavlinkChannelWarnMs == 0 || !Throttle::isWithinTimespanMs(mavlinkChannelWarnMs, 30000))) {
+            mavlinkChannelWarnMs = now;
+            LOG_WARN("MAVLink serial: no channel named '%s'; chunks will be rejected by the peer", boundChannel);
+        }
+    }
     p->decoded.payload.size = len;
     p->decoded.want_response = false;
 
-    service->sendToMesh(p);
+    // Commit the FIFO bytes only when the mesh actually accepted the packet; on any router
+    // rejection (duty cycle, no interface, encode/enqueue failure) leave them queued.
+    ErrorCode res = service->sendToMesh(p);
+    if (res != ERRNO_OK) {
+        mavlinkBackoffStartMs = now;
+        mavlinkBackoffMs = 250;
+        return false;
+    }
     mavlinkBridge->commitMeshPayload(len, now);
     mavlinkBackoffMs = 0;
     return true;
@@ -503,7 +561,7 @@ ProcessMessage SerialModuleRadio::handleReceived(const meshtastic_MeshPacket &mp
 #if !MESHTASTIC_EXCLUDE_MAVLINK
             if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
                 if (mavlinkBridge)
-                    mavlinkBridge->ingestMeshPayload(getFrom(&mp), p.payload.bytes, p.payload.size);
+                    mavlinkBridge->ingestMeshPayload(getFrom(&mp), p.payload.bytes, p.payload.size, mp.rx_rssi, mp.rx_snr);
                 return ProcessMessage::CONTINUE;
             }
 #endif

@@ -64,6 +64,7 @@ class SerialModuleRadio : public SinglePortModule
   private:
     uint32_t mavlinkBackoffStartMs = 0;
     uint32_t mavlinkBackoffMs = 0;
+    uint32_t mavlinkChannelWarnMs = 0;
 
   public:
 #endif

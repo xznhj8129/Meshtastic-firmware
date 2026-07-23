@@ -11,6 +11,7 @@
 #include "gps/RTC.h"
 #include "main.h"
 #include "memGet.h"
+#include "modules/Mavlink/MavlinkBridge.h"
 #include <OLEDDisplay.h>
 #include <OLEDDisplayUi.h>
 #include <meshUtils.h>
@@ -115,6 +116,22 @@ meshtastic_Telemetry DeviceTelemetryModule::getDeviceTelemetry()
         t.variant.device_metrics.voltage = batteryMv / 1000.0f;
     }
     t.variant.device_metrics.uptime_seconds = getUptimeSeconds();
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+    // On an aircraft node the MAVLink flight battery is the authoritative battery for this
+    // node (MAVLINK.md section 8.2). Override only the outbound metrics; PowerStatus and its
+    // charging/shutdown safety logic keep seeing the real hardware.
+    if (mavlinkBridge) {
+        MavlinkBatterySnapshot mav;
+        if (mavlinkBridge->getBatterySnapshot(millis(), mav)) {
+            if (mav.hasLevel)
+                t.variant.device_metrics.battery_level = mav.level;
+            if (mav.hasVoltage) {
+                t.variant.device_metrics.voltage = mav.voltage;
+                t.variant.device_metrics.has_voltage = true;
+            }
+        }
+    }
+#endif
     return t;
 }
 
