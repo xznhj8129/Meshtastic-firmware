@@ -526,10 +526,16 @@ bool SerialModuleRadio::sendMavlinkChunk()
     p->decoded.payload.size = len;
     p->decoded.want_response = false;
 
-    // Commit the FIFO bytes only when the mesh actually accepted the packet; on any router
-    // rejection (duty cycle, no interface, encode/enqueue failure) leave them queued.
+    // Commit the FIFO bytes only when the mesh actually accepted the packet; on a transient
+    // router rejection (duty cycle, no interface, enqueue failure) leave them queued and retry.
     ErrorCode res = service->sendToMesh(p);
     if (res != ERRNO_OK) {
+        // TOO_LARGE / NO_CHANNEL are permanent for this chunk - retrying the identical bytes can
+        // never succeed and just head-of-line-blocks the FIFO forever. Drop the chunk so the
+        // stream keeps moving (the peer's MAVLink parser resyncs on the next frame start).
+        if (res == meshtastic_Routing_Error_TOO_LARGE || res == meshtastic_Routing_Error_NO_CHANNEL) {
+            mavlinkBridge->commitMeshPayload(len, now);
+        }
         mavlinkBackoffStartMs = now;
         mavlinkBackoffMs = 250;
         return false;

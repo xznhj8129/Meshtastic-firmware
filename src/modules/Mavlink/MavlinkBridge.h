@@ -159,7 +159,12 @@ class MavlinkBridge
   public:
     static constexpr size_t INPUT_FIFO_SIZE = 1024;
     static constexpr size_t OUTPUT_FIFO_SIZE = 512;
-    static constexpr size_t MAX_CHUNK = meshtastic_Constants_DATA_PAYLOAD_LEN;
+    // A full DATA_PAYLOAD_LEN (233) chunk is NOT transmittable: once the router wraps it in the
+    // Data protobuf (portnum + length-prefixed payload + always-set bitfield) and prepends the
+    // 16-byte mesh header, the frame exceeds MAX_LORA_PAYLOAD_LEN and perhapsEncode() rejects it
+    // with TOO_LARGE - which sendMavlinkChunk() then retries forever. Leave headroom for the
+    // wrapper so every chunk we emit fits a LoRa frame.
+    static constexpr size_t MAX_CHUNK = meshtastic_Constants_DATA_PAYLOAD_LEN - 32; // 201
     static constexpr uint32_t FLUSH_INTERVAL_MS = 100;        // send a partial chunk after this age
     static constexpr uint32_t UART_TX_STALL_MS = 500;         // drop a pending frame after this long
     static constexpr uint32_t RADIO_STATUS_INTERVAL_MS = 500; // 2 Hz RADIO_STATUS (MAVLINK.md §7.1)
