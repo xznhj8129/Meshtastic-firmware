@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 ENV_FILE="${PX4_MESH_TEST_ENV:-${SCRIPT_DIR}/px4_sitl_mesh_test.env}"
-VENV_DIR="${PX4_MESH_TEST_VENV:-${REPO_ROOT}/.venv-px4-mesh-test}"
+VENV_DIR="${PX4_MESH_TEST_VENV:-${SCRIPT_DIR}/.venv-px4-mesh-test}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
