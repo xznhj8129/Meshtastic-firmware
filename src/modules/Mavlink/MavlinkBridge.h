@@ -32,17 +32,17 @@ struct MavlinkBridgeStats {
     uint32_t framesToUart = 0;
     uint32_t corruptFrames = 0;
     uint32_t framingErrors = 0;
-    uint32_t inputOverflowBytes = 0;  // complete local frames dropped while the TX queue was full
-    uint32_t outputOverflowBytes = 0; // complete remote frames dropped while the local output queue was full
-    uint32_t rejectedSourceChunks = 0; // legacy compatibility counter; frame-aware mesh mode accepts all sources
+    uint32_t inputOverflowBytes = 0;
+    uint32_t outputOverflowBytes = 0;
+    uint32_t rejectedSourceChunks = 0;
     uint32_t malformedMeshPayloads = 0;
     uint32_t duplicateFragments = 0;
     uint32_t reassemblyTimeouts = 0;
     uint32_t reassemblyEvictions = 0;
     uint32_t uartTxStallDrops = 0;
     uint32_t radioStatusSent = 0;
-    size_t inputHighWater = 0;  // queued complete local frames
-    size_t outputHighWater = 0; // queued complete remote frames
+    size_t inputHighWater = 0;
+    size_t outputHighWater = 0;
 };
 
 #ifndef MESHTASTIC_MAVLINK_RADIO_STATUS_SYSID
@@ -117,8 +117,7 @@ class MavlinkBridge
 
     explicit MavlinkBridge(Stream *uart);
 
-    // Source-compatible constructor for older tests/callers. The peer argument is ignored:
-    // frame-aware mesh mode has no pair lock.
+    // Source-compatible constructor for older tests/callers. The peer argument is ignored.
     MavlinkBridge(Stream *uart, NodeNum legacyPeer);
 
     void ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now);
@@ -130,6 +129,10 @@ class MavlinkBridge
     void ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi = 0, float rxSnr = 0);
     void processOutput(uint32_t now);
     void serviceFlowControl(uint32_t now);
+
+    // Legacy SerialModule API. A zero destination means broadcast, which is the initial
+    // any-to-any routing policy. There is no peer lock.
+    NodeNum getPeer() const { return 0; }
 
     const MavlinkBridgeStats &getStats();
     MavlinkRole getRole() const { return role; }
