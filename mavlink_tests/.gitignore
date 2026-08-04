@@ -1,1 +1,4 @@
 *.yaml
+.venv-px4-mesh-test/
+px4_sitl_mesh_test.env
+reports/
