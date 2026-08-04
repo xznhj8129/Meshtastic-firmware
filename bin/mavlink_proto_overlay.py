@@ -65,11 +65,16 @@ def install_mavlink_proto_overlay(env) -> None:
             "#define meshtastic_ModuleConfig_SerialConfig_peer_node_tag 9",
             "peer_node tag",
         )
+        peer_fieldlist = (
+            "X(a, STATIC,   SINGULAR, BOOL,     override_console_serial_port,   8) "
+            + "\\"
+            + "\n"
+            + "X(a, STATIC,   SINGULAR, UINT32,   peer_node,         9)"
+        )
         text = _replace_once(
             text,
             "X(a, STATIC,   SINGULAR, BOOL,     override_console_serial_port,   8)",
-            "X(a, STATIC,   SINGULAR, BOOL,     override_console_serial_port,   8) \\\n"
-            "X(a, STATIC,   SINGULAR, UINT32,   peer_node,         9)",
+            peer_fieldlist,
             "peer_node field descriptor",
         )
         text = _replace_once(
