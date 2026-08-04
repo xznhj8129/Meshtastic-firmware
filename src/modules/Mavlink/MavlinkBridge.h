@@ -174,8 +174,11 @@ class MavlinkBridge
     static constexpr uint32_t BATTERY_STALENESS_MS = 120000;  // hardware readings resume after this
     static constexpr uint32_t SYS_STATUS_DEFER_MS = 10000;    // SYS_STATUS yields to recent BATTERY_STATUS
 
-    /// uart may be nullptr: a NullStream sink is substituted (UDP-only endpoint, no pins)
+    /// Uses the persisted serial.peer_node setting. A zero value keeps first-sender discovery.
     explicit MavlinkBridge(Stream *uart);
+
+    /// Explicit peer constructor for deterministic tests and callers that already resolved configuration.
+    MavlinkBridge(Stream *uart, NodeNum configuredPeer);
 
     void ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now);
 
@@ -205,8 +208,8 @@ class MavlinkBridge
     /// path (nodeDB->setLocalPosition + positionModule->handleNewPosition).
     bool takePositionSnapshot(uint32_t now, MavlinkPositionSnapshot &out);
 
-    /// Latest snooped aircraft battery. Returns false when stale (BATTERY_STALENESS_MS) or
-    /// nothing was ever received; the caller then falls back to hardware readings.
+    /// Latest snooped aircraft battery. Level and voltage freshness are evaluated independently.
+    /// Returns true when at least one field is fresh; stale fields are cleared in the output flags.
     bool getBatterySnapshot(uint32_t now, MavlinkBatterySnapshot &out) const;
 
   private:
@@ -273,12 +276,13 @@ class MavlinkBridge
     uint32_t lastGlobalPosMs = 0; // last GLOBAL_POSITION_INT (GPS_RAW_INT fallback beyond GLOBAL_POS_FRESH_MS)
     uint32_t lastPositionTakeMs = 0;
     MavlinkBatterySnapshot battSnap;
-    uint32_t lastBatteryMs = 0;       // last accepted battery source of either kind
-    uint32_t lastBatteryStatusMs = 0; // last BATTERY_STATUS (SYS_STATUS defers for SYS_STATUS_DEFER_MS)
-    bool haveBatteryId = false;       // first-seen BATTERY_STATUS id sticks
+    uint32_t lastBatteryLevelMs = 0;   // freshness is tracked independently per field
+    uint32_t lastBatteryVoltageMs = 0; // HIGH_LATENCY2 must not refresh an old voltage
+    uint32_t lastBatteryStatusMs = 0;  // last BATTERY_STATUS (SYS_STATUS defers for SYS_STATUS_DEFER_MS)
+    bool haveBatteryId = false;        // first-seen BATTERY_STATUS id sticks
     uint8_t batteryId = 0;
 
-    NodeNum lockedPeer = 0; // first mesh node heard from; others rejected (prototype peer policy)
+    NodeNum lockedPeer = 0; // configured peer, or first nonempty sender when discovery is enabled
     Stream *uart;
     MavlinkBridgeStats stats;
     uint32_t lastInOverflowLogMs = 0;

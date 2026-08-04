@@ -3,6 +3,7 @@
 #if !MESHTASTIC_EXCLUDE_MAVLINK
 
 #include "DebugConfiguration.h"
+#include "NodeDB.h"
 #if MESHTASTIC_MAVLINK_UDP
 #include "MavlinkUdpServer.h"
 #endif
@@ -12,7 +13,14 @@ MavlinkBridge *mavlinkBridge;
 
 static NullStream mavlinkNullStream;
 
-MavlinkBridge::MavlinkBridge(Stream *serial) : uart(serial ? serial : &mavlinkNullStream) {}
+MavlinkBridge::MavlinkBridge(Stream *serial) : MavlinkBridge(serial, moduleConfig.serial.peer_node) {}
+
+MavlinkBridge::MavlinkBridge(Stream *serial, NodeNum configuredPeer)
+    : lockedPeer(configuredPeer), uart(serial ? serial : &mavlinkNullStream)
+{
+    if (configuredPeer)
+        LOG_INFO("MAVLink bridge configured for peer 0x%08x", configuredPeer);
+}
 
 void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now)
 {
@@ -364,24 +372,31 @@ void MavlinkBridge::snoopBattery(const mavlink_message_t &msg, uint32_t now)
             }
         }
         battSnap.hasVoltage = anyCell;
-        battSnap.voltage = mvSum / 1000.0f;
+        if (anyCell) {
+            battSnap.voltage = mvSum / 1000.0f;
+            lastBatteryVoltageMs = now;
+        }
         battSnap.hasLevel = (b.battery_remaining >= 0); // -1 = autopilot does not estimate
-        if (battSnap.hasLevel)
+        if (battSnap.hasLevel) {
             battSnap.level = (uint8_t)min((int)b.battery_remaining, 100);
+            lastBatteryLevelMs = now;
+        }
         lastBatteryStatusMs = now;
-        lastBatteryMs = now;
     } else { // SYS_STATUS: fallback only when no recent BATTERY_STATUS
         if (lastBatteryStatusMs && (now - lastBatteryStatusMs) <= SYS_STATUS_DEFER_MS)
             return;
         mavlink_sys_status_t s;
         mavlink_msg_sys_status_decode(&msg, &s);
         battSnap.hasVoltage = (s.voltage_battery != UINT16_MAX);
-        if (battSnap.hasVoltage)
+        if (battSnap.hasVoltage) {
             battSnap.voltage = s.voltage_battery / 1000.0f;
+            lastBatteryVoltageMs = now;
+        }
         battSnap.hasLevel = (s.battery_remaining >= 0);
-        if (battSnap.hasLevel)
+        if (battSnap.hasLevel) {
             battSnap.level = (uint8_t)min((int)s.battery_remaining, 100);
-        lastBatteryMs = now;
+            lastBatteryLevelMs = now;
+        }
     }
 }
 
@@ -407,7 +422,7 @@ void MavlinkBridge::snoopHighLatency2(const mavlink_message_t &msg, uint32_t now
     if (hl.battery >= 0) { // -1 = autopilot does not estimate; HL2 carries no per-cell voltage
         battSnap.hasLevel = true;
         battSnap.level = (uint8_t)min((int)hl.battery, 100);
-        lastBatteryMs = now;
+        lastBatteryLevelMs = now;
     }
 }
 
@@ -425,10 +440,10 @@ bool MavlinkBridge::takePositionSnapshot(uint32_t now, MavlinkPositionSnapshot &
 
 bool MavlinkBridge::getBatterySnapshot(uint32_t now, MavlinkBatterySnapshot &out) const
 {
-    if (!lastBatteryMs || (now - lastBatteryMs) > BATTERY_STALENESS_MS)
-        return false;
     out = battSnap;
-    return true;
+    out.hasLevel = lastBatteryLevelMs && (now - lastBatteryLevelMs) <= BATTERY_STALENESS_MS;
+    out.hasVoltage = lastBatteryVoltageMs && (now - lastBatteryVoltageMs) <= BATTERY_STALENESS_MS;
+    return out.hasLevel || out.hasVoltage;
 }
 
 #endif
