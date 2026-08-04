@@ -71,10 +71,10 @@ void test_high_latency_level_does_not_refresh_stale_voltage()
     mavlink_battery_status_t battery{};
     battery.id = 0;
     battery.battery_remaining = 80;
-    for (auto &voltage : battery.voltages)
-        voltage = UINT16_MAX;
-    for (auto &voltage : battery.voltages_ext)
-        voltage = UINT16_MAX;
+    for (size_t i = 0; i < 10; i++)
+        battery.voltages[i] = UINT16_MAX;
+    for (size_t i = 0; i < 4; i++)
+        battery.voltages_ext[i] = UINT16_MAX;
     battery.voltages[0] = 12000;
 
     mavlink_message_t batteryMsg;
