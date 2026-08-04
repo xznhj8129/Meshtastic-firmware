@@ -11,9 +11,8 @@
 #if (defined(ARCH_ESP32) || defined(ARCH_NRF52) || defined(ARCH_RP2040) || defined(ARCH_STM32WL)) &&                             \
     !defined(CONFIG_IDF_TARGET_ESP32S2) && !defined(CONFIG_IDF_TARGET_ESP32C3)
 
-// Pending Serial_Mode.MAVLINK = 11 in meshtastic/protobufs; nanopb UENUM fields decode and
-// persist out-of-range values, so the raw value works end to end on the device side.
-static constexpr auto Serial_Mode_MAVLINK = static_cast<meshtastic_ModuleConfig_SerialConfig_Serial_Mode>(11);
+// Local shorthand for the canonical protobuf enum.
+static constexpr auto Serial_Mode_MAVLINK = meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MAVLINK;
 
 class SerialModule : public StreamAPI, private concurrency::OSThread
 {
