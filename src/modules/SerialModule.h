@@ -11,7 +11,6 @@
 #if (defined(ARCH_ESP32) || defined(ARCH_NRF52) || defined(ARCH_RP2040) || defined(ARCH_STM32WL)) &&                             \
     !defined(CONFIG_IDF_TARGET_ESP32S2) && !defined(CONFIG_IDF_TARGET_ESP32C3)
 
-// Local shorthand for the canonical protobuf enum.
 static constexpr auto Serial_Mode_MAVLINK = meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MAVLINK;
 
 class SerialModule : public StreamAPI, private concurrency::OSThread
@@ -28,7 +27,6 @@ class SerialModule : public StreamAPI, private concurrency::OSThread
   protected:
     virtual int32_t runOnce() override;
 
-    /// Check the current underlying physical link to see if the client is currently connected
     virtual bool checkIsConnected() override;
 
   private:
@@ -39,10 +37,6 @@ class SerialModule : public StreamAPI, private concurrency::OSThread
 
 extern SerialModule *serialModule;
 
-/*
- * Radio interface for SerialModule
- *
- */
 class SerialModuleRadio : public SinglePortModule
 {
     uint32_t lastRxID = 0;
@@ -51,13 +45,10 @@ class SerialModuleRadio : public SinglePortModule
   public:
     SerialModuleRadio();
 
-    /**
-     * Send our payload into the mesh
-     */
     void sendPayload(NodeNum dest = NODENUM_BROADCAST, bool wantReplies = false);
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
-    /// Send one raw MAVLink chunk from the bridge input FIFO, if due and the mesh has capacity
+    /// Send one frame-aware MAVLink transport packet. The initial any-to-any policy broadcasts it.
     bool sendMavlinkChunk();
 
   private:
@@ -69,11 +60,6 @@ class SerialModuleRadio : public SinglePortModule
 #endif
 
   protected:
-    /** Called to handle a particular incoming message
-
-    @return ProcessMessage::STOP if you've guaranteed you've handled this message and no other handlers should be considered for
-    it
-    */
     virtual ProcessMessage handleReceived(const meshtastic_MeshPacket &mp) override;
 };
 
