@@ -20,6 +20,14 @@ source "${ENV_FILE}"
 : "${AIR_UART:?Set AIR_UART in ${ENV_FILE}}"
 : "${GROUND_HOST:?Set GROUND_HOST in ${ENV_FILE}}"
 
+AIR_UART_CONFIGURED="${AIR_UART}"
+AIR_UART="$(readlink -f -- "${AIR_UART_CONFIGURED}")"
+if [[ -z "${AIR_UART}" || ! -e "${AIR_UART}" ]]; then
+    echo "AIR_UART does not resolve to an existing device: ${AIR_UART_CONFIGURED}" >&2
+    exit 2
+fi
+printf 'Air UART: %s -> %s\n' "${AIR_UART_CONFIGURED}" "${AIR_UART}"
+
 if [[ ! -x "${VENV_DIR}/bin/python" ]]; then
     "${PYTHON_BIN}" -m venv "${VENV_DIR}"
 fi
