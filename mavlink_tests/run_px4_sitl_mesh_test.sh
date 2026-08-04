@@ -29,6 +29,9 @@ fi
 
 cd "${REPO_ROOT}"
 
+# The harness uses direct pymavlink parser instances, so choose MAVLink 2 before import.
+export MAVLINK20=1
+
 exec "${VENV_DIR}/bin/python" "${SCRIPT_DIR}/px4_sitl_mesh_test.py" \
     --px4-dir "${PX4_DIR}" \
     --air-uart "${AIR_UART}" \
