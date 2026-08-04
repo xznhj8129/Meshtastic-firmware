@@ -7,70 +7,61 @@
 #if MESHTASTIC_MAVLINK_UDP
 #include "MavlinkUdpServer.h"
 #endif
-#include <Throttle.h>
 
 MavlinkBridge *mavlinkBridge;
 
 static NullStream mavlinkNullStream;
 
-MavlinkBridge::MavlinkBridge(Stream *serial) : MavlinkBridge(serial, moduleConfig.serial.peer_node) {}
-
-MavlinkBridge::MavlinkBridge(Stream *serial, NodeNum configuredPeer)
-    : lockedPeer(configuredPeer), uart(serial ? serial : &mavlinkNullStream)
+MavlinkBridge::MavlinkBridge(Stream *serial) : uart(serial ? serial : &mavlinkNullStream)
 {
-    if (configuredPeer)
-        LOG_INFO("MAVLink bridge configured for peer 0x%08x", configuredPeer);
+    if (moduleConfig.serial.peer_node)
+        LOG_WARN("MAVLink mesh mode ignores serial.peer_node; routing is any-to-any");
+}
+
+MavlinkBridge::MavlinkBridge(Stream *serial, NodeNum legacyPeer) : MavlinkBridge(serial)
+{
+    if (legacyPeer)
+        LOG_WARN("MAVLink legacy peer 0x%08x ignored; routing is any-to-any", legacyPeer);
 }
 
 void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now)
 {
-    if (!len)
+    if (!data || !len)
         return;
     stats.uartRxBytes += len;
     lastActivityMs = now;
     everActive = true;
     snoopSerialBytes(data, len, now);
-    if (inputFifo.size() == 0)
-        firstPendingMs = now;
-    size_t accepted = inputFifo.push(data, len);
-    if (accepted < len) {
-        stats.inputOverflowBytes += len - accepted;
-        if (!Throttle::isWithinTimespanMs(lastInOverflowLogMs, 5000)) {
-            lastInOverflowLogMs = now;
-            LOG_WARN("MAVLink input FIFO overflow, %u bytes dropped total", stats.inputOverflowBytes);
-        }
-    }
+    transport.ingestLocalBytes(data, len);
 }
 
 bool MavlinkBridge::wantsMeshSend(uint32_t now) const
 {
-    size_t queued = inputFifo.size();
-    if (queued >= MAX_CHUNK)
-        return true;
-    return queued > 0 && (now - firstPendingMs) >= FLUSH_INTERVAL_MS;
+    (void)now;
+    return transport.hasOutbound();
 }
 
 size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity)
 {
-    return inputFifo.peek(out, min(capacity, MAX_CHUNK));
+    return transport.peekOutbound(out, min(capacity, MAX_CHUNK));
 }
 
 void MavlinkBridge::commitMeshPayload(size_t len, uint32_t now)
 {
-    inputFifo.drop(len);
-    stats.meshTxBytes += len;
-    if (inputFifo.size() > 0)
-        firstPendingMs = now; // restart the age clock for the remaining bytes
+    (void)now;
+    if (transport.commitOutbound(len))
+        stats.meshTxBytes += len;
+}
+
+void MavlinkBridge::dropCurrentMeshFrame()
+{
+    transport.dropOutbound();
 }
 
 void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi, float rxSnr)
 {
-    if (!len)
-        return; // an empty chunk must not capture the peer lock
-    if (!acceptSource(source)) {
-        stats.rejectedSourceChunks++;
+    if (!data || !len)
         return;
-    }
     stats.meshRxBytes += len;
     lastActivityMs = millis();
     everActive = true;
@@ -79,86 +70,23 @@ void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_
         lastRxSnr = rxSnr;
         haveRxMetadata = true;
     }
-    size_t accepted = outputFifo.push(data, len);
-    if (accepted < len) {
-        stats.outputOverflowBytes += len - accepted;
-        if (!Throttle::isWithinTimespanMs(lastOutOverflowLogMs, 5000)) {
-            lastOutOverflowLogMs = millis();
-            LOG_WARN("MAVLink output FIFO overflow, %u bytes dropped total", stats.outputOverflowBytes);
-        }
-    }
-}
-
-bool MavlinkBridge::acceptSource(NodeNum source)
-{
-    if (lockedPeer == 0) {
-        lockedPeer = source;
-        LOG_INFO("MAVLink bridge locked to peer 0x%08x", source);
-    }
-    return source == lockedPeer;
+    transport.ingestMeshPayload(source, data, len, millis());
 }
 
 void MavlinkBridge::processOutput(uint32_t now)
 {
     flushPending(now);
-    while (pendingLen == 0) { // stop parsing while a frame is stuck waiting for UART space
-        uint8_t c;
-        if (!outputFifo.pop(&c, 1))
+    while (pendingLen == 0) {
+        size_t len = 0;
+        if (!transport.popInbound(pendingFrame, sizeof(pendingFrame), len))
             break;
-
-        if (meshRxStatus.parse_state == MAVLINK_PARSE_STATE_IDLE) {
-            rawLen = 0;
-            rawOverflow = false;
-            pendingSignedBadCrc = false;
-        }
-        if (rawLen < sizeof(rawFrame))
-            rawFrame[rawLen++] = c;
-        else
-            rawOverflow = true;
-
-        mavlink_message_t msg;
-        mavlink_status_t status;
-        uint8_t res = mavlink_frame_char_buffer(&meshRxWorking, &meshRxStatus, c, &msg, &status);
-        stats.framingErrors += status.packet_rx_drop_count; // parse errors on this byte
-
-        if (res == MAVLINK_FRAMING_OK) {
-            if (pendingSignedBadCrc) {
-                // Signed frame whose CRC failed at CRC2; the parser forgot that once the
-                // signature completed. Apply the known/unknown rule to the recorded msgid.
-                if (mavlink_get_msg_entry(pendingBadCrcMsgid) == nullptr)
-                    emitFrame(now); // unknown dialect - forward the wire bytes untouched
-                else
-                    stats.corruptFrames++;
-            } else {
-                emitFrame(now); // valid frame - forward the wire bytes
-            }
-        } else if (res == MAVLINK_FRAMING_BAD_CRC) {
-            if (meshRxStatus.parse_state == MAVLINK_PARSE_STATE_SIGNATURE_WAIT) {
-                // Signed frame, 13 signature bytes still in flight; msg is not valid yet.
-                pendingSignedBadCrc = true;
-                pendingBadCrcMsgid = meshRxWorking.msgid; // header is parsed, msgid is valid
-            } else if (mavlink_get_msg_entry(msg.msgid) == nullptr) {
-                // No CRC_EXTRA entry: unknown-dialect message, wire checksum preserved in
-                // the raw capture. A known msgid with bad CRC is real corruption.
-                emitFrame(now);
-            } else {
-                stats.corruptFrames++;
-            }
-        }
+        pendingLen = len;
+        pendingOff = 0;
+        pendingSinceMs = now;
         flushPending(now);
+        if (pendingLen != 0)
+            break;
     }
-}
-
-void MavlinkBridge::emitFrame(uint32_t now)
-{
-    if (rawOverflow || rawLen == 0) {
-        stats.framingErrors++; // can't reconstruct the exact wire bytes
-        return;
-    }
-    memcpy(pendingFrame, rawFrame, rawLen);
-    pendingLen = rawLen;
-    pendingOff = 0;
-    pendingSinceMs = now;
 }
 
 void MavlinkBridge::queueFrame(const mavlink_message_t &msg, uint32_t now)
@@ -182,14 +110,12 @@ void MavlinkBridge::flushPending(uint32_t now)
     }
     if (pendingOff >= pendingLen) {
 #if MESHTASTIC_MAVLINK_UDP
-        // One completed frame per datagram to the registered UDP client (MAVLINK.md section 4.4)
         if (mavlinkUdpServer)
             mavlinkUdpServer->writeFrame(pendingFrame, pendingLen, now);
 #endif
         pendingLen = pendingOff = 0;
         stats.framesToUart++;
     } else if ((now - pendingSinceMs) >= UART_TX_STALL_MS) {
-        // UART TX has been full for too long (reader gone?) - drop rather than deadlock
         stats.uartTxStallDrops++;
         pendingLen = pendingOff = 0;
     }
@@ -199,21 +125,23 @@ void MavlinkBridge::serviceFlowControl(uint32_t now)
 {
 #ifndef MESHTASTIC_MAVLINK_NO_RADIO_STATUS
     if (pendingLen)
-        return; // never interleave with a partially written frame
+        return;
     if (!everActive || (now - lastActivityMs) > ACTIVITY_WINDOW_MS)
-        return; // don't spam a silent port
+        return;
     if ((now - lastRadioStatusMs) < RADIO_STATUS_INTERVAL_MS)
         return;
     lastRadioStatusMs = now;
 
     mavlink_radio_status_t rs{};
-    rs.txbuf = (uint8_t)((inputFifo.freeSpace() * 100U) / inputFifo.capacity());
-    // SiK-style mapping of the final LoRa hop; UINT8_MAX = unknown per the RADIO_STATUS spec
+    rs.txbuf = transport.outboundFreePercent();
     rs.rssi = haveRxMetadata ? (uint8_t)constrain(lastRxRssi + 127, 0, 254) : UINT8_MAX;
     rs.noise = haveRxMetadata ? (uint8_t)constrain((int32_t)(lastRxRssi - lastRxSnr) + 127, 0, 254) : UINT8_MAX;
     rs.remrssi = UINT8_MAX;
     rs.remnoise = UINT8_MAX;
-    rs.rxerrors = (uint16_t)min(stats.corruptFrames + stats.framingErrors, (uint32_t)UINT16_MAX);
+    const auto &transportStats = transport.getCounters();
+    rs.rxerrors = (uint16_t)min(transportStats.corruptFrames + transportStats.framingErrors +
+                                    transportStats.malformedPayloads,
+                                (uint32_t)UINT16_MAX);
     rs.fixed = 0;
 
     mavlink_message_t msg;
@@ -226,8 +154,19 @@ void MavlinkBridge::serviceFlowControl(uint32_t now)
 
 const MavlinkBridgeStats &MavlinkBridge::getStats()
 {
-    stats.inputHighWater = inputFifo.highWater();
-    stats.outputHighWater = outputFifo.highWater();
+    const auto &transportStats = transport.getCounters();
+    stats.framesToMesh = transportStats.outboundFramesSent;
+    stats.framesFromMesh = transportStats.reassembledFrames;
+    stats.corruptFrames = transportStats.corruptFrames;
+    stats.framingErrors = transportStats.framingErrors;
+    stats.inputOverflowBytes = transportStats.outboundDropBytes;
+    stats.outputOverflowBytes = transportStats.inboundDropBytes;
+    stats.malformedMeshPayloads = transportStats.malformedPayloads;
+    stats.duplicateFragments = transportStats.duplicateFragments;
+    stats.reassemblyTimeouts = transportStats.reassemblyTimeouts;
+    stats.reassemblyEvictions = transportStats.reassemblyEvictions;
+    stats.inputHighWater = transportStats.outboundHighWater;
+    stats.outputHighWater = transportStats.inboundHighWater;
     return stats;
 }
 
@@ -249,7 +188,7 @@ void MavlinkBridge::handleSnoopedMessage(const mavlink_message_t &msg, uint32_t 
         return;
     }
     if (role != MavlinkRole::AIR || !fromAutopilot(msg))
-        return; // position and battery snooping apply to the aircraft bus only
+        return;
     switch (msg.msgid) {
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
     case MAVLINK_MSG_ID_GPS_RAW_INT:
@@ -260,7 +199,7 @@ void MavlinkBridge::handleSnoopedMessage(const mavlink_message_t &msg, uint32_t 
         snoopBattery(msg, now);
         break;
     case MAVLINK_MSG_ID_HIGH_LATENCY2:
-        snoopHighLatency2(msg, now); // one frame carries both a fix and battery %
+        snoopHighLatency2(msg, now);
         break;
     default:
         break;
@@ -270,13 +209,11 @@ void MavlinkBridge::handleSnoopedMessage(const mavlink_message_t &msg, uint32_t 
 void MavlinkBridge::snoopHeartbeat(const mavlink_message_t &msg)
 {
 #if MESHTASTIC_MAVLINK_ROLE != 0
-    return; // role is compile-time forced; heartbeats can't change it
+    return;
 #endif
     mavlink_heartbeat_t hb;
     mavlink_msg_heartbeat_decode(&msg, &hb);
     if (haveAutopilot) {
-        // Only the learned autopilot may reaffirm AIR; gimbal/GCS heartbeats on the vehicle
-        // bus must not flap the role.
         if (msg.sysid == autopilotSysid && msg.compid == autopilotCompid)
             role = MavlinkRole::AIR;
         return;
@@ -306,19 +243,18 @@ void MavlinkBridge::snoopPosition(const mavlink_message_t &msg, uint32_t now)
         mavlink_msg_global_position_int_decode(&msg, &gp);
         posSnap.latI = gp.lat;
         posSnap.lonI = gp.lon;
-        posSnap.altM = gp.alt / 1000; // mm to m
-        // vx/vy are cm/s; the firmware's ground_speed convention is km/h (see GPS.cpp)
+        posSnap.altM = gp.alt / 1000;
         float vx = gp.vx, vy = gp.vy;
         posSnap.groundSpeedKmh = (uint32_t)(sqrtf(vx * vx + vy * vy) * 0.036f + 0.5f);
         posSnap.hasGroundSpeed = true;
         if (gp.hdg != UINT16_MAX && gp.hdg <= 36000) {
-            posSnap.groundTrack1e5 = (uint32_t)gp.hdg * 1000; // centideg to deg x 1e5
+            posSnap.groundTrack1e5 = (uint32_t)gp.hdg * 1000;
             posSnap.hasGroundTrack = true;
         }
         posSnap.hasFix = true;
         lastGlobalPosMs = now;
         positionDirty = true;
-    } else { // GPS_RAW_INT: ancillary fix/sats, full fallback only when GLOBAL_POSITION_INT is stale
+    } else {
         mavlink_gps_raw_int_t g;
         mavlink_msg_gps_raw_int_decode(&msg, &g);
         posSnap.fixType = g.fix_type;
@@ -349,14 +285,12 @@ void MavlinkBridge::snoopBattery(const mavlink_message_t &msg, uint32_t now)
     if (msg.msgid == MAVLINK_MSG_ID_BATTERY_STATUS) {
         mavlink_battery_status_t b;
         mavlink_msg_battery_status_decode(&msg, &b);
-        if (!haveBatteryId) { // first-seen battery id sticks; others are ignored
+        if (!haveBatteryId) {
             haveBatteryId = true;
             batteryId = b.id;
         } else if (b.id != batteryId) {
             return;
         }
-        // voltages[]: UINT16_MAX = invalid; cell 0 may carry the overall voltage. voltages_ext[]:
-        // 0 = not supported (zero-truncatable), so both 0 and UINT16_MAX are skipped there.
         uint32_t mvSum = 0;
         bool anyCell = false;
         for (size_t i = 0; i < 10; i++) {
@@ -376,13 +310,13 @@ void MavlinkBridge::snoopBattery(const mavlink_message_t &msg, uint32_t now)
             battSnap.voltage = mvSum / 1000.0f;
             lastBatteryVoltageMs = now;
         }
-        battSnap.hasLevel = (b.battery_remaining >= 0); // -1 = autopilot does not estimate
+        battSnap.hasLevel = (b.battery_remaining >= 0);
         if (battSnap.hasLevel) {
             battSnap.level = (uint8_t)min((int)b.battery_remaining, 100);
             lastBatteryLevelMs = now;
         }
         lastBatteryStatusMs = now;
-    } else { // SYS_STATUS: fallback only when no recent BATTERY_STATUS
+    } else {
         if (lastBatteryStatusMs && (now - lastBatteryStatusMs) <= SYS_STATUS_DEFER_MS)
             return;
         mavlink_sys_status_t s;
@@ -402,24 +336,21 @@ void MavlinkBridge::snoopBattery(const mavlink_message_t &msg, uint32_t now)
 
 void MavlinkBridge::snoopHighLatency2(const mavlink_message_t &msg, uint32_t now)
 {
-    // HIGH_LATENCY2 is the compact whole-vehicle frame low-bandwidth links use. It carries a full
-    // fix (lat/lon/alt) and battery % in one message, so treat it as a first-class position and
-    // battery source alongside GLOBAL_POSITION_INT / BATTERY_STATUS.
     mavlink_high_latency2_t hl;
     mavlink_msg_high_latency2_decode(&msg, &hl);
 
     posSnap.latI = hl.latitude;
     posSnap.lonI = hl.longitude;
-    posSnap.altM = hl.altitude; // already meters MSL (int16), unlike GLOBAL_POSITION_INT's mm
+    posSnap.altM = hl.altitude;
     posSnap.hasFix = true;
-    if (hl.heading <= 180) { // uint8 in units of 2 deg (0..180 spans 0..360)
+    if (hl.heading <= 180) {
         posSnap.groundTrack1e5 = (uint32_t)hl.heading * 2 * 100000;
         posSnap.hasGroundTrack = true;
     }
-    lastGlobalPosMs = now; // authoritative fix; keeps GPS_RAW_INT as fallback only
+    lastGlobalPosMs = now;
     positionDirty = true;
 
-    if (hl.battery >= 0) { // -1 = autopilot does not estimate; HL2 carries no per-cell voltage
+    if (hl.battery >= 0) {
         battSnap.hasLevel = true;
         battSnap.level = (uint8_t)min((int)hl.battery, 100);
         lastBatteryLevelMs = now;
