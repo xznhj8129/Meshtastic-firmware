@@ -154,6 +154,43 @@ void test_malformed_transport_payload_is_dropped()
     TEST_ASSERT_EQUAL_UINT32(0, stream.writtenLen);
 }
 
+void test_snooping_is_scoped_to_the_local_airframe_sysid()
+{
+    TestStream stream;
+    MavlinkBridge bridge(&stream);
+    learnAutopilot(bridge, 1000); // local airframe is sysid 1
+
+    mavlink_high_latency2_t own{};
+    own.latitude = 451234567;
+    own.longitude = -731234567;
+    own.altitude = 123;
+    own.battery = 70;
+    mavlink_message_t ownMsg;
+    // A non-autopilot component in the same MAVLink system still belongs to this airframe.
+    mavlink_msg_high_latency2_encode(1, MAV_COMP_ID_ONBOARD_COMPUTER, &ownMsg, &own);
+    ingestFrame(bridge, ownMsg, 2000);
+
+    mavlink_high_latency2_t foreign{};
+    foreign.latitude = 499999999;
+    foreign.longitude = -799999999;
+    foreign.altitude = 999;
+    foreign.battery = 5;
+    mavlink_message_t foreignMsg;
+    mavlink_msg_high_latency2_encode(2, MAV_COMP_ID_AUTOPILOT1, &foreignMsg, &foreign);
+    ingestFrame(bridge, foreignMsg, 3000);
+
+    MavlinkBatterySnapshot battery;
+    TEST_ASSERT_TRUE(bridge.getBatterySnapshot(3001, battery));
+    TEST_ASSERT_TRUE(battery.hasLevel);
+    TEST_ASSERT_EQUAL_UINT8(70, battery.level);
+
+    MavlinkPositionSnapshot position;
+    TEST_ASSERT_TRUE(bridge.takePositionSnapshot(3001, position));
+    TEST_ASSERT_EQUAL_INT32(own.latitude, position.latI);
+    TEST_ASSERT_EQUAL_INT32(own.longitude, position.lonI);
+    TEST_ASSERT_EQUAL_INT32(own.altitude, position.altM);
+}
+
 void test_high_latency_level_does_not_refresh_stale_voltage()
 {
     TestStream stream;
@@ -231,6 +268,7 @@ void setup()
     RUN_TEST(test_complete_mavlink_frame_round_trip);
     RUN_TEST(test_interleaved_sources_reassemble_independently);
     RUN_TEST(test_malformed_transport_payload_is_dropped);
+    RUN_TEST(test_snooping_is_scoped_to_the_local_airframe_sysid);
     RUN_TEST(test_high_latency_level_does_not_refresh_stale_voltage);
     RUN_TEST(test_sys_status_voltage_only_expires_independently);
 #endif
