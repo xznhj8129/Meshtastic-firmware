@@ -187,6 +187,8 @@ void MavlinkBridge::handleSnoopedMessage(const mavlink_message_t &msg, uint32_t 
         snoopHeartbeat(msg);
         return;
     }
+    // Only the locally learned airframe may populate this node's position and battery state.
+    // Other systems can share the mesh and local MAVLink bus without becoming this node's aircraft.
     if (role != MavlinkRole::AIR || !fromAutopilot(msg))
         return;
     switch (msg.msgid) {
@@ -214,7 +216,7 @@ void MavlinkBridge::snoopHeartbeat(const mavlink_message_t &msg)
     mavlink_heartbeat_t hb;
     mavlink_msg_heartbeat_decode(&msg, &hb);
     if (haveAutopilot) {
-        if (msg.sysid == autopilotSysid && msg.compid == autopilotCompid)
+        if (msg.sysid == autopilotSysid)
             role = MavlinkRole::AIR;
         return;
     }
@@ -233,7 +235,9 @@ void MavlinkBridge::snoopHeartbeat(const mavlink_message_t &msg)
 
 bool MavlinkBridge::fromAutopilot(const mavlink_message_t &msg) const
 {
-    return !haveAutopilot || (msg.sysid == autopilotSysid && msg.compid == autopilotCompid);
+    // sysid identifies the airframe. Components belonging to that system may legitimately
+    // emit position or battery messages; a different sysid is a different airframe.
+    return !haveAutopilot || msg.sysid == autopilotSysid;
 }
 
 void MavlinkBridge::snoopPosition(const mavlink_message_t &msg, uint32_t now)
