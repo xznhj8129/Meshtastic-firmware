@@ -2,6 +2,11 @@
 # trunk-ignore-all(ruff/F821)
 # trunk-ignore-all(flake8/F821): For SConstruct imports
 Import("env")
+
+from mavlink_proto_overlay import install_mavlink_proto_overlay
+
+install_mavlink_proto_overlay(env)
+
 platform = env.PioPlatform()
 
 if platform.name == "native":
