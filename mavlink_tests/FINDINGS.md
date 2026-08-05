@@ -528,3 +528,120 @@ is the right shape for this link and why the mandatory floor, not stream tuning,
 - Open: why the ground node cannot transmit at 22% channel duty. Relay load and transmit
   arbitration are both still candidates; the measurement that separates them is the ground
   console during a confirmed `hop_limit = 1` run.
+
+# QGroundControl over the high-latency link
+
+Observed live against SIH armed and loitering at 50 m, `-m iridium`, telemetry crossing
+UART / LoRa / UDP at ~0.5 Hz.
+
+## End-to-end proof
+
+`commander arm` + `commander takeoff` with `MIS_TAKEOFF_ALT 50` produced a real flight, and the
+resulting telemetry crossed the mesh intact:
+
+```text
+HIGH_LATENCY2  alt=539m  lat=473977435  lon=85455944  hdg=358deg  batt=50%  mode=772
+```
+
+539 m AMSL against a 489 m SIH origin is exactly 50 m above ground. Position, heading and
+battery all correct. This is the first end-to-end demonstration with *changing* values rather
+than a static frame.
+
+## What QGC cannot show, and why
+
+| symptom | cause |
+| --- | --- |
+| every numeric field reads 0 | without `HEARTBEAT` QGC never initialises its firmware plugin, so decoded `HIGH_LATENCY2` fields are discarded. HEARTBEAT is absent by protocol on an HL channel. |
+| flight mode wrong ("takeoff" while in `AUTO_LOITER`) | `HIGH_LATENCY2.custom_mode` is 16-bit; PX4's `custom_mode` is 32-bit. Truncation loses the sub-mode. Shifting left by 16 recovers it. |
+| armed state wrong | `HIGH_LATENCY2` carries no arming bit, and `HEARTBEAT.base_mode` is absent. QGC is inferring. |
+| "vehicle did not respond to command" on every command | ACK suppressed in IRIDIUM. The uLog shows `NAV_TAKEOFF result=ACCEPTED` and `DO_SET_MODE result=ACCEPTED`; the commands worked. |
+| repeated negative tone | our own 5 s `CONTROL_HIGH_LATENCY` assert is ACCEPTED by the serial instance and FAILED by the other instances: 36 of each in one session. Self-inflicted. |
+
+QGC's high-latency support is monitoring-oriented. Arming and commanding a vehicle purely over
+an HL link is outside what the mode is designed for, which is why its affordances fight it.
+
+## Ground-side synthesis: prototype result
+
+About 30 lines in a host-side relay, synthesizing toward the GCS from each `HIGH_LATENCY2`,
+costing no airtime: `HEARTBEAT` at 1 Hz, `GLOBAL_POSITION_INT`, `VFR_HUD`, `SYS_STATUS`, plus
+the reconstructed 32-bit `custom_mode`.
+
+QGC went from all fields zero to armed, correct mode ("Hold"), and 539 m altitude.
+
+It then flickered, because the relay both forwarded the raw `HIGH_LATENCY2` and synthesized from
+it, so QGC's high-latency and normal handlers fought over the same vehicle state. That is a
+direct violation of terminate-don't-tunnel: a bridge that re-emits must consume the source frame,
+not pass it through as well.
+
+**The relay is scaffolding, not the design.** Its value is the evidence that state replication at
+the bridge works, and that it is cheap.
+
+# Architecture direction
+
+Conclusions from the measurements above, agreed as direction rather than implemented.
+
+1. **Two PX4 MAVLink ports.** One ordinary port for a primary GCS or companion computer, one
+   dedicated to the mesh. The mandatory floor still exists on the dedicated port, but the node
+   filters before anything reaches the air, so it stops mattering. This lets the mesh link leave
+   IRIDIUM behind, which restores `COMMAND_ACK`, `HEARTBEAT`, arming state and `STATUSTEXT` —
+   every QGC pathology above is iridium-induced.
+2. **Filter and schedule at the node**, against a link budget computed from preset and band:
+
+   ```text
+   SHORT_FAST   10.94 kbps ≈ 1367 B/s
+   packet       ~115 bytes ≈ 115 ms airtime
+   25% duty     ≈ 2.2 packets/s
+   4:1 aggregation ≈ 8.8 MAVLink frames/s
+   ```
+
+   LONG_FAST at 1.07 kbps yields ~0.2 packets/s, which honestly says some presets cannot carry a
+   GCS at all.
+3. **Strictly MAVLink over the mesh.** No custom protocol. Coalescing, filtering and scheduling
+   only.
+4. **Rates configured in Meshtastic**, expressed as a budget plus per-class shares rather than
+   per-message-ID entries. Telemetry arrives at whatever rate the endpoint emits; a last-value
+   slot per `(sysid, compid, msgid)` holds the newest and emits at budget.
+5. **Message classification drives everything:**
+
+   | class | examples | policy |
+   | --- | --- | --- |
+   | State | `GLOBAL_POSITION_INT`, `ATTITUDE`, `SYS_STATUS`, `HIGH_LATENCY2` | last-value slot, emit at budget |
+   | Event | `COMMAND_ACK`, `STATUSTEXT`, `MISSION_ITEM_REACHED` | never coalesce, queue and deliver each |
+   | Command | `COMMAND_LONG`/`COMMAND_INT` | highest priority, retry, ack tracking |
+   | Bulk | parameter and mission protocols | deny |
+
+   Coalescing an Event loses information permanently. This distinction is the crux.
+6. **Deny bulk loudly.** A silent drop makes the GCS retry forever — observed directly, QGC
+   hammering a parameter download. Denials must produce a locally synthesized negative response
+   (`MISSION_ACK` with `MAV_MISSION_DENIED`, `COMMAND_ACK` with `MAV_RESULT_DENIED`) so the GCS
+   stops immediately.
+7. **Preserve `seq`, accept the gaps.** Renumbering needs a CRC recompute, breaks signed MAVLink 2
+   frames which cannot be re-signed without the key, and interleaves badly when a primary link is
+   live at the same time. The gaps are honest: decimated messages genuinely were not delivered.
+   Receiver loss statistics are meaningless on this link and should be ignored, not fixed. Note
+   `seq` is 8-bit: decimation beyond 1-in-255 makes loss counters wrap and read as small forward
+   jumps.
+8. **Preserve identity.** Same `sysid`/`compid` end to end, so a GCS connected over both a primary
+   and the mesh link sees one vehicle, not two.
+9. **This is a secondary link.** Parameters, missions and geofences belong on a primary
+   short-range link, matching the MAVLink High Latency Protocol guidance. That makes "deny" correct
+   rather than a compromise, and narrows the command set to an enumerable whitelist: arm/disarm,
+   mode, RTL, takeoff/land, reposition.
+
+## Why not a custom PX4 high-latency mode
+
+Considered, and rejected for scope rather than correctness.
+
+- It does not remove the work: the GCS-to-vehicle direction still needs filtering at the node,
+  because PX4 cannot stop a GCS from starting a parameter download.
+- A compiled-in stream table cannot adapt to the link budget, which depends on preset, band and
+  congestion. The node knows those; the autopilot does not.
+- It is a second permanent fork to rebase, and buys nothing for ArduPilot or INAV.
+
+The autopilot-agnostic equivalent is for the node to send `MAV_CMD_SET_MESSAGE_INTERVAL` to its
+locally attached autopilot, computed from the budget. That is standard MAVLink. It cannot disable
+`HEARTBEAT` or `MISSION_CURRENT`, so local filtering still mops up the residue — which is the same
+filter the GCS direction needs anyway.
+
+If the project were ever PX4-only on a fixed preset, the custom mode would be less total code and
+the trade would reverse.
