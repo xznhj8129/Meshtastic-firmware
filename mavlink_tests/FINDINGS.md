@@ -283,3 +283,56 @@ close this as a PX4 bug yet.
 Cheap decisive test, seconds not minutes: issue the request repeatedly in quick succession and
 measure how reliably `AUTOPILOT_VERSION` returns. Reliable return with never an ack implicates
 PX4. Both flaky implicates the return path, and that is ours.
+
+# Round 3: direct-send probe overturns the PX4 attribution
+
+Probe on 2026-08-04 22:16, firmware `2.8.0.6d533cc`. Ten `MAV_CMD_REQUEST_MESSAGE`
+requests at 2 s spacing, 26 s total measurement.
+
+## Result
+
+```text
+requests sent                       10
+PX4 vehicle_command_ack for 512      0
+AUTOPILOT_VERSION replies            0
+COMMAND_ACK replies for 512          0
+```
+
+Streams were unaffected during the same window: 18 `HEARTBEAT`, 9 `HIGH_LATENCY2`,
+19 `MISSION_CURRENT`, 41 `RADIO_STATUS`. The single `COMMAND_ACK` observed was again
+command 211, not ours, and arrived in 0.06 s.
+
+The ulog for this run contains **no command 512 at all**. PX4 never received any of the ten
+requests.
+
+## Ground-to-air delivery is unreliable
+
+| Run | Requests sent | PX4 processed (ulog 512) | Replies received |
+| --- | ---: | ---: | ---: |
+| 2026-08-04 20:29, `69c06a6` | 3 | 2 | 3 `AUTOPILOT_VERSION` |
+| 2026-08-04 22:03, `6d533cc` | 3 | 2 | 0 |
+| 2026-08-04 22:16 probe, `6d533cc` | 10 | 0 | 0 |
+
+One-shot `COMMAND_LONG` delivery from ground to air is intermittent, ranging from 2/3 to 0/10.
+Periodic streams hide this completely because they repeat until a copy survives; a one-shot
+command has no second chance.
+
+## Revised attribution
+
+The Boundary C conclusion is downgraded. It remains true that PX4 published accepted acks that
+never reached the verifier in the earlier runs, but that is no longer the leading defect, and
+it cannot be investigated while command delivery itself is unreliable.
+
+The primary defect is ours: single MAVLink frames are lost crossing the mesh, in both
+directions, and only repetition makes the link look healthy. Every "PX4 misbehaving" reading in
+this document rests on runs where delivery happened to succeed.
+
+## Next
+
+Characterize one-shot frame loss before touching PX4 or the ack path:
+
+1. Measure delivery rate for a single frame in each direction independently.
+2. Compare against Meshtastic packet counters at both nodes for the same window.
+3. Establish whether loss is at mesh transmit, mesh receive, reassembly, or endpoint write.
+
+Do not add retries to mask this. Measure the loss first.
