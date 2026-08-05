@@ -133,6 +133,30 @@ class MavlinkUdpEndpoint:
             3,
         )
 
+    def send_control_high_latency(self, target_system: int, target_component: int, enable: bool) -> None:
+        """Assert the high-latency link. PX4 only honours this in IRIDIUM mode."""
+        self.log_tx_message(
+            "COMMAND_LONG",
+            command=int(mavutil.mavlink.MAV_CMD_CONTROL_HIGH_LATENCY),
+            target_system=target_system,
+            target_component=target_component,
+            confirmation=0,
+            param1_enable=1 if enable else 0,
+        )
+        self.tx.command_long_send(
+            target_system,
+            target_component,
+            mavutil.mavlink.MAV_CMD_CONTROL_HIGH_LATENCY,
+            0,
+            1 if enable else 0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        )
+
     def send_request_version(self, target_system: int, target_component: int) -> None:
         self.log_tx_message(
             "COMMAND_LONG",
@@ -425,8 +449,14 @@ def run_capture(endpoint: MavlinkUdpEndpoint, log: EventLog, args: argparse.Name
         if elapsed >= stop_at:
             break
 
+        # No GCS heartbeat. PX4 disables IRIDIUM transmission whenever it believes a GCS is
+        # connected, and that branch ignores the commanded flag, so heart-beating over the only
+        # link silences the vehicle. A satellite GCS does not heartbeat; it asserts the link with
+        # MAV_CMD_CONTROL_HIGH_LATENCY instead. This also keeps the ground node's UDP client
+        # registration alive, which the heartbeat used to provide.
         if elapsed >= next_heartbeat:
-            endpoint.send_heartbeat()
+            log.write("probe_send", probe="control_high_latency_enable")
+            endpoint.send_control_high_latency(args.target_sysid, args.target_compid, True)
             next_heartbeat += 5.0
 
         while request_index < len(request_times) and elapsed >= request_times[request_index]:

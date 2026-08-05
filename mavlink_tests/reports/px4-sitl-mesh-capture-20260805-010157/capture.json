@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "events_jsonl": "events.jsonl",
+    "px4_console_log": "px4.log"
+  },
+  "completed_without_harness_error": true,
+  "configuration": {
+    "air_baud": 57600,
+    "air_uart": "/dev/ttyUSB0",
+    "control_offset_s": 1.0,
+    "drain_s": 8.0,
+    "ground_host": "192.168.0.244",
+    "ground_port": 14550,
+    "local_port": 14600,
+    "max_rate_bps": 1000,
+    "probe_attempts": 10,
+    "probe_interval_s": 3.0,
+    "px4_dir": "PX4-Autopilot",
+    "target_compid": 1,
+    "target_sysid": 1,
+    "warmup_s": 5.0
+  },
+  "event_counts": {
+    "capture_complete": 1,
+    "capture_created": 1,
+    "capture_schedule": 1,
+    "configuration_resolved": 1,
+    "mavlink_rx_message": 94,
+    "mavlink_tx_message": 29,
+    "probe_send": 29,
+    "px4_launch": 1,
+    "px4_shell_output": 4,
+    "px4_status_dump": 4,
+    "px4_stopped": 1,
+    "udp_endpoint_closed": 1,
+    "udp_endpoint_open": 1,
+    "udp_rx": 94,
+    "udp_tx": 29
+  },
+  "fatal_error": null,
+  "finished_at": "2026-08-05T05:02:39.883323+00:00",
+  "format": "meshtastic-mavlink-raw-capture-v1",
+  "received_message_counts": {
+    "AUTOPILOT_VERSION": 3,
+    "HIGH_LATENCY2": 15,
+    "RADIO_STATUS": 76
+  },
+  "received_source_counts": {
+    "1:1": 18,
+    "255:68": 76
+  },
+  "sent_message_counts": {
+    "COMMAND_LONG": 29
+  },
+  "started_at": "2026-08-05T05:01:57.245290+00:00",
+  "udp": {
+    "rx_bytes": 2622,
+    "rx_datagrams": 94,
+    "tx_bytes": 1276,
+    "tx_datagrams": 29
+  }
+}

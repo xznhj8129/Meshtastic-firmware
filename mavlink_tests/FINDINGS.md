@@ -248,3 +248,45 @@ is acknowledged `result=4` (FAILED), because `HEARTBEAT` is not a configured str
 mode, so that control command is not a useful probe in this configuration.
 
 Nothing in the Meshtastic firmware is implicated. No transport change is warranted by this.
+
+# IRIDIUM-compliant GCS: telemetry restored
+
+Capture `20260805-010157`. Harness change only, no reflash.
+
+## The demand
+
+```c
+if (_transmitting_enabled && (!vehicle_status.gcs_connection_lost || ...)) {
+    _transmitting_enabled = false;
+}
+```
+
+PX4 disables IRIDIUM transmission whenever it believes a GCS is connected, and that branch
+ignores `_transmitting_enabled_commanded`. Sending GCS heartbeats over the only available link
+therefore silences the vehicle. A satellite GCS does not heartbeat; PX4 treats "GCS lost" as the
+signal that the high-latency link is all that remains.
+
+## The change
+
+The recorder no longer sends `HEARTBEAT`. It asserts the link with
+`MAV_CMD_CONTROL_HIGH_LATENCY(enable=1)` on the same 5 s clock instead, which also keeps the
+ground node's UDP client registration alive.
+
+## Result
+
+| Measure | heartbeating GCS (004817) | compliant GCS (010157) |
+| --- | ---: | ---: |
+| `HIGH_LATENCY2` received | 2 | **15** |
+| `AUTOPILOT_VERSION` received | 1 | **3** |
+| GCS heartbeats sent | 9 | 0 |
+| commands acked by PX4 | 19 / 20 | **28 / 29** |
+| `COMMAND_ACK` on the wire | 0 | 0 |
+
+`HIGH_LATENCY2` at 15 in ~43 s is roughly 0.35/s against 0.5 Hz configured. PX4 now transmits
+steadily instead of oscillating between enabled and disabled. Our `MAV_CMD_CONTROL_HIGH_LATENCY`
+probes are themselves acknowledged (`2600` appears 12 times in the uLog), confirming delivery.
+
+## Unchanged, and unchangeable from the GCS
+
+`COMMAND_ACK` is still absent, and every uLog record still carries `from_external=0`. No GCS
+behaviour affects that branch. The suppression is structural, as recorded above.

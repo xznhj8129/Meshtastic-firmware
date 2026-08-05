@@ -1,0 +1,1072 @@
+# capture start 2026-08-05T05:01:55.576177+00:00 port=/dev/ttyUSB1 baud=115200
+[2026-08-05T05:01:58.577695+00:00] [    3.020] [32mINFO  [0m| 05:01:57 839 [Serial] [32mMAVLink UDP client registered: 192.168.0.213:14600
+[2026-08-05T05:01:59.246309+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mPartially randomized packet id 3213148615
+[2026-08-05T05:01:59.246398+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mIgnore update from self
+[2026-08-05T05:01:59.246432+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mhandleReceived(LOCAL) (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906118)
+[2026-08-05T05:01:59.246477+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:01:59.246508+00:00] [    3.688] [0m[32mINFO  [0m| 05:01:58 839 [Serial] [32mPacket History - insert: Using new slot @uptime 839.868s TRACE NEW
+[2026-08-05T05:01:59.246536+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mXEdDSA signed packet 0xbf84c1c7
+[2026-08-05T05:01:59.246559+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mUse AES256 key!
+[2026-08-05T05:01:59.246581+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mBroadcasting packet over UDP (id=3213148615)
+[2026-08-05T05:01:59.246603+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34menqueue for send (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906118 hopStart=3 relay=0x
+[2026-08-05T05:01:59.246625+00:00] [    3.688] [0m[34mDEBUG [0m| 05:01:58 839 [Serial] [34mtxGood=35,txRelay=9,rxGood=31,rxBad=0
+[2026-08-05T05:01:59.246646+00:00] [    3.688] [0m[32mINFO  [0m| 05:01:58 839 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:01:59.246666+00:00] [    3.689] [0m[33mWARN  [0m| 05:01:58 839 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:01:59.246686+00:00] [    3.689] [0m[33mWARN  [0m| 05:01:58 839 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:01:59.246706+00:00] [    3.689] [0m[33mWARN  [0m| 05:01:58 840 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:01:59.246727+00:00] [    3.689] [0m[33mWARN  [0m| 05:01:58 840 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:01:59.246747+00:00] [    3.689] [0m[33mWARN  [0m| 05:01:58 840 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:01:59.246778+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:01:59.246812+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [RadioIf] [34mLora RX (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=223 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:01:59.246835+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [RadioIf] [34mPacket RX: 180ms
+[2026-08-05T05:01:59.246864+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:01:59.246908+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mUse AES256 key!
+[2026-08-05T05:01:59.246929+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:01:59.246950+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mdecoded message (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:01:59.246970+00:00] [    3.689] [0m[32mINFO  [0m| 05:01:58 840 [Router] [32mPacket History - insert: Using new slot @uptime 840.214s TRACE NEW
+[2026-08-05T05:01:59.246991+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mhandleReceived(REMOTE) (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906118 rxSNR=11.25 rxRSSI=-38
+[2026-08-05T05:01:59.247036+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:01:59.247099+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:01:59.247125+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:01:59.247147+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mRouting sniffing (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906118 rxSNR=11.25 rxRSSI=-38 hopSt
+[2026-08-05T05:01:59.247168+00:00] [    3.689] [0m[32mINFO  [0m| 05:01:58 840 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:01:59.247189+00:00] [    3.689] [0m[32mINFO  [0m| 05:01:58 840 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:01:59.247209+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mUse AES256 key!
+[2026-08-05T05:01:59.247228+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mBroadcasting packet over UDP (id=3761518332)
+[2026-08-05T05:01:59.247248+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34menqueue for send (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906118 rxSNR=11.25 rxRSSI=
+[2026-08-05T05:01:59.247267+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mtxGood=35,txRelay=9,rxGood=32,rxBad=0
+[2026-08-05T05:01:59.247286+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:01:59.247317+00:00] [    3.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mrx_snr found in packet. Setting tx delay:1168
+[2026-08-05T05:02:00.247514+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mDelivering rx packet (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906118 rxSNR=11.25 rxRSSI=-38 h
+[2026-08-05T05:02:00.247584+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906118
+[2026-08-05T05:02:00.247598+00:00] [    4.689] [0m[32mINFO  [0m| 05:01:58 840 [Router] [32mSort took 0 milliseconds
+[2026-08-05T05:02:00.247607+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mForwarding to phone (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906118 rxSNR=11.25 rxRSSI=-38 ho
+[2026-08-05T05:02:00.247616+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:00.247626+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:00.247635+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:00.247642+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [34mSX126x AGC reset: warm sleep + Calibrate(0x7F)
+[2026-08-05T05:02:00.247649+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [34mStarted Tx (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906118 rxSNR=11.25 rxRSSI=-38 ho
+[2026-08-05T05:02:00.247655+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [34m1 packets remain in the TX queue
+[2026-08-05T05:02:00.247662+00:00] [    4.689] [0m[34mDEBUG [0m| 05:01:58 840 [34mPacket TX: 180ms
+[2026-08-05T05:02:00.247674+00:00] [    4.690] [0m[34mDEBUG [0m| 05:01:58 840 [34mCompleted sending (id=0xe03436fc fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906118 rxSNR=11.25 rxRSSI
+[2026-08-05T05:02:00.247689+00:00] [    4.690] [0m[34mDEBUG [0m| 05:01:59 840 [TrafficManagement] [34m[TM] Maintenance: 0 active, 0 expired, 0/500 slots, 0ms elapsed
+[2026-08-05T05:02:01.247858+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 841 [Power] [34mBattery: usbPower=1, isCharging=1, batMv=4204, batPct=100
+[2026-08-05T05:02:01.247972+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:01.248027+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mLora RX (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:01.248062+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:01.248090+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:01.248116+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:01.248140+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:01.248166+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mdecoded message (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:01.248191+00:00] [    5.690] [0m[32mINFO  [0m| 05:02:00 842 [Router] [32mPacket History - insert: Using new slot @uptime 842.178s TRACE NEW
+[2026-08-05T05:02:01.248216+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mhandleReceived(REMOTE) (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906120 rxSNR=11 rxRSSI=-38 ho
+[2026-08-05T05:02:01.248241+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:01.248266+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:01.248289+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:01.248313+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mRouting sniffing (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906120 rxSNR=11 rxRSSI=-38 hopStart
+[2026-08-05T05:02:01.248338+00:00] [    5.690] [0m[32mINFO  [0m| 05:02:00 842 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:01.248358+00:00] [    5.690] [0m[32mINFO  [0m| 05:02:00 842 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:01.248377+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:01.248400+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mBroadcasting packet over UDP (id=167658237)
+[2026-08-05T05:02:01.248425+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34menqueue for send (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906120 rxSNR=11 rxRSSI=-38
+[2026-08-05T05:02:01.248448+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mtxGood=36,txRelay=10,rxGood=33,rxBad=0
+[2026-08-05T05:02:01.248513+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.000000
+[2026-08-05T05:02:01.248539+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mrx_snr found in packet. Setting tx delay:1872
+[2026-08-05T05:02:01.248558+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mDelivering rx packet (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906120 rxSNR=11 rxRSSI=-38 hopS
+[2026-08-05T05:02:01.248578+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906120
+[2026-08-05T05:02:01.248594+00:00] [    5.690] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mForwarding to phone (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906120 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:02.249298+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:02.249351+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:02.249361+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:02.249369+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mStarted Tx (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906120 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:02.249377+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34m1 packets remain in the TX queue
+[2026-08-05T05:02:02.249383+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:02.249390+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mCompleted sending (id=0x09fe42fd fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906120 rxSNR=11 rxRSSI=-3
+[2026-08-05T05:02:02.249398+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34mStarted Tx (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906118 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:02.249406+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:00 842 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:02.249414+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:01 842 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:02.249420+00:00] [    6.691] [0m[34mDEBUG [0m| 05:02:01 842 [RadioIf] [34mCompleted sending (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906118 hopStart=3 relay=0
+[2026-08-05T05:02:03.249516+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:03.249575+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mLora RX (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:03.249593+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:03.249613+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:03.249632+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:03.249647+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:03.249660+00:00] [    7.691] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mdecoded message (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:03.249672+00:00] [    7.692] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mRx someone rebroadcasting for us (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-3
+[2026-08-05T05:02:03.249684+00:00] [    7.692] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:03.249696+00:00] [    7.692] [0m[32mINFO  [0m| 05:02:02 844 [Router] [32mPacket History - insert: Reusing slot aged 4.468s TRACE MATCHED PACKET
+[2026-08-05T05:02:03.249707+00:00] [    7.692] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mIgnore dupe incoming msg (id=0xbf84c1c7 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-38 hopSta
+[2026-08-05T05:02:03.933819+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mcancelSending id=0xbf84c1c7, removed=0
+[2026-08-05T05:02:03.933886+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:03.933920+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:03.933936+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mLora RX (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=10.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:03.933950+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:03.933964+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:03.933977+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:03.933989+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:03.934002+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mdecoded message (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=10.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:03.934014+00:00] [    8.376] [0m[32mINFO  [0m| 05:02:02 844 [Router] [32mPacket History - insert: Using new slot @uptime 844.501s TRACE NEW
+[2026-08-05T05:02:03.934027+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mhandleReceived(REMOTE) (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906122 rxSNR=10.5 rxRSSI=-38 
+[2026-08-05T05:02:03.934039+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:03.934051+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:03.934063+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:03.934075+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mRouting sniffing (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906122 rxSNR=10.5 rxRSSI=-38 hopSta
+[2026-08-05T05:02:03.934088+00:00] [    8.376] [0m[32mINFO  [0m| 05:02:02 844 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:03.934100+00:00] [    8.376] [0m[32mINFO  [0m| 05:02:02 844 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:03.934113+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:03.934125+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mBroadcasting packet over UDP (id=1215995646)
+[2026-08-05T05:02:03.934137+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34menqueue for send (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906122 rxSNR=10.5 rxRSSI=-
+[2026-08-05T05:02:03.934149+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mtxGood=38,txRelay=11,rxGood=35,rxBad=0
+[2026-08-05T05:02:03.934161+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mrx_snr found. hop_limit:2 rx_snr:10.500000
+[2026-08-05T05:02:03.934173+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mrx_snr found in packet. Setting tx delay:752
+[2026-08-05T05:02:03.934185+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:02 844 [Router] [34mDelivering rx packet (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906122 rxSNR=10.5 rxRSSI=-38 ho
+[2026-08-05T05:02:03.934196+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906122
+[2026-08-05T05:02:03.934208+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Router] [34mForwarding to phone (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906122 rxSNR=10.5 rxRSSI=-38 hop
+[2026-08-05T05:02:03.934220+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:03.934240+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:03.934253+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:03.934265+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Serial] [34mPartially randomized packet id 1916648904
+[2026-08-05T05:02:03.934276+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:03.934288+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Serial] [34mhandleReceived(LOCAL) (id=0x723dbdc8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906123)
+[2026-08-05T05:02:03.934300+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 844 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:03.934311+00:00] [    8.376] [0m[32mINFO  [0m| 05:02:03 845 [Serial] [32mPacket History - insert: Using new slot @uptime 844.995s TRACE NEW
+[2026-08-05T05:02:03.934322+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mXEdDSA signed packet 0x723dbdc8
+[2026-08-05T05:02:03.934333+00:00] [    8.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:04.934510+00:00] [    9.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mBroadcasting packet over UDP (id=1916648904)
+[2026-08-05T05:02:04.934585+00:00] [    9.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34menqueue for send (id=0x723dbdc8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906123 hopStart=3 relay=0x
+[2026-08-05T05:02:04.934604+00:00] [    9.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mtxGood=38,txRelay=11,rxGood=35,rxBad=0
+[2026-08-05T05:02:04.934620+00:00] [    9.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:10.500000
+[2026-08-05T05:02:04.934635+00:00] [    9.376] [0m[34mDEBUG [0m| 05:02:03 845 [Serial] [34mrx_snr found in packet. Setting tx delay:1224
+[2026-08-05T05:02:04.934650+00:00] [    9.376] [0m[32mINFO  [0m| 05:02:03 845 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:04.934664+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34mStarted Tx (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906122 rxSNR=10.5 rxRSSI=-38 hop
+[2026-08-05T05:02:04.934678+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34m1 packets remain in the TX queue
+[2026-08-05T05:02:04.934692+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:04.934707+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34mCompleted sending (id=0x487a9efe fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906122 rxSNR=10.5 rxRSSI=
+[2026-08-05T05:02:04.934721+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34mStarted Tx (id=0x723dbdc8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906123 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:04.934735+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:03 845 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:04.934749+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [RadioIf] [34mPacket TX: 152ms
+[2026-08-05T05:02:04.934762+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [RadioIf] [34mCompleted sending (id=0x723dbdc8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906123 hopStart=3 relay=0
+[2026-08-05T05:02:04.934777+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mPartially randomized packet id 2468604361
+[2026-08-05T05:02:04.934795+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:04.934837+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mhandleReceived(LOCAL) (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906124)
+[2026-08-05T05:02:04.934858+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:04.934874+00:00] [    9.377] [0m[32mINFO  [0m| 05:02:04 845 [Serial] [32mPacket History - insert: Using new slot @uptime 845.861s TRACE NEW
+[2026-08-05T05:02:04.934891+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mXEdDSA signed packet 0x9323e9c9
+[2026-08-05T05:02:04.934907+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:04.934926+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mBroadcasting packet over UDP (id=2468604361)
+[2026-08-05T05:02:04.934943+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34menqueue for send (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906124 hopStart=3 relay=0x
+[2026-08-05T05:02:04.934961+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 845 [Serial] [34mtxGood=40,txRelay=12,rxGood=35,rxBad=0
+[2026-08-05T05:02:04.934977+00:00] [    9.377] [0m[32mINFO  [0m| 05:02:04 845 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:04.934990+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 846 [RadioIf] [34mStarted Tx (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906124 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:04.935003+00:00] [    9.377] [0m[34mDEBUG [0m| 05:02:04 846 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:05.935513+00:00] [   10.377] [0m[34mDEBUG [0m| 05:02:04 846 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:05.935559+00:00] [   10.377] [0m[34mDEBUG [0m| 05:02:04 846 [RadioIf] [34mCompleted sending (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906124 hopStart=3 relay=0
+[2026-08-05T05:02:06.935665+00:00] [   11.378] [0m[31mERROR [0m| 05:02:05 847 [RadioIf] [31mIgnore received packet due to error=-7 (maybe id=0xfe3dbdc8 fr=0x3a180e17 to=0xffffffff flags=0x8a rxSNR=-12.5 rxRSSI=-92 nextHop=0x48 relay=0x2)
+[2026-08-05T05:02:06.935711+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:05 847 [RadioIf] [34mPacket RX (noise?) : 152ms
+[2026-08-05T05:02:06.935720+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mPartially randomized packet id 3262269898
+[2026-08-05T05:02:06.935728+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:06.935735+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mhandleReceived(LOCAL) (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906126)
+[2026-08-05T05:02:06.935742+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:06.935749+00:00] [   11.378] [0m[32mINFO  [0m| 05:02:06 847 [Serial] [32mPacket History - insert: Using new slot @uptime 847.856s TRACE NEW
+[2026-08-05T05:02:06.935755+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mXEdDSA signed packet 0xc27249ca
+[2026-08-05T05:02:06.935761+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:06.935767+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mBroadcasting packet over UDP (id=3262269898)
+[2026-08-05T05:02:06.935773+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34menqueue for send (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906126 hopStart=3 relay=0x
+[2026-08-05T05:02:06.935779+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 847 [Serial] [34mtxGood=41,txRelay=12,rxGood=35,rxBad=1
+[2026-08-05T05:02:06.935796+00:00] [   11.378] [0m[32mINFO  [0m| 05:02:06 847 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:06.935802+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 848 [RadioIf] [34mStarted Tx (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906126 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:06.935808+00:00] [   11.378] [0m[34mDEBUG [0m| 05:02:06 848 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:07.935922+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:06 848 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:07.935971+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:06 848 [RadioIf] [34mCompleted sending (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906126 hopStart=3 relay=0
+[2026-08-05T05:02:07.935981+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mPartially randomized packet id 1495577035
+[2026-08-05T05:02:07.935989+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:07.935995+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mhandleReceived(LOCAL) (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906127)
+[2026-08-05T05:02:07.936002+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:07.936009+00:00] [   12.378] [0m[32mINFO  [0m| 05:02:07 848 [Serial] [32mPacket History - insert: Using new slot @uptime 848.860s TRACE NEW
+[2026-08-05T05:02:07.936015+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mXEdDSA signed packet 0x5924b1cb
+[2026-08-05T05:02:07.936021+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:07.936028+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mBroadcasting packet over UDP (id=1495577035)
+[2026-08-05T05:02:07.936034+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34menqueue for send (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906127 hopStart=3 relay=0x
+[2026-08-05T05:02:07.936040+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [Serial] [34mtxGood=42,txRelay=12,rxGood=35,rxBad=1
+[2026-08-05T05:02:07.936046+00:00] [   12.378] [0m[32mINFO  [0m| 05:02:07 848 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:07.936052+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [RadioIf] [34mStarted Tx (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906127 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:07.936058+00:00] [   12.378] [0m[34mDEBUG [0m| 05:02:07 848 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:08.936198+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:07 849 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:08.936257+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:07 849 [RadioIf] [34mCompleted sending (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906127 hopStart=3 relay=0
+[2026-08-05T05:02:08.936275+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:08.936289+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [RadioIf] [34mLora RX (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:08.936301+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:08.936310+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:08.936319+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:08.936341+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:08.936350+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mdecoded message (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:08.936360+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mRx someone rebroadcasting for us (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 h
+[2026-08-05T05:02:08.936368+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:08.936380+00:00] [   13.378] [0m[32mINFO  [0m| 05:02:08 849 [Router] [32mPacket History - insert: Reusing slot aged 3.965s TRACE MATCHED PACKET
+[2026-08-05T05:02:08.936389+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mIgnore dupe incoming msg (id=0x9323e9c9 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=
+[2026-08-05T05:02:08.936400+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mcancelSending id=0x9323e9c9, removed=0
+[2026-08-05T05:02:08.936409+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:08.936421+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mPartially randomized packet id 2816373196
+[2026-08-05T05:02:08.936429+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:08.936438+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mhandleReceived(LOCAL) (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906128)
+[2026-08-05T05:02:08.936447+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:08.936473+00:00] [   13.378] [0m[32mINFO  [0m| 05:02:08 849 [Serial] [32mPacket History - insert: Using new slot @uptime 849.907s TRACE NEW
+[2026-08-05T05:02:08.936486+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mXEdDSA signed packet 0xa7de71cc
+[2026-08-05T05:02:08.936495+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:08.936504+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mBroadcasting packet over UDP (id=2816373196)
+[2026-08-05T05:02:08.936514+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34menqueue for send (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906128 hopStart=3 relay=0x
+[2026-08-05T05:02:08.936523+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 849 [Serial] [34mtxGood=43,txRelay=12,rxGood=36,rxBad=1
+[2026-08-05T05:02:08.936532+00:00] [   13.378] [0m[32mINFO  [0m| 05:02:08 849 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:08.936540+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 850 [RadioIf] [34mStarted Tx (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906128 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:08.936550+00:00] [   13.378] [0m[34mDEBUG [0m| 05:02:08 850 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:09.936652+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:08 850 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:09.936717+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:08 850 [RadioIf] [34mCompleted sending (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906128 hopStart=3 relay=0
+[2026-08-05T05:02:09.936735+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mPartially randomized packet id 4291905997
+[2026-08-05T05:02:09.936750+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:09.936784+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mhandleReceived(LOCAL) (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906129)
+[2026-08-05T05:02:09.936805+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:09.936819+00:00] [   14.379] [0m[32mINFO  [0m| 05:02:09 850 [Serial] [32mPacket History - insert: Using new slot @uptime 850.857s TRACE NEW
+[2026-08-05T05:02:09.936836+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mXEdDSA signed packet 0xffd149cd
+[2026-08-05T05:02:09.936854+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:09.936873+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mBroadcasting packet over UDP (id=4291905997)
+[2026-08-05T05:02:09.936892+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34menqueue for send (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906129 hopStart=3 relay=0x
+[2026-08-05T05:02:09.936910+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 850 [Serial] [34mtxGood=44,txRelay=12,rxGood=36,rxBad=1
+[2026-08-05T05:02:09.936928+00:00] [   14.379] [0m[32mINFO  [0m| 05:02:09 850 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:09.936946+00:00] [   14.379] [0m[33mWARN  [0m| 05:02:09 850 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:02:09.936965+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:09.936978+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mLora RX (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-37 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:09.936989+00:00] [   14.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:10.937169+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:10.937256+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:10.937288+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:10.937307+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mdecoded message (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11.25 rxRSSI=-37 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:10.937323+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mRx someone rebroadcasting for us (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-3
+[2026-08-05T05:02:10.937337+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:10.937351+00:00] [   15.379] [0m[32mINFO  [0m| 05:02:09 851 [Router] [32mPacket History - insert: Reusing slot aged 3.309s TRACE MATCHED PACKET
+[2026-08-05T05:02:10.937365+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mIgnore dupe incoming msg (id=0xc27249ca fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.25 rxRSSI=-37 hopSta
+[2026-08-05T05:02:10.937379+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mcancelSending id=0xc27249ca, removed=0
+[2026-08-05T05:02:10.937393+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:10.937406+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mStarted Tx (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906129 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:10.937438+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:10.937467+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:10.937508+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:09 851 [RadioIf] [34mCompleted sending (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906129 hopStart=3 relay=0
+[2026-08-05T05:02:10.937534+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mPartially randomized packet id 3687110094
+[2026-08-05T05:02:10.937550+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:10.937568+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mhandleReceived(LOCAL) (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906130)
+[2026-08-05T05:02:10.937585+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:10.937599+00:00] [   15.379] [0m[32mINFO  [0m| 05:02:10 851 [Serial] [32mPacket History - insert: Using new slot @uptime 851.862s TRACE NEW
+[2026-08-05T05:02:10.937613+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mXEdDSA signed packet 0xdbc4d5ce
+[2026-08-05T05:02:10.937626+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:10.937639+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mBroadcasting packet over UDP (id=3687110094)
+[2026-08-05T05:02:10.937652+00:00] [   15.379] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34menqueue for send (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906130 hopStart=3 relay=0x
+[2026-08-05T05:02:10.937665+00:00] [   15.380] [0m[34mDEBUG [0m| 05:02:10 851 [Serial] [34mtxGood=45,txRelay=12,rxGood=37,rxBad=1
+[2026-08-05T05:02:10.937677+00:00] [   15.380] [0m[32mINFO  [0m| 05:02:10 851 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:10.937690+00:00] [   15.380] [0m[34mDEBUG [0m| 05:02:10 852 [RadioIf] [34mStarted Tx (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906130 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:10.937702+00:00] [   15.380] [0m[34mDEBUG [0m| 05:02:10 852 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:11.938526+00:00] [   16.380] [0m[34mDEBUG [0m| 05:02:10 852 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:11.938585+00:00] [   16.380] [0m[34mDEBUG [0m| 05:02:10 852 [RadioIf] [34mCompleted sending (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906130 hopStart=3 relay=0
+[2026-08-05T05:02:12.938737+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:12.938802+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [RadioIf] [34mLora RX (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:12.938818+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:12.938832+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:12.938845+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:12.938858+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:12.938877+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mdecoded message (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:12.938890+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mRx someone rebroadcasting for us (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.75 rxRSSI=-3
+[2026-08-05T05:02:12.938917+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:12.938930+00:00] [   17.381] [0m[32mINFO  [0m| 05:02:11 853 [Router] [32mPacket History - insert: Reusing slot aged 4.706s TRACE MATCHED PACKET
+[2026-08-05T05:02:12.938943+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mIgnore dupe incoming msg (id=0x5924b1cb fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.75 rxRSSI=-38 hopSta
+[2026-08-05T05:02:12.938955+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mcancelSending id=0x5924b1cb, removed=0
+[2026-08-05T05:02:12.938967+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:11 853 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:12.938978+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mPartially randomized packet id 1773556175
+[2026-08-05T05:02:12.938990+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:12.939002+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mhandleReceived(LOCAL) (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906132)
+[2026-08-05T05:02:12.939014+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:12.939026+00:00] [   17.381] [0m[32mINFO  [0m| 05:02:12 853 [Serial] [32mPacket History - insert: Using new slot @uptime 853.898s TRACE NEW
+[2026-08-05T05:02:12.939038+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mXEdDSA signed packet 0x69b651cf
+[2026-08-05T05:02:12.939049+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:12.939061+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mBroadcasting packet over UDP (id=1773556175)
+[2026-08-05T05:02:12.939073+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34menqueue for send (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906132 hopStart=3 relay=0x
+[2026-08-05T05:02:12.939084+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 853 [Serial] [34mtxGood=46,txRelay=12,rxGood=38,rxBad=1
+[2026-08-05T05:02:12.939095+00:00] [   17.381] [0m[32mINFO  [0m| 05:02:12 853 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:12.939106+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 854 [RadioIf] [34mStarted Tx (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906132 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:12.939117+00:00] [   17.381] [0m[34mDEBUG [0m| 05:02:12 854 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:13.939260+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:12 854 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:13.939328+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:12 854 [RadioIf] [34mCompleted sending (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906132 hopStart=3 relay=0
+[2026-08-05T05:02:13.939346+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mPartially randomized packet id 3606710736
+[2026-08-05T05:02:13.939361+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:13.939376+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mhandleReceived(LOCAL) (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906133)
+[2026-08-05T05:02:13.939390+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:13.939427+00:00] [   18.381] [0m[32mINFO  [0m| 05:02:13 854 [Serial] [32mPacket History - insert: Using new slot @uptime 854.858s TRACE NEW
+[2026-08-05T05:02:13.939442+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mXEdDSA signed packet 0xd6fa09d0
+[2026-08-05T05:02:13.939469+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:13.939489+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mBroadcasting packet over UDP (id=3606710736)
+[2026-08-05T05:02:13.939503+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34menqueue for send (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906133 hopStart=3 relay=0x
+[2026-08-05T05:02:13.939517+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [Serial] [34mtxGood=47,txRelay=12,rxGood=38,rxBad=1
+[2026-08-05T05:02:13.939529+00:00] [   18.381] [0m[32mINFO  [0m| 05:02:13 854 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:13.939542+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [RadioIf] [34mStarted Tx (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906133 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:13.939555+00:00] [   18.381] [0m[34mDEBUG [0m| 05:02:13 854 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:14.940513+00:00] [   19.382] [0m[34mDEBUG [0m| 05:02:13 855 [RadioIf] [34mPacket TX: 152ms
+[2026-08-05T05:02:14.940564+00:00] [   19.382] [0m[34mDEBUG [0m| 05:02:13 855 [RadioIf] [34mCompleted sending (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906133 hopStart=3 relay=0
+[2026-08-05T05:02:15.940694+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mPartially randomized packet id 4274268625
+[2026-08-05T05:02:15.940765+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:15.940784+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mhandleReceived(LOCAL) (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906135)
+[2026-08-05T05:02:15.940800+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:15.940815+00:00] [   20.383] [0m[32mINFO  [0m| 05:02:15 856 [Serial] [32mPacket History - insert: Using new slot @uptime 856.860s TRACE NEW
+[2026-08-05T05:02:15.940829+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mXEdDSA signed packet 0xfec429d1
+[2026-08-05T05:02:15.940843+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:15.940857+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mBroadcasting packet over UDP (id=4274268625)
+[2026-08-05T05:02:15.940871+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34menqueue for send (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906135 hopStart=3 relay=0x
+[2026-08-05T05:02:15.940884+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 856 [Serial] [34mtxGood=48,txRelay=12,rxGood=38,rxBad=1
+[2026-08-05T05:02:15.940897+00:00] [   20.383] [0m[32mINFO  [0m| 05:02:15 856 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:15.940910+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 857 [RadioIf] [34mStarted Tx (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906135 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:15.940923+00:00] [   20.383] [0m[34mDEBUG [0m| 05:02:15 857 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:16.941030+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:15 857 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:16.941080+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:15 857 [RadioIf] [34mCompleted sending (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906135 hopStart=3 relay=0
+[2026-08-05T05:02:16.941100+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:16.941107+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [RadioIf] [34mLora RX (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:16.941114+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:16.941120+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:16.941126+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:16.941133+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:16.941139+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mdecoded message (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:16.941145+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mRx someone rebroadcasting for us (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 h
+[2026-08-05T05:02:16.941152+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:16.941158+00:00] [   21.383] [0m[32mINFO  [0m| 05:02:16 857 [Router] [32mPacket History - insert: Reusing slot aged 7.983s TRACE MATCHED PACKET
+[2026-08-05T05:02:16.941164+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mIgnore dupe incoming msg (id=0xa7de71cc fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=
+[2026-08-05T05:02:16.941170+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mcancelSending id=0xa7de71cc, removed=0
+[2026-08-05T05:02:16.941176+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:16.941182+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Serial] [34mPartially randomized packet id 1710126546
+[2026-08-05T05:02:16.941188+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:16.941195+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Serial] [34mhandleReceived(LOCAL) (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906136)
+[2026-08-05T05:02:16.941201+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 857 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:16.941208+00:00] [   21.383] [0m[32mINFO  [0m| 05:02:16 857 [Serial] [32mPacket History - insert: Using new slot @uptime 857.981s TRACE NEW
+[2026-08-05T05:02:16.941213+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 858 [Serial] [34mXEdDSA signed packet 0x65ee75d2
+[2026-08-05T05:02:16.941219+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 858 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:16.941225+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 858 [Serial] [34mBroadcasting packet over UDP (id=1710126546)
+[2026-08-05T05:02:16.941231+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 858 [Serial] [34menqueue for send (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906136 hopStart=3 relay=0x
+[2026-08-05T05:02:16.941237+00:00] [   21.383] [0m[34mDEBUG [0m| 05:02:16 858 [Serial] [34mtxGood=49,txRelay=12,rxGood=39,rxBad=1
+[2026-08-05T05:02:17.941518+00:00] [   22.383] [0m[32mINFO  [0m| 05:02:16 858 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:17.941592+00:00] [   22.383] [0m[34mDEBUG [0m| 05:02:16 858 [RadioIf] [34mStarted Tx (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906136 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:17.941604+00:00] [   22.383] [0m[34mDEBUG [0m| 05:02:16 858 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:17.941613+00:00] [   22.383] [0m[34mDEBUG [0m| 05:02:16 858 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:17.941621+00:00] [   22.383] [0m[34mDEBUG [0m| 05:02:16 858 [RadioIf] [34mCompleted sending (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906136 hopStart=3 relay=0
+[2026-08-05T05:02:18.941792+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:17 859 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:18.941862+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:17 859 [RadioIf] [34mLora RX (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:18.941881+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:18.941898+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:18.941914+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:18.941935+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:18.941956+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mdecoded message (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:18.941986+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mRx someone rebroadcasting for us (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 h
+[2026-08-05T05:02:18.942009+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:18.942032+00:00] [   23.384] [0m[32mINFO  [0m| 05:02:18 859 [Router] [32mPacket History - insert: Reusing slot aged 8.927s TRACE MATCHED PACKET
+[2026-08-05T05:02:18.942054+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mIgnore dupe incoming msg (id=0xffd149cd fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=
+[2026-08-05T05:02:18.942077+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mcancelSending id=0xffd149cd, removed=0
+[2026-08-05T05:02:18.942098+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:18.942118+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mPartially randomized packet id 2942902739
+[2026-08-05T05:02:18.942137+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:18.942155+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mhandleReceived(LOCAL) (id=0xaf6921d3 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906138)
+[2026-08-05T05:02:18.942170+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:18.942183+00:00] [   23.384] [0m[32mINFO  [0m| 05:02:18 859 [Serial] [32mPacket History - insert: Using new slot @uptime 859.865s TRACE NEW
+[2026-08-05T05:02:18.942195+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mXEdDSA signed packet 0xaf6921d3
+[2026-08-05T05:02:18.942207+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:18.942219+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mBroadcasting packet over UDP (id=2942902739)
+[2026-08-05T05:02:18.942250+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34menqueue for send (id=0xaf6921d3 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906138 hopStart=3 relay=0x
+[2026-08-05T05:02:18.942263+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [Serial] [34mtxGood=50,txRelay=12,rxGood=40,rxBad=1
+[2026-08-05T05:02:18.942275+00:00] [   23.384] [0m[32mINFO  [0m| 05:02:18 859 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:18.942287+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 859 [RadioIf] [34mStarted Tx (id=0xaf6921d3 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906138 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:18.942298+00:00] [   23.384] [0m[34mDEBUG [0m| 05:02:18 860 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:19.942497+00:00] [   24.384] [0m[34mDEBUG [0m| 05:02:18 860 [RadioIf] [34mPacket TX: 152ms
+[2026-08-05T05:02:19.942595+00:00] [   24.384] [0m[34mDEBUG [0m| 05:02:18 860 [RadioIf] [34mCompleted sending (id=0xaf6921d3 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906138 hopStart=3 relay=0
+[2026-08-05T05:02:19.942643+00:00] [   24.384] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mPartially randomized packet id 2613402068
+[2026-08-05T05:02:19.942671+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:19.942697+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mhandleReceived(LOCAL) (id=0x9bc559d4 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906139)
+[2026-08-05T05:02:19.942735+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:19.942755+00:00] [   24.385] [0m[32mINFO  [0m| 05:02:19 860 [Serial] [32mPacket History - insert: Using new slot @uptime 860.853s TRACE NEW
+[2026-08-05T05:02:19.942774+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mXEdDSA signed packet 0x9bc559d4
+[2026-08-05T05:02:19.942791+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:19.942809+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mBroadcasting packet over UDP (id=2613402068)
+[2026-08-05T05:02:19.942828+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34menqueue for send (id=0x9bc559d4 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906139 hopStart=3 relay=0x
+[2026-08-05T05:02:19.942846+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [Serial] [34mtxGood=51,txRelay=12,rxGood=40,rxBad=1
+[2026-08-05T05:02:19.942862+00:00] [   24.385] [0m[32mINFO  [0m| 05:02:19 860 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:19.942879+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [RadioIf] [34mStarted Tx (id=0x9bc559d4 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906139 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:19.942896+00:00] [   24.385] [0m[34mDEBUG [0m| 05:02:19 860 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:20.943632+00:00] [   25.385] [0m[34mDEBUG [0m| 05:02:19 861 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:20.943690+00:00] [   25.386] [0m[34mDEBUG [0m| 05:02:19 861 [RadioIf] [34mCompleted sending (id=0x9bc559d4 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906139 hopStart=3 relay=0
+[2026-08-05T05:02:21.943834+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:21.943899+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [RadioIf] [34mLora RX (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:21.943929+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:21.943943+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:21.943955+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:21.943966+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:21.943975+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mdecoded message (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=10.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:21.943985+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mRx someone rebroadcasting for us (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.5 rxRSSI=-38
+[2026-08-05T05:02:21.943999+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:21.944006+00:00] [   26.386] [0m[32mINFO  [0m| 05:02:20 862 [Router] [32mPacket History - insert: Reusing slot aged 10.617s TRACE MATCHED PACKET
+[2026-08-05T05:02:21.944015+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mIgnore dupe incoming msg (id=0xdbc4d5ce fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.5 rxRSSI=-38 hopStar
+[2026-08-05T05:02:21.944024+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mcancelSending id=0xdbc4d5ce, removed=0
+[2026-08-05T05:02:21.944033+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:20 862 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:21.944040+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mPartially randomized packet id 3518664149
+[2026-08-05T05:02:21.944047+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:21.944056+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mhandleReceived(LOCAL) (id=0xd1ba8dd5 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906141)
+[2026-08-05T05:02:21.944063+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:21.944071+00:00] [   26.386] [0m[32mINFO  [0m| 05:02:21 862 [Serial] [32mPacket History - insert: Using new slot @uptime 862.861s TRACE NEW
+[2026-08-05T05:02:21.944081+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mXEdDSA signed packet 0xd1ba8dd5
+[2026-08-05T05:02:21.944092+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:21.944099+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mBroadcasting packet over UDP (id=3518664149)
+[2026-08-05T05:02:21.944108+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34menqueue for send (id=0xd1ba8dd5 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906141 hopStart=3 relay=0x
+[2026-08-05T05:02:21.944115+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 862 [Serial] [34mtxGood=52,txRelay=12,rxGood=41,rxBad=1
+[2026-08-05T05:02:21.944122+00:00] [   26.386] [0m[32mINFO  [0m| 05:02:21 862 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:21.944131+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 863 [RadioIf] [34mStarted Tx (id=0xd1ba8dd5 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906141 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:21.944138+00:00] [   26.386] [0m[34mDEBUG [0m| 05:02:21 863 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:22.944304+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:21 863 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:22.944380+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:21 863 [RadioIf] [34mCompleted sending (id=0xd1ba8dd5 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906141 hopStart=3 relay=0
+[2026-08-05T05:02:22.944420+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mPartially randomized packet id 16524758
+[2026-08-05T05:02:22.944437+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:22.944472+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mhandleReceived(LOCAL) (id=0x00fc25d6 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906142)
+[2026-08-05T05:02:22.944495+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:22.944519+00:00] [   27.386] [0m[32mINFO  [0m| 05:02:22 863 [Serial] [32mPacket History - insert: Using new slot @uptime 863.854s TRACE NEW
+[2026-08-05T05:02:22.944553+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mXEdDSA signed packet 0x00fc25d6
+[2026-08-05T05:02:22.944573+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:22.944588+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mBroadcasting packet over UDP (id=16524758)
+[2026-08-05T05:02:22.944603+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34menqueue for send (id=0x00fc25d6 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906142 hopStart=3 relay=0x
+[2026-08-05T05:02:22.944617+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [Serial] [34mtxGood=53,txRelay=12,rxGood=41,rxBad=1
+[2026-08-05T05:02:22.944630+00:00] [   27.386] [0m[32mINFO  [0m| 05:02:22 863 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:22.944644+00:00] [   27.386] [0m[34mDEBUG [0m| 05:02:22 863 [RadioIf] [34mStarted Tx (id=0x00fc25d6 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906142 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:22.944679+00:00] [   27.387] [0m[34mDEBUG [0m| 05:02:22 863 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:23.945312+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:22 864 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:23.945384+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:22 864 [RadioIf] [34mCompleted sending (id=0x00fc25d6 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906142 hopStart=3 relay=0
+[2026-08-05T05:02:23.945400+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mPartially randomized packet id 1300199895
+[2026-08-05T05:02:23.945413+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:23.945424+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mhandleReceived(LOCAL) (id=0x4d7f79d7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906143)
+[2026-08-05T05:02:23.945433+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:23.945444+00:00] [   28.387] [0m[32mINFO  [0m| 05:02:23 864 [Serial] [32mPacket History - insert: Using new slot @uptime 864.864s TRACE NEW
+[2026-08-05T05:02:23.945469+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mXEdDSA signed packet 0x4d7f79d7
+[2026-08-05T05:02:23.945484+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:23.945496+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mBroadcasting packet over UDP (id=1300199895)
+[2026-08-05T05:02:23.945506+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34menqueue for send (id=0x4d7f79d7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906143 hopStart=3 relay=0x
+[2026-08-05T05:02:23.945528+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [Serial] [34mtxGood=54,txRelay=12,rxGood=41,rxBad=1
+[2026-08-05T05:02:23.945541+00:00] [   28.387] [0m[32mINFO  [0m| 05:02:23 864 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:23.945551+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:23.945560+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [RadioIf] [34mLora RX (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:23.945569+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 864 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:23.945578+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:23.945586+00:00] [   28.387] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:24.945773+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:24.945871+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mdecoded message (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:24.945901+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mRx someone rebroadcasting for us (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 h
+[2026-08-05T05:02:24.945926+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:24.945950+00:00] [   29.388] [0m[32mINFO  [0m| 05:02:23 865 [Router] [32mPacket History - insert: Reusing slot aged 11.209s TRACE MATCHED PACKET
+[2026-08-05T05:02:24.945971+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mIgnore dupe incoming msg (id=0x69b651cf fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11 rxRSSI=-38 hopStart=
+[2026-08-05T05:02:24.945991+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mcancelSending id=0x69b651cf, removed=0
+[2026-08-05T05:02:24.946010+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:24.946030+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [RadioIf] [34mStarted Tx (id=0x4d7f79d7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906143 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:24.946050+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:24.946069+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:24.946089+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:23 865 [RadioIf] [34mCompleted sending (id=0x4d7f79d7 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906143 hopStart=3 relay=0
+[2026-08-05T05:02:24.946108+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mPartially randomized packet id 1118581208
+[2026-08-05T05:02:24.946126+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:24.946147+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mhandleReceived(LOCAL) (id=0x42ac31d8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906144)
+[2026-08-05T05:02:24.946167+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:24.946188+00:00] [   29.388] [0m[32mINFO  [0m| 05:02:24 865 [Serial] [32mPacket History - insert: Using new slot @uptime 865.855s TRACE NEW
+[2026-08-05T05:02:24.946208+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mXEdDSA signed packet 0x42ac31d8
+[2026-08-05T05:02:24.946255+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:24.946277+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mBroadcasting packet over UDP (id=1118581208)
+[2026-08-05T05:02:24.946298+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34menqueue for send (id=0x42ac31d8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906144 hopStart=3 relay=0x
+[2026-08-05T05:02:24.946318+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 865 [Serial] [34mtxGood=55,txRelay=12,rxGood=42,rxBad=1
+[2026-08-05T05:02:24.946338+00:00] [   29.388] [0m[32mINFO  [0m| 05:02:24 865 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:24.946357+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 866 [RadioIf] [34mStarted Tx (id=0x42ac31d8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906144 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:24.946375+00:00] [   29.388] [0m[34mDEBUG [0m| 05:02:24 866 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:25.946541+00:00] [   30.388] [0m[34mDEBUG [0m| 05:02:24 866 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:25.946619+00:00] [   30.388] [0m[34mDEBUG [0m| 05:02:24 866 [RadioIf] [34mCompleted sending (id=0x42ac31d8 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906144 hopStart=3 relay=0
+[2026-08-05T05:02:25.946637+00:00] [   30.388] [0m[34mDEBUG [0m| 05:02:25 866 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:25.946650+00:00] [   30.388] [0m[34mDEBUG [0m| 05:02:25 866 [RadioIf] [34mLora RX (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=184 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:25.946663+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [RadioIf] [34mPacket RX: 152ms
+[2026-08-05T05:02:25.946675+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:25.946686+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:25.946697+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:25.946708+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mdecoded message (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:25.946719+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mRx someone rebroadcasting for us (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=184 rxSNR=11.25 rxRSSI=-3
+[2026-08-05T05:02:25.946730+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:25.946741+00:00] [   30.389] [0m[32mINFO  [0m| 05:02:25 866 [Router] [32mPacket History - insert: Reusing slot aged 12.078s TRACE MATCHED PACKET
+[2026-08-05T05:02:25.946752+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mIgnore dupe incoming msg (id=0xd6fa09d0 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=184 rxSNR=11.25 rxRSSI=-38 hopSta
+[2026-08-05T05:02:25.946763+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mcancelSending id=0xd6fa09d0, removed=0
+[2026-08-05T05:02:25.946774+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:25.946784+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Serial] [34mPartially randomized packet id 474420697
+[2026-08-05T05:02:25.946794+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 866 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:25.946805+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mhandleReceived(LOCAL) (id=0x1c4715d9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906145)
+[2026-08-05T05:02:25.946832+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:25.946843+00:00] [   30.389] [0m[32mINFO  [0m| 05:02:25 867 [Serial] [32mPacket History - insert: Using new slot @uptime 867.027s TRACE NEW
+[2026-08-05T05:02:25.946853+00:00] [   30.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mXEdDSA signed packet 0x1c4715d9
+[2026-08-05T05:02:26.946983+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:26.947037+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mBroadcasting packet over UDP (id=474420697)
+[2026-08-05T05:02:26.947046+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34menqueue for send (id=0x1c4715d9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906145 hopStart=3 relay=0x
+[2026-08-05T05:02:26.947054+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [Serial] [34mtxGood=56,txRelay=12,rxGood=43,rxBad=1
+[2026-08-05T05:02:26.947068+00:00] [   31.389] [0m[32mINFO  [0m| 05:02:25 867 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:26.947083+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [RadioIf] [34mStarted Tx (id=0x1c4715d9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906145 hopStart=3 relay=0x17 pri
+[2026-08-05T05:02:26.947092+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [RadioIf] [34m0 packets remain in the TX queue
+[2026-08-05T05:02:26.947100+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [RadioIf] [34mPacket TX: 116ms
+[2026-08-05T05:02:26.947109+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:25 867 [RadioIf] [34mCompleted sending (id=0x1c4715d9 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906145 hopStart=3 relay=0
+[2026-08-05T05:02:26.947117+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:26.947123+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [RadioIf] [34mLora RX (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:26.947128+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:26.947134+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:26.947139+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:26.947145+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:26.947150+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [Router] [34mdecoded message (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:26.947155+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 867 [Router] [34mRx someone rebroadcasting for us (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.75 rxRSSI=-3
+[2026-08-05T05:02:26.947161+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:26.947166+00:00] [   31.389] [0m[32mINFO  [0m| 05:02:26 868 [Router] [32mPacket History - insert: Reusing slot aged 11.145s TRACE MATCHED PACKET
+[2026-08-05T05:02:26.947171+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mIgnore dupe incoming msg (id=0xfec429d1 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=10.75 rxRSSI=-38 hopSta
+[2026-08-05T05:02:26.947177+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mcancelSending id=0xfec429d1, removed=0
+[2026-08-05T05:02:26.947192+00:00] [   31.389] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:27.786841+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:27.786893+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mLora RX (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:27.786903+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mPacket RX: 116ms
+[2026-08-05T05:02:27.786910+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:27.786916+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:27.786923+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mVerified XEdDSA signature from 0x3a180e17
+[2026-08-05T05:02:27.786929+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mdecoded message (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:27.786935+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mRx someone rebroadcasting for us (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.5 rxRSSI=-38
+[2026-08-05T05:02:27.786940+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mDidn't find pending packet
+[2026-08-05T05:02:27.786946+00:00] [   32.229] [0m[32mINFO  [0m| 05:02:26 868 [Router] [32mPacket History - insert: Reusing slot aged 10.491s TRACE MATCHED PACKET
+[2026-08-05T05:02:27.786952+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mIgnore dupe incoming msg (id=0x65ee75d2 fr=0x3a180e17 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=138 rxSNR=11.5 rxRSSI=-38 hopStar
+[2026-08-05T05:02:27.786958+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mcancelSending id=0x65ee75d2, removed=0
+[2026-08-05T05:02:27.786964+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [Router] [34mIncoming msg was filtered from 0x3a180e17
+[2026-08-05T05:02:27.786969+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:27.786975+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mLora RX (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:27.786980+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:26 868 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:27.786986+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:27.786991+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:27.786997+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:27.787002+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mdecoded message (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.25 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:27.787008+00:00] [   32.229] [0m[32mINFO  [0m| 05:02:27 868 [Router] [32mPacket History - insert: Using new slot @uptime 868.756s TRACE NEW
+[2026-08-05T05:02:27.787014+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mhandleReceived(REMOTE) (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=11.25 rxRSSI=-38
+[2026-08-05T05:02:27.787019+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:27.787025+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:27.787041+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:27.787047+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mRouting sniffing (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=11.25 rxRSSI=-38 hopSt
+[2026-08-05T05:02:27.787053+00:00] [   32.229] [0m[32mINFO  [0m| 05:02:27 868 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:27.787058+00:00] [   32.229] [0m[32mINFO  [0m| 05:02:27 868 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:27.787064+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:27.787069+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mBroadcasting packet over UDP (id=910323455)
+[2026-08-05T05:02:27.787074+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34menqueue for send (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=11.25 rxRSSI=
+[2026-08-05T05:02:27.787079+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mtxGood=57,txRelay=12,rxGood=46,rxBad=1
+[2026-08-05T05:02:27.787084+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:27.787090+00:00] [   32.229] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mrx_snr found in packet. Setting tx delay:376
+[2026-08-05T05:02:28.231881+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mDelivering rx packet (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=11.25 rxRSSI=-38 h
+[2026-08-05T05:02:28.231930+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906147
+[2026-08-05T05:02:28.231939+00:00] [   32.674] [0m[32mINFO  [0m| 05:02:27 868 [Router] [32mSort took 0 milliseconds
+[2026-08-05T05:02:28.231947+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mForwarding to phone (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=11.25 rxRSSI=-38 ho
+[2026-08-05T05:02:28.231953+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:28.231960+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:28.231966+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:28.231973+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Serial] [34mPartially randomized packet id 1438215642
+[2026-08-05T05:02:28.231979+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:28.231985+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 868 [Serial] [34mhandleReceived(LOCAL) (id=0x55b96dda fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147)
+[2026-08-05T05:02:28.231992+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:28.231998+00:00] [   32.674] [0m[32mINFO  [0m| 05:02:27 869 [Serial] [32mPacket History - insert: Using new slot @uptime 869.011s TRACE NEW
+[2026-08-05T05:02:28.232005+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mXEdDSA signed packet 0x55b96dda
+[2026-08-05T05:02:28.232011+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:28.232017+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mBroadcasting packet over UDP (id=1438215642)
+[2026-08-05T05:02:28.232023+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34menqueue for send (id=0x55b96dda fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906147 hopStart=3 relay=0x
+[2026-08-05T05:02:28.232052+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mtxGood=57,txRelay=12,rxGood=46,rxBad=1
+[2026-08-05T05:02:28.232059+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.232065+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Serial] [34mrx_snr found in packet. Setting tx delay:1120
+[2026-08-05T05:02:28.232071+00:00] [   32.674] [0m[32mINFO  [0m| 05:02:27 869 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:28.232077+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:28.232083+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mLora RX (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:28.232089+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:28.232095+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.232101+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mrx_snr found in packet. Setting tx delay:168
+[2026-08-05T05:02:28.232107+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:28.232113+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:28.232119+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:28.232125+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mdecoded message (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:28.232132+00:00] [   32.674] [0m[32mINFO  [0m| 05:02:27 869 [Router] [32mPacket History - insert: Using new slot @uptime 869.267s TRACE NEW
+[2026-08-05T05:02:28.232138+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mhandleReceived(REMOTE) (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=10.75 rxRSSI=-38
+[2026-08-05T05:02:28.232143+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:28.232150+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:28.232156+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:28.232162+00:00] [   32.674] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mRouting sniffing (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=10.75 rxRSSI=-38 hopSt
+[2026-08-05T05:02:28.232167+00:00] [   32.674] [0m[32mINFO  [0m| 05:02:27 869 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:28.982021+00:00] [   33.424] [0m[32mINFO  [0m| 05:02:27 869 [Router] [32mPacket History - insert: Reusing slot aged 0.080s TRACE MATCHED PACKET
+[2026-08-05T05:02:28.982106+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:28.982127+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mBroadcasting packet over UDP (id=582573825)
+[2026-08-05T05:02:28.982145+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34menqueue for send (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=10.75 rxRSSI=
+[2026-08-05T05:02:28.982162+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mtxGood=57,txRelay=12,rxGood=47,rxBad=1
+[2026-08-05T05:02:28.982199+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.982213+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mrx_snr found in packet. Setting tx delay:472
+[2026-08-05T05:02:28.982226+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mDelivering rx packet (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=10.75 rxRSSI=-38 h
+[2026-08-05T05:02:28.982238+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906147
+[2026-08-05T05:02:28.982251+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mForwarding to phone (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906147 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:28.982263+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:28.982276+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:28.982288+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:28.982301+00:00] [   33.424] [0m[31mERROR [0m| 05:02:27 869 [RadioIf] [31mIgnore received packet due to error=-7 (maybe id=0x140e7438 fr=0xfe1647d2 to=0xaee557bf flags=0xe6 rxSNR=-11.75 rxRSSI=-82 nextHop=0xf4 relay=0x75)
+[2026-08-05T05:02:28.982313+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mPacket RX (noise?) : 264ms
+[2026-08-05T05:02:28.982325+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.982337+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:27 869 [RadioIf] [34mrx_snr found in packet. Setting tx delay:968
+[2026-08-05T05:02:28.982349+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mPartially randomized packet id 2968010203
+[2026-08-05T05:02:28.982361+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:28.982374+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mhandleReceived(LOCAL) (id=0xb0e83ddb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148)
+[2026-08-05T05:02:28.982387+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:28.982399+00:00] [   33.424] [0m[32mINFO  [0m| 05:02:28 869 [Serial] [32mPacket History - insert: Using new slot @uptime 869.860s TRACE NEW
+[2026-08-05T05:02:28.982411+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mXEdDSA signed packet 0xb0e83ddb
+[2026-08-05T05:02:28.982422+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:28.982434+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mBroadcasting packet over UDP (id=2968010203)
+[2026-08-05T05:02:28.982446+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34menqueue for send (id=0xb0e83ddb fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=184 rxtime=1785906148 hopStart=3 relay=0x
+[2026-08-05T05:02:28.982484+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mtxGood=57,txRelay=12,rxGood=47,rxBad=2
+[2026-08-05T05:02:28.982497+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.982510+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [Serial] [34mrx_snr found in packet. Setting tx delay:1968
+[2026-08-05T05:02:28.982521+00:00] [   33.424] [0m[32mINFO  [0m| 05:02:28 869 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:28.982533+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:28.982553+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 869 [RadioIf] [34mLora RX (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:28.982565+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:28.982577+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:28.982588+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1904
+[2026-08-05T05:02:28.982599+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:28.982610+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:28.982622+00:00] [   33.424] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:29.395113+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mdecoded message (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:29.395174+00:00] [   33.837] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mPacket History - insert: Using new slot @uptime 870.116s TRACE NEW
+[2026-08-05T05:02:29.395187+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mhandleReceived(REMOTE) (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 
+[2026-08-05T05:02:29.395198+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:29.395208+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:29.395218+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:29.395227+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mRouting sniffing (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hopSta
+[2026-08-05T05:02:29.395236+00:00] [   33.837] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:29.395247+00:00] [   33.837] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:29.395257+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:29.395265+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mBroadcasting packet over UDP (id=474600197)
+[2026-08-05T05:02:29.395275+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34menqueue for send (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=-
+[2026-08-05T05:02:29.395284+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mtxGood=57,txRelay=12,rxGood=48,rxBad=2
+[2026-08-05T05:02:29.395292+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:29.395300+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mrx_snr found in packet. Setting tx delay:1408
+[2026-08-05T05:02:29.395309+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mDelivering rx packet (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 ho
+[2026-08-05T05:02:29.395317+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906148
+[2026-08-05T05:02:29.395326+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mForwarding to phone (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:29.395354+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:29.395364+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:29.395371+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:29.395379+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:29.395387+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mLora RX (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:29.395396+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:29.395403+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:29.395411+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [RadioIf] [34mrx_snr found in packet. Setting tx delay:288
+[2026-08-05T05:02:29.395420+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:29.395429+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:29.395438+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:29.395447+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mdecoded message (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:29.395475+00:00] [   33.837] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mPacket History - insert: Using new slot @uptime 870.469s TRACE NEW
+[2026-08-05T05:02:29.395494+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mhandleReceived(REMOTE) (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 
+[2026-08-05T05:02:29.395502+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:29.395510+00:00] [   33.837] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:29.812172+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:29.812245+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mRouting sniffing (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hopSta
+[2026-08-05T05:02:29.812264+00:00] [   34.254] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:29.812280+00:00] [   34.254] [0m[32mINFO  [0m| 05:02:28 870 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:29.812295+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:29.812310+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mBroadcasting packet over UDP (id=2208634631)
+[2026-08-05T05:02:29.812324+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34menqueue for send (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=-
+[2026-08-05T05:02:29.812338+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mtxGood=57,txRelay=12,rxGood=49,rxBad=2
+[2026-08-05T05:02:29.812351+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:29.812392+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mrx_snr found in packet. Setting tx delay:1064
+[2026-08-05T05:02:29.812407+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mDelivering rx packet (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 ho
+[2026-08-05T05:02:29.812421+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906148
+[2026-08-05T05:02:29.812435+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mForwarding to phone (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:29.812449+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:28 870 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:29.812494+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:29.812509+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:29.812522+00:00] [   34.254] [0m[33mWARN  [0m| 05:02:29 870 [RadioIf] [33mCan not send yet, busyRx
+[2026-08-05T05:02:29.812536+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:29.812550+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mrx_snr found in packet. Setting tx delay:656
+[2026-08-05T05:02:29.812563+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mCorrected frequency offset: 449.499969
+[2026-08-05T05:02:29.812577+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mLora RX (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:29.812590+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:29.812603+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:29.812617+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [RadioIf] [34mrx_snr found in packet. Setting tx delay:408
+[2026-08-05T05:02:29.812630+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:29.812643+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:29.812657+00:00] [   34.254] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:29.812670+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mdecoded message (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:29.812684+00:00] [   34.255] [0m[32mINFO  [0m| 05:02:29 870 [Router] [32mPacket History - insert: Using new slot @uptime 870.847s TRACE NEW
+[2026-08-05T05:02:29.812697+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mhandleReceived(REMOTE) (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-38 
+[2026-08-05T05:02:29.812710+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:29.812723+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:29.812736+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:29.812749+00:00] [   34.255] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mRouting sniffing (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-38 hopSta
+[2026-08-05T05:02:29.812761+00:00] [   34.255] [0m[32mINFO  [0m| 05:02:29 870 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:30.225148+00:00] [   34.667] [0m[32mINFO  [0m| 05:02:29 870 [Router] [32mPacket History - insert: Reusing slot aged 0.080s TRACE MATCHED PACKET
+[2026-08-05T05:02:30.225216+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:30.225241+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mBroadcasting packet over UDP (id=1848443657)
+[2026-08-05T05:02:30.225264+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34menqueue for send (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906149 rxSNR=11.5 rxRSSI=-
+[2026-08-05T05:02:30.225302+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mtxGood=57,txRelay=12,rxGood=50,rxBad=2
+[2026-08-05T05:02:30.225326+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:30.225345+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mrx_snr found in packet. Setting tx delay:336
+[2026-08-05T05:02:30.225365+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 870 [Router] [34mDelivering rx packet (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-38 ho
+[2026-08-05T05:02:30.225390+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906149
+[2026-08-05T05:02:30.225413+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mForwarding to phone (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:30.225431+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:30.225449+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:30.225525+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:30.225568+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:30.225589+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mLora RX (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=223 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:30.225611+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mPacket RX: 180ms
+[2026-08-05T05:02:30.225631+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:30.225649+00:00] [   34.667] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mrx_snr found in packet. Setting tx delay:560
+[2026-08-05T05:02:30.225668+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:30.225688+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:30.225707+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:30.225727+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mdecoded message (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:30.225745+00:00] [   34.668] [0m[32mINFO  [0m| 05:02:29 871 [Router] [32mPacket History - insert: Using new slot @uptime 871.200s TRACE NEW
+[2026-08-05T05:02:30.225764+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mhandleReceived(REMOTE) (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11 rxRSSI=-38 ho
+[2026-08-05T05:02:30.225781+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:30.225825+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:30.225847+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:30.225866+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mRouting sniffing (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11 rxRSSI=-38 hopStart
+[2026-08-05T05:02:30.225884+00:00] [   34.668] [0m[32mINFO  [0m| 05:02:29 871 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:30.225903+00:00] [   34.668] [0m[32mINFO  [0m| 05:02:29 871 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:30.225923+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:30.225942+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mBroadcasting packet over UDP (id=2357450506)
+[2026-08-05T05:02:30.225963+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34menqueue for send (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11 rxRSSI=-38
+[2026-08-05T05:02:30.225983+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mtxGood=57,txRelay=12,rxGood=51,rxBad=2
+[2026-08-05T05:02:30.226001+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:30.226019+00:00] [   34.668] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mrx_snr found in packet. Setting tx delay:1752
+[2026-08-05T05:02:30.709266+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mDelivering rx packet (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11 rxRSSI=-38 hopS
+[2026-08-05T05:02:30.709318+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906149
+[2026-08-05T05:02:30.709328+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mForwarding to phone (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:30.709334+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:30.709342+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:30.709348+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:30.709354+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:30.709361+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mLora RX (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=223 rxSNR=11.5 rxRSSI=-37 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:30.709367+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mPacket RX: 180ms
+[2026-08-05T05:02:30.709373+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:30.709380+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [RadioIf] [34mrx_snr found in packet. Setting tx delay:640
+[2026-08-05T05:02:30.709386+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:30.709393+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:30.709399+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:30.709405+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mdecoded message (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-37 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:30.709449+00:00] [   35.151] [0m[32mINFO  [0m| 05:02:29 871 [Router] [32mPacket History - insert: Using new slot @uptime 871.623s TRACE NEW
+[2026-08-05T05:02:30.709476+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:29 871 [Router] [34mhandleReceived(REMOTE) (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-37 
+[2026-08-05T05:02:30.709485+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:30.709491+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:30.709498+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:30.709505+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mRouting sniffing (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-37 hopSta
+[2026-08-05T05:02:30.709511+00:00] [   35.151] [0m[32mINFO  [0m| 05:02:30 871 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:30.709517+00:00] [   35.151] [0m[32mINFO  [0m| 05:02:30 871 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:30.709524+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:30.709530+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mBroadcasting packet over UDP (id=2715031308)
+[2026-08-05T05:02:30.709537+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34menqueue for send (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11.5 rxRSSI=-
+[2026-08-05T05:02:30.709543+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mtxGood=57,txRelay=12,rxGood=52,rxBad=2
+[2026-08-05T05:02:30.709549+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:30.709555+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mrx_snr found in packet. Setting tx delay:1712
+[2026-08-05T05:02:30.709561+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mDelivering rx packet (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-37 ho
+[2026-08-05T05:02:30.709567+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906149
+[2026-08-05T05:02:30.709574+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mForwarding to phone (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906149 rxSNR=11.5 rxRSSI=-37 hop
+[2026-08-05T05:02:30.709580+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:30.709585+00:00] [   35.151] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:31.161312+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:31.161370+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [RadioIf] [34mCorrected frequency offset: 418.499969
+[2026-08-05T05:02:31.161379+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [RadioIf] [34mLora RX (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:31.161387+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:31.161394+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:31.161416+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [RadioIf] [34mrx_snr found in packet. Setting tx delay:2024
+[2026-08-05T05:02:31.161424+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:31.161430+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:31.161436+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:31.161443+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mdecoded message (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.5 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:31.161456+00:00] [   35.603] [0m[32mINFO  [0m| 05:02:30 871 [Router] [32mPacket History - insert: Using new slot @uptime 871.978s TRACE NEW
+[2026-08-05T05:02:31.161481+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 871 [Router] [34mhandleReceived(REMOTE) (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906150 rxSNR=11.5 rxRSSI=-38 
+[2026-08-05T05:02:31.161489+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:31.161495+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:31.161501+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:31.161508+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mRouting sniffing (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906150 rxSNR=11.5 rxRSSI=-38 hopSta
+[2026-08-05T05:02:31.161514+00:00] [   35.603] [0m[32mINFO  [0m| 05:02:30 872 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:31.161520+00:00] [   35.603] [0m[32mINFO  [0m| 05:02:30 872 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:31.161527+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:31.161542+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mBroadcasting packet over UDP (id=686869261)
+[2026-08-05T05:02:31.161556+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34menqueue for send (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906150 rxSNR=11.5 rxRSSI=-
+[2026-08-05T05:02:31.161569+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mtxGood=57,txRelay=12,rxGood=53,rxBad=2
+[2026-08-05T05:02:31.161578+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:31.161587+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mrx_snr found in packet. Setting tx delay:944
+[2026-08-05T05:02:31.161597+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mDelivering rx packet (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906150 rxSNR=11.5 rxRSSI=-38 ho
+[2026-08-05T05:02:31.161607+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906150
+[2026-08-05T05:02:31.161615+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mForwarding to phone (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906150 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:31.161634+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:31.161643+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:31.161649+00:00] [   35.603] [0m[34mDEBUG [0m| 05:02:30 872 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:31.161668+00:00] [   35.604] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mPartially randomized packet id 1098011100
+[2026-08-05T05:02:31.161678+00:00] [   35.604] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:31.161687+00:00] [   35.604] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mhandleReceived(LOCAL) (id=0x417251dc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906150)
+[2026-08-05T05:02:31.161695+00:00] [   35.604] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:31.161703+00:00] [   35.604] [0m[32mINFO  [0m| 05:02:30 872 [Serial] [32mPacket History - insert: Using new slot @uptime 872.232s TRACE NEW
+[2026-08-05T05:02:31.901396+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mXEdDSA signed packet 0x417251dc
+[2026-08-05T05:02:31.901452+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:31.901490+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mBroadcasting packet over UDP (id=1098011100)
+[2026-08-05T05:02:31.901505+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34menqueue for send (id=0x417251dc fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906150 hopStart=3 relay=0x
+[2026-08-05T05:02:31.901518+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mtxGood=57,txRelay=12,rxGood=53,rxBad=2
+[2026-08-05T05:02:31.901531+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:31.901543+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:30 872 [Serial] [34mrx_snr found in packet. Setting tx delay:552
+[2026-08-05T05:02:31.901555+00:00] [   36.343] [0m[32mINFO  [0m| 05:02:30 872 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:31.901568+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:31.901580+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [RadioIf] [34mLora RX (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:31.901592+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:31.901604+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:31.901616+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [RadioIf] [34mrx_snr found in packet. Setting tx delay:344
+[2026-08-05T05:02:31.901628+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:31.901640+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:31.901652+00:00] [   36.343] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:31.901664+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mdecoded message (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:31.901676+00:00] [   36.344] [0m[32mINFO  [0m| 05:02:31 872 [Router] [32mPacket History - insert: Using new slot @uptime 872.813s TRACE NEW
+[2026-08-05T05:02:31.901688+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mhandleReceived(REMOTE) (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906151 rxSNR=10.75 rxRSSI=-38
+[2026-08-05T05:02:31.901700+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:31.901712+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:31.901741+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:31.901754+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mRouting sniffing (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906151 rxSNR=10.75 rxRSSI=-38 hopSt
+[2026-08-05T05:02:31.901766+00:00] [   36.344] [0m[32mINFO  [0m| 05:02:31 872 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:31.901778+00:00] [   36.344] [0m[32mINFO  [0m| 05:02:31 872 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:31.901790+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:31.901802+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mBroadcasting packet over UDP (id=3290059535)
+[2026-08-05T05:02:31.901813+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34menqueue for send (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906151 rxSNR=10.75 rxRSSI=
+[2026-08-05T05:02:31.901825+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mtxGood=57,txRelay=12,rxGood=54,rxBad=2
+[2026-08-05T05:02:31.901837+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:31.901849+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mrx_snr found in packet. Setting tx delay:1832
+[2026-08-05T05:02:31.901860+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mDelivering rx packet (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906151 rxSNR=10.75 rxRSSI=-38 h
+[2026-08-05T05:02:31.901872+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906151
+[2026-08-05T05:02:31.901883+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 872 [Router] [34mForwarding to phone (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906151 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:31.901894+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 873 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:31.901905+00:00] [   36.344] [0m[34mDEBUG [0m| 05:02:31 873 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:32.902502+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:32.902552+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mPartially randomized packet id 2817391069
+[2026-08-05T05:02:32.902562+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:32.902573+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mhandleReceived(LOCAL) (id=0xa7edf9dd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906151)
+[2026-08-05T05:02:32.902583+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:32.902592+00:00] [   37.344] [0m[32mINFO  [0m| 05:02:31 873 [Serial] [32mPacket History - insert: Using new slot @uptime 873.068s TRACE NEW
+[2026-08-05T05:02:32.902600+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mXEdDSA signed packet 0xa7edf9dd
+[2026-08-05T05:02:32.902608+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:32.902617+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mBroadcasting packet over UDP (id=2817391069)
+[2026-08-05T05:02:32.902623+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34menqueue for send (id=0xa7edf9dd fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906151 hopStart=3 relay=0x
+[2026-08-05T05:02:32.902631+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mtxGood=57,txRelay=12,rxGood=54,rxBad=2
+[2026-08-05T05:02:32.902653+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:11.250000
+[2026-08-05T05:02:32.902660+00:00] [   37.344] [0m[34mDEBUG [0m| 05:02:31 873 [Serial] [34mrx_snr found in packet. Setting tx delay:2048
+[2026-08-05T05:02:32.902666+00:00] [   37.345] [0m[32mINFO  [0m| 05:02:31 873 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:32.902673+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34mStarted Tx (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=11.25 rxRSSI=-38 ho
+[2026-08-05T05:02:32.902679+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34m12 packets remain in the TX queue
+[2026-08-05T05:02:32.902685+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:32.902691+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34mCompleted sending (id=0x36426eff fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=11.25 rxRSSI
+[2026-08-05T05:02:32.902697+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:32.902702+00:00] [   37.345] [0m[34mDEBUG [0m| 05:02:31 873 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1728
+[2026-08-05T05:02:33.902793+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:33.902845+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [RadioIf] [34mLora RX (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:33.902855+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:33.902863+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:33.902872+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [RadioIf] [34mrx_snr found in packet. Setting tx delay:632
+[2026-08-05T05:02:33.902879+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:33.902887+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:33.902895+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:33.902902+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mdecoded message (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:33.902910+00:00] [   38.345] [0m[32mINFO  [0m| 05:02:33 874 [Router] [32mPacket History - insert: Using new slot @uptime 874.864s TRACE NEW
+[2026-08-05T05:02:33.902918+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mhandleReceived(REMOTE) (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906153 rxSNR=11 rxRSSI=-38 ho
+[2026-08-05T05:02:33.902926+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:33.902933+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:33.902940+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:33.902948+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mRouting sniffing (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906153 rxSNR=11 rxRSSI=-38 hopStart
+[2026-08-05T05:02:33.902956+00:00] [   38.345] [0m[32mINFO  [0m| 05:02:33 874 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:33.902974+00:00] [   38.345] [0m[32mINFO  [0m| 05:02:33 874 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:33.902981+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:33.902987+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mBroadcasting packet over UDP (id=789414672)
+[2026-08-05T05:02:33.902993+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34menqueue for send (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906153 rxSNR=11 rxRSSI=-38
+[2026-08-05T05:02:33.902999+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mtxGood=58,txRelay=13,rxGood=55,rxBad=2
+[2026-08-05T05:02:33.903004+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:33.903010+00:00] [   38.345] [0m[34mDEBUG [0m| 05:02:33 874 [Router] [34mrx_snr found in packet. Setting tx delay:1544
+[2026-08-05T05:02:34.903504+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mDelivering rx packet (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906153 rxSNR=11 rxRSSI=-38 hopS
+[2026-08-05T05:02:34.903547+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906153
+[2026-08-05T05:02:34.903555+00:00] [   39.345] [0m[32mINFO  [0m| 05:02:33 875 [Router] [32mSort took 0 milliseconds
+[2026-08-05T05:02:34.903561+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mForwarding to phone (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906153 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:34.903568+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:34.903575+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:34.903581+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:34.903587+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mPartially randomized packet id 2879576542
+[2026-08-05T05:02:34.903593+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:34.903600+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mhandleReceived(LOCAL) (id=0xaba2d9de fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906153)
+[2026-08-05T05:02:34.903607+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:34.903614+00:00] [   39.345] [0m[32mINFO  [0m| 05:02:33 875 [Serial] [32mPacket History - insert: Using new slot @uptime 875.119s TRACE NEW
+[2026-08-05T05:02:34.903620+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mXEdDSA signed packet 0xaba2d9de
+[2026-08-05T05:02:34.903626+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:34.903632+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mBroadcasting packet over UDP (id=2879576542)
+[2026-08-05T05:02:34.903639+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34menqueue for send (id=0xaba2d9de fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906153 hopStart=3 relay=0x
+[2026-08-05T05:02:34.903645+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mtxGood=58,txRelay=13,rxGood=55,rxBad=2
+[2026-08-05T05:02:34.903651+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:34.903657+00:00] [   39.345] [0m[34mDEBUG [0m| 05:02:33 875 [Serial] [34mrx_snr found in packet. Setting tx delay:1096
+[2026-08-05T05:02:34.903673+00:00] [   39.346] [0m[32mINFO  [0m| 05:02:33 875 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:34.903680+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34mStarted Tx (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:34.903686+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34m13 packets remain in the TX queue
+[2026-08-05T05:02:34.903692+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:34.903697+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34mCompleted sending (id=0x22b95f01 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906147 rxSNR=10.75 rxRSSI
+[2026-08-05T05:02:34.903703+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:34.903708+00:00] [   39.346] [0m[34mDEBUG [0m| 05:02:33 875 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1504
+[2026-08-05T05:02:35.903809+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:35.903870+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [RadioIf] [34mLora RX (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:35.903888+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:35.903903+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:35.903916+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [RadioIf] [34mrx_snr found in packet. Setting tx delay:296
+[2026-08-05T05:02:35.903929+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:35.903942+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:35.903954+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:35.903967+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mdecoded message (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:35.903980+00:00] [   40.346] [0m[32mINFO  [0m| 05:02:35 876 [Router] [32mPacket History - insert: Using new slot @uptime 876.926s TRACE NEW
+[2026-08-05T05:02:35.903992+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mhandleReceived(REMOTE) (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906155 rxSNR=11.75 rxRSSI=-38
+[2026-08-05T05:02:35.904004+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:35.904016+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:35.904028+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:35.904039+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 876 [Router] [34mRouting sniffing (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906155 rxSNR=11.75 rxRSSI=-38 hopSt
+[2026-08-05T05:02:35.904051+00:00] [   40.346] [0m[32mINFO  [0m| 05:02:35 877 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:35.904062+00:00] [   40.346] [0m[32mINFO  [0m| 05:02:35 877 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:35.904074+00:00] [   40.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:36.904375+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mBroadcasting packet over UDP (id=1888235281)
+[2026-08-05T05:02:36.904443+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34menqueue for send (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906155 rxSNR=11.75 rxRSSI=
+[2026-08-05T05:02:36.904483+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mtxGood=59,txRelay=14,rxGood=56,rxBad=2
+[2026-08-05T05:02:36.904501+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:36.904516+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mrx_snr found in packet. Setting tx delay:1152
+[2026-08-05T05:02:36.904531+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mDelivering rx packet (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906155 rxSNR=11.75 rxRSSI=-38 h
+[2026-08-05T05:02:36.904544+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906155
+[2026-08-05T05:02:36.904558+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mForwarding to phone (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906155 rxSNR=11.75 rxRSSI=-38 ho
+[2026-08-05T05:02:36.904572+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:36.904586+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:36.904599+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:36.904613+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34mStarted Tx (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:36.904626+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34m13 packets remain in the TX queue
+[2026-08-05T05:02:36.904640+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:36.904654+00:00] [   41.346] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34mCompleted sending (id=0x1c49d305 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=
+[2026-08-05T05:02:36.904667+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:36.904680+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:35 877 [RadioIf] [34mrx_snr found in packet. Setting tx delay:328
+[2026-08-05T05:02:36.904693+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34mStarted Tx (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:36.904705+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34m12 packets remain in the TX queue
+[2026-08-05T05:02:36.904718+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:36.904731+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34mCompleted sending (id=0x83a51707 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906148 rxSNR=11.5 rxRSSI=
+[2026-08-05T05:02:36.904743+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:36.904755+00:00] [   41.347] [0m[34mDEBUG [0m| 05:02:36 877 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1336
+[2026-08-05T05:02:37.904846+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [RadioIf] [34mCorrected frequency offset: 387.500000
+[2026-08-05T05:02:37.904894+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [RadioIf] [34mLora RX (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:37.904918+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:37.904927+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:37.904934+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [RadioIf] [34mrx_snr found in packet. Setting tx delay:808
+[2026-08-05T05:02:37.904941+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:37.904948+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:37.904954+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:37.904960+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [Router] [34mdecoded message (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=10.75 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:37.904967+00:00] [   42.347] [0m[32mINFO  [0m| 05:02:37 878 [Router] [32mPacket History - insert: Using new slot @uptime 878.985s TRACE NEW
+[2026-08-05T05:02:37.904973+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 878 [Router] [34mhandleReceived(REMOTE) (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906157 rxSNR=10.75 rxRSSI=-38
+[2026-08-05T05:02:37.904979+00:00] [   42.347] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:38.902277+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:38.902341+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:38.902362+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mRouting sniffing (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906157 rxSNR=10.75 rxRSSI=-38 hopSt
+[2026-08-05T05:02:38.902380+00:00] [   43.344] [0m[32mINFO  [0m| 05:02:37 879 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:38.902396+00:00] [   43.344] [0m[32mINFO  [0m| 05:02:37 879 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:38.902411+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:38.902426+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mBroadcasting packet over UDP (id=1227590418)
+[2026-08-05T05:02:38.902441+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34menqueue for send (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906157 rxSNR=10.75 rxRSSI=
+[2026-08-05T05:02:38.902470+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mtxGood=61,txRelay=16,rxGood=57,rxBad=2
+[2026-08-05T05:02:38.902489+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:38.902503+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mrx_snr found in packet. Setting tx delay:640
+[2026-08-05T05:02:38.902516+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mDelivering rx packet (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906157 rxSNR=10.75 rxRSSI=-38 h
+[2026-08-05T05:02:38.902529+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906157
+[2026-08-05T05:02:38.902542+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mForwarding to phone (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906157 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:38.902575+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:38.902588+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:38.902599+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:37 879 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:38.902611+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:38 879 [RadioIf] [34mStarted Tx (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906149 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:38.902622+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:38 879 [RadioIf] [34m12 packets remain in the TX queue
+[2026-08-05T05:02:38.902632+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mPartially randomized packet id 2739296735
+[2026-08-05T05:02:38.902642+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mIgnore update from self
+[2026-08-05T05:02:38.902653+00:00] [   43.344] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mhandleReceived(LOCAL) (id=0xa34659df fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906158)
+[2026-08-05T05:02:38.902664+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mNo modules interested in portnum=64, src=LOCAL
+[2026-08-05T05:02:38.902674+00:00] [   43.345] [0m[32mINFO  [0m| 05:02:38 879 [Serial] [32mPacket History - insert: Using new slot @uptime 879.864s TRACE NEW
+[2026-08-05T05:02:38.902684+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mXEdDSA signed packet 0xa34659df
+[2026-08-05T05:02:38.902694+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mUse AES256 key!
+[2026-08-05T05:02:38.902705+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mBroadcasting packet over UDP (id=2739296735)
+[2026-08-05T05:02:38.902715+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34menqueue for send (id=0xa34659df fr=0x3a180e17 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=138 rxtime=1785906158 hopStart=3 relay=0x
+[2026-08-05T05:02:38.902724+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mtxGood=61,txRelay=16,rxGood=57,rxBad=2
+[2026-08-05T05:02:38.902734+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mrx_snr found. hop_limit:2 rx_snr:11.000000
+[2026-08-05T05:02:38.902743+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [Serial] [34mrx_snr found in packet. Setting tx delay:992
+[2026-08-05T05:02:38.902751+00:00] [   43.345] [0m[32mINFO  [0m| 05:02:38 879 [Serial] [32mtophone queue status queue is full, discard oldest
+[2026-08-05T05:02:38.902759+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:38.902769+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 879 [RadioIf] [34mCompleted sending (id=0x6e2d0309 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906149 rxSNR=11.5 rxRSSI=
+[2026-08-05T05:02:38.902778+00:00] [   43.345] [0m[34mDEBUG [0m| 05:02:38 880 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.000000
+[2026-08-05T05:02:39.902969+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:38 880 [RadioIf] [34mrx_snr found in packet. Setting tx delay:632
+[2026-08-05T05:02:39.903019+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34mStarted Tx (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:39.903028+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34m12 packets remain in the TX queue
+[2026-08-05T05:02:39.903035+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34mPacket TX: 180ms
+[2026-08-05T05:02:39.903042+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34mCompleted sending (id=0x8c83d70a fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11 rxRSSI=-3
+[2026-08-05T05:02:39.903061+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:39.903067+00:00] [   44.345] [0m[34mDEBUG [0m| 05:02:39 880 [RadioIf] [34mrx_snr found in packet. Setting tx delay:488
+[2026-08-05T05:02:40.903506+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [RadioIf] [34mCorrected frequency offset: 356.499969
+[2026-08-05T05:02:40.903558+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [RadioIf] [34mLora RX (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 0, WantAck=0, HopLim=3 Ch=190 encrypted len=148 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:40.903568+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [RadioIf] [34mPacket RX: 124ms
+[2026-08-05T05:02:40.903575+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:40.903582+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [RadioIf] [34mrx_snr found in packet. Setting tx delay:856
+[2026-08-05T05:02:40.903588+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mUse channel 1 (hash 0xbe)
+[2026-08-05T05:02:40.903595+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:40.903602+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mVerified XEdDSA signature from 0xb6c5b4c5
+[2026-08-05T05:02:40.903608+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mdecoded message (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxSNR=11 rxRSSI=-38 hopStart=3 relay=0xc5)
+[2026-08-05T05:02:40.903614+00:00] [   45.345] [0m[32mINFO  [0m| 05:02:39 881 [Router] [32mPacket History - insert: Using new slot @uptime 881.441s TRACE NEW
+[2026-08-05T05:02:40.903621+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mhandleReceived(REMOTE) (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906159 rxSNR=11 rxRSSI=-38 ho
+[2026-08-05T05:02:40.903627+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'TrafficManagement' wantsPacket=1
+[2026-08-05T05:02:40.903634+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'TrafficManagement' considered
+[2026-08-05T05:02:40.903640+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'routing' wantsPacket=1
+[2026-08-05T05:02:40.903646+00:00] [   45.345] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mRouting sniffing (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906159 rxSNR=11 rxRSSI=-38 hopStart
+[2026-08-05T05:02:40.903653+00:00] [   45.345] [0m[32mINFO  [0m| 05:02:39 881 [Router] [32mRebroadcast received message coming from c5
+[2026-08-05T05:02:40.903659+00:00] [   45.345] [0m[32mINFO  [0m| 05:02:39 881 [Router] [32mPacket History - insert: Reusing slot aged 0.079s TRACE MATCHED PACKET
+[2026-08-05T05:02:40.903665+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mUse AES256 key!
+[2026-08-05T05:02:40.903671+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mBroadcasting packet over UDP (id=296306451)
+[2026-08-05T05:02:40.903677+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34menqueue for send (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906159 rxSNR=11 rxRSSI=-38
+[2026-08-05T05:02:40.903683+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mtxGood=63,txRelay=18,rxGood=58,rxBad=2
+[2026-08-05T05:02:40.903689+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:40.903695+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mrx_snr found in packet. Setting tx delay:1136
+[2026-08-05T05:02:40.903714+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mDelivering rx packet (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906159 rxSNR=11 rxRSSI=-38 hopS
+[2026-08-05T05:02:40.903721+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mUpdate DB node 0xb6c5b4c5, rx_time=1785906159
+[2026-08-05T05:02:40.903727+00:00] [   45.346] [0m[32mINFO  [0m| 05:02:39 881 [Router] [32mSort took 0 milliseconds
+[2026-08-05T05:02:40.903733+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mForwarding to phone (id=0x11a94713 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=3 Ch=1 Portnum=64 rxtime=1785906159 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:40.903739+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'routing' considered
+[2026-08-05T05:02:40.903745+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'SerialModuleRadio' wantsPacket=1
+[2026-08-05T05:02:40.903750+00:00] [   45.346] [0m[34mDEBUG [0m| 05:02:39 881 [Router] [34mModule 'SerialModuleRadio' considered
+[2026-08-05T05:02:41.903942+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34mStarted Tx (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11.5 rxRSSI=-37 hop
+[2026-08-05T05:02:41.904006+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34m12 packets remain in the TX queue
+[2026-08-05T05:02:41.904022+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34mPacket TX: 180ms
+[2026-08-05T05:02:41.904035+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34mCompleted sending (id=0xa1d4170c fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=223 rxtime=1785906149 rxSNR=11.5 rxRSSI=
+[2026-08-05T05:02:41.904047+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.500000
+[2026-08-05T05:02:41.904058+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:40 882 [RadioIf] [34mrx_snr found in packet. Setting tx delay:288
+[2026-08-05T05:02:41.904069+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34mStarted Tx (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906150 rxSNR=11.5 rxRSSI=-38 hop
+[2026-08-05T05:02:41.904080+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34m11 packets remain in the TX queue
+[2026-08-05T05:02:41.904091+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:41.904102+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34mCompleted sending (id=0x28f0cb0d fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906150 rxSNR=11.5 rxRSSI=
+[2026-08-05T05:02:41.904112+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:41.904122+00:00] [   46.346] [0m[34mDEBUG [0m| 05:02:41 882 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1808
+[2026-08-05T05:02:43.904927+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34mStarted Tx (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906151 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:43.904987+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34m10 packets remain in the TX queue
+[2026-08-05T05:02:43.904999+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:43.905008+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34mCompleted sending (id=0xc41a530f fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906151 rxSNR=10.75 rxRSSI
+[2026-08-05T05:02:43.905016+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.000000
+[2026-08-05T05:02:43.905042+00:00] [   48.347] [0m[34mDEBUG [0m| 05:02:43 884 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1432
+[2026-08-05T05:02:45.905923+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34mStarted Tx (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906153 rxSNR=11 rxRSSI=-38 hopSt
+[2026-08-05T05:02:45.906106+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34m9 packets remain in the TX queue
+[2026-08-05T05:02:45.906197+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:45.906278+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34mCompleted sending (id=0x2f0d8310 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906153 rxSNR=11 rxRSSI=-3
+[2026-08-05T05:02:45.906350+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.750000
+[2026-08-05T05:02:45.906387+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:44 886 [RadioIf] [34mrx_snr found in packet. Setting tx delay:344
+[2026-08-05T05:02:45.906399+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 886 [RadioIf] [34mStarted Tx (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906155 rxSNR=11.75 rxRSSI=-38 ho
+[2026-08-05T05:02:45.906413+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 886 [RadioIf] [34m8 packets remain in the TX queue
+[2026-08-05T05:02:45.906427+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 886 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:45.906436+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 886 [RadioIf] [34mCompleted sending (id=0x708c2f11 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906155 rxSNR=11.75 rxRSSI
+[2026-08-05T05:02:45.906446+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 887 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:10.750000
+[2026-08-05T05:02:45.906466+00:00] [   50.348] [0m[34mDEBUG [0m| 05:02:45 887 [RadioIf] [34mrx_snr found in packet. Setting tx delay:1904
+[2026-08-05T05:02:47.907644+00:00] [   52.349] [0m[34mDEBUG [0m| 05:02:47 888 [RadioIf] [34mStarted Tx (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906157 rxSNR=10.75 rxRSSI=-38 ho
+[2026-08-05T05:02:47.907704+00:00] [   52.350] [0m[34mDEBUG [0m| 05:02:47 888 [RadioIf] [34m7 packets remain in the TX queue
+[2026-08-05T05:02:48.909537+00:00] [   53.351] [0m[34mDEBUG [0m| 05:02:47 889 [RadioIf] [34mPacket TX: 124ms
+[2026-08-05T05:02:48.909604+00:00] [   53.351] [0m[34mDEBUG [0m| 05:02:47 889 [RadioIf] [34mCompleted sending (id=0x492b8b12 fr=0xb6c5b4c5 to=0xffffffff, transport = 1, WantAck=0, HopLim=2 Ch=190 encrypted len=148 rxtime=1785906157 rxSNR=10.75 rxRSSI
+[2026-08-05T05:02:48.909622+00:00] [   53.351] [0m[34mDEBUG [0m| 05:02:47 889 [RadioIf] [34mrx_snr found. hop_limit:2 rx_snr:11.000000
+[2026-08-05T05:02:48.909635+00:00] [   53.351] [0m[34mDEBUG [0m| 05:02:47 889 [RadioIf] [34mrx_snr found in packet. Setting tx delay:2040
