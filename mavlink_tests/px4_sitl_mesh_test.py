@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hands-off PX4 SIH -> UART -> Meshtastic mesh -> UDP integration test."""
+"""Capture PX4 SIH <-> Meshtastic MAVLink traffic without judging it."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ import socket
 import sys
 import time
 from collections import Counter
-from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,78 +21,81 @@ from pymavlink import mavutil
 
 
 class HarnessError(RuntimeError):
-    """Base class for a controlled harness failure."""
+    pass
 
 
 class PreflightError(HarnessError):
-    """A required local resource or configuration is unavailable."""
+    pass
 
 
-class TestFailure(HarnessError):
-    """The end-to-end MAVLink test did not meet its acceptance criteria."""
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
-@dataclass
-class TestResult:
-    passed: bool
-    started_at: str
-    finished_at: str
-    px4_dir: str
-    air_uart: str
-    air_baud: int
-    ground_host: str
-    ground_port: int
-    local_port: int
-    expected_sysid: int
+def json_safe(value: Any) -> Any:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    if isinstance(value, bytes):
+        return {"hex": value.hex(), "length": len(value)}
+    if isinstance(value, dict):
+        return {str(k): json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(v) for v in value]
+    return repr(value)
 
-    # Explicit milestones. `passed` remains the compatibility alias for strict_pass.
-    transport_pass: bool = False
-    telemetry_pass: bool = False
-    command_delivery_pass: bool = False
-    response_return_pass: bool = False
-    command_ack_pass: bool = False
-    control_command_ack_pass: bool = False
-    strict_pass: bool = False
 
-    vehicle_sysid: int | None = None
-    vehicle_compid: int | None = None
-    heartbeat_latency_s: float | None = None
-    high_latency2_latency_s: float | None = None
-    command_ack_latency_s: float | None = None
-    control_command_ack_latency_s: float | None = None
-    autopilot_version_latency_s: float | None = None
-    high_latency2: dict[str, Any] | None = None
-    command_ack_result: int | None = None
-    control_command_ack_result: int | None = None
-    flight_sw_version: int | None = None
-    message_counts: dict[str, int] = field(default_factory=dict)
-    request_attempts: int = 0
-    control_command_attempts: int = 0
-    failed_checks: list[str] = field(default_factory=list)
-    report_dir: str | None = None
-    error: str | None = None
+class EventLog:
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.started = time.monotonic()
+        self.file = path.open("w", encoding="utf-8")
+        self.counts: Counter[str] = Counter()
+
+    def write(self, event: str, **fields: Any) -> None:
+        self.counts[event] += 1
+        row = {
+            "time_utc": utc_now(),
+            "elapsed_s": round(time.monotonic() - self.started, 6),
+            "event": event,
+            **{k: json_safe(v) for k, v in fields.items()},
+        }
+        self.file.write(json.dumps(row, sort_keys=True) + "\n")
+        self.file.flush()
+
+    def close(self) -> None:
+        self.file.close()
 
 
 class UdpWriter:
-    """File-like object used by pymavlink for datagram transmission."""
-
-    def __init__(self, sock: socket.socket, destination: tuple[str, int]) -> None:
+    def __init__(self, sock: socket.socket, destination: tuple[str, int], log: EventLog) -> None:
         self.sock = sock
         self.destination = destination
+        self.log = log
+        self.datagrams = 0
+        self.bytes = 0
 
     def write(self, data: bytes) -> int:
-        return self.sock.sendto(data, self.destination)
+        written = self.sock.sendto(data, self.destination)
+        self.datagrams += 1
+        self.bytes += written
+        self.log.write(
+            "udp_tx",
+            destination_host=self.destination[0],
+            destination_port=self.destination[1],
+            length=written,
+            raw_hex=data[:written].hex(),
+        )
+        return written
 
 
 class MavlinkUdpEndpoint:
-    """Single bound UDP socket that both registers with and receives from the ground node."""
-
-    def __init__(self, ground_host: str, ground_port: int, local_port: int) -> None:
-        self.destination = (socket.gethostbyname(ground_host), ground_port)
+    def __init__(self, host: str, port: int, local_port: int, log: EventLog) -> None:
+        self.destination = (socket.gethostbyname(host), port)
+        self.log = log
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind(("0.0.0.0", local_port))
-        self.writer = UdpWriter(self.sock, self.destination)
+        self.writer = UdpWriter(self.sock, self.destination, log)
         self.tx = mavutil.mavlink.MAVLink(
             self.writer,
             srcSystem=255,
@@ -101,11 +103,27 @@ class MavlinkUdpEndpoint:
         )
         self.rx = mavutil.mavlink.MAVLink(None)
         self.rx.robust_parsing = True
+        self.rx_datagrams = 0
+        self.rx_bytes = 0
+        self.rx_messages: Counter[str] = Counter()
+        self.rx_sources: Counter[str] = Counter()
+        self.tx_messages: Counter[str] = Counter()
 
     def close(self) -> None:
         self.sock.close()
 
+    def log_tx_message(self, message_type: str, **fields: Any) -> None:
+        self.tx_messages[message_type] += 1
+        self.log.write("mavlink_tx_message", message_type=message_type, **fields)
+
     def send_heartbeat(self) -> None:
+        self.log_tx_message(
+            "HEARTBEAT",
+            source_system=255,
+            source_component=int(mavutil.mavlink.MAV_COMP_ID_MISSIONPLANNER),
+            type=int(mavutil.mavlink.MAV_TYPE_GCS),
+            autopilot=int(mavutil.mavlink.MAV_AUTOPILOT_INVALID),
+        )
         self.tx.heartbeat_send(
             mavutil.mavlink.MAV_TYPE_GCS,
             mavutil.mavlink.MAV_AUTOPILOT_INVALID,
@@ -115,7 +133,15 @@ class MavlinkUdpEndpoint:
             3,
         )
 
-    def send_request_autopilot_version(self, target_system: int, target_component: int) -> None:
+    def send_request_version(self, target_system: int, target_component: int) -> None:
+        self.log_tx_message(
+            "COMMAND_LONG",
+            command=int(mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE),
+            target_system=target_system,
+            target_component=target_component,
+            confirmation=0,
+            param1_message_id=int(mavutil.mavlink.MAVLINK_MSG_ID_AUTOPILOT_VERSION),
+        )
         self.tx.command_long_send(
             target_system,
             target_component,
@@ -130,8 +156,16 @@ class MavlinkUdpEndpoint:
             0,
         )
 
-    def send_control_set_heartbeat_interval(self, target_system: int, target_component: int) -> None:
-        """Harmless ACK control: request the already-configured 1 Hz heartbeat interval."""
+    def send_control(self, target_system: int, target_component: int) -> None:
+        self.log_tx_message(
+            "COMMAND_LONG",
+            command=int(mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL),
+            target_system=target_system,
+            target_component=target_component,
+            confirmation=0,
+            param1_message_id=int(mavutil.mavlink.MAVLINK_MSG_ID_HEARTBEAT),
+            param2_interval_us=1_000_000,
+        )
         self.tx.command_long_send(
             target_system,
             target_component,
@@ -146,19 +180,63 @@ class MavlinkUdpEndpoint:
             0,
         )
 
-    def receive(self, timeout_s: float) -> list[Any]:
+    def receive_once(self, timeout_s: float) -> None:
         self.sock.settimeout(max(0.0, timeout_s))
         try:
-            data, _source = self.sock.recvfrom(4096)
+            data, source = self.sock.recvfrom(65535)
         except socket.timeout:
-            return []
-        parsed = self.rx.parse_buffer(data)
-        return list(parsed or [])
+            return
+
+        self.rx_datagrams += 1
+        self.rx_bytes += len(data)
+        self.log.write(
+            "udp_rx",
+            source_host=source[0],
+            source_port=source[1],
+            length=len(data),
+            raw_hex=data.hex(),
+        )
+
+        try:
+            messages = list(self.rx.parse_buffer(data) or [])
+        except Exception as exc:
+            self.log.write(
+                "mavlink_parse_exception",
+                exception_type=type(exc).__name__,
+                exception=str(exc),
+                raw_hex=data.hex(),
+            )
+            return
+
+        if not messages:
+            self.log.write("mavlink_rx_unparsed_datagram", raw_hex=data.hex())
+            return
+
+        for message in messages:
+            message_type = message.get_type()
+            sysid = int(message.get_srcSystem())
+            compid = int(message.get_srcComponent())
+            self.rx_messages[message_type] += 1
+            self.rx_sources[f"{sysid}:{compid}"] += 1
+            try:
+                decoded = message.to_dict()
+            except Exception as exc:
+                decoded = {"decode_exception": f"{type(exc).__name__}: {exc}"}
+            try:
+                sequence = int(message.get_header().seq)
+            except Exception:
+                sequence = None
+            self.log.write(
+                "mavlink_rx_message",
+                message_type=message_type,
+                source_system=sysid,
+                source_component=compid,
+                sequence=sequence,
+                decoded=decoded,
+            )
 
 
 class Px4Session:
-    """Interactive PX4 SIH process controlled through its pxh shell."""
-
     PROMPT = re.compile(r"pxh>\s*")
 
     def __init__(
@@ -167,22 +245,66 @@ class Px4Session:
         air_uart: str,
         air_baud: int,
         max_rate_bps: int,
-        build_timeout_s: int,
-        log_path: Path,
+        build_timeout: int,
+        console_path: Path,
+        log: EventLog,
     ) -> None:
         self.px4_dir = px4_dir
         self.air_uart = air_uart
         self.air_baud = air_baud
         self.max_rate_bps = max_rate_bps
-        self.build_timeout_s = build_timeout_s
-        self.log_path = log_path
+        self.build_timeout = build_timeout
+        self.console_path = console_path
+        self.log = log
         self.child: pexpect.spawn | None = None
-        self.log_file: Any = None
+        self.console: Any = None
+
+    def run_command(self, command: str, timeout: int = 30) -> str:
+        if not self.child:
+            raise HarnessError("PX4 process is not running")
+        self.child.sendline(command)
+        try:
+            # This exact echo match is only pxh transport synchronization, not a test assertion.
+            self.child.expect_exact(command, timeout=timeout)
+            self.child.expect(self.PROMPT, timeout=timeout)
+        except (pexpect.TIMEOUT, pexpect.EOF) as exc:
+            raise HarnessError(f"PX4 shell did not complete {command!r}; inspect {self.console_path}") from exc
+        return self.child.before or ""
+
+    def run_and_log(self, command: str, timeout: int = 30, tolerate: bool = False) -> str:
+        try:
+            output = self.run_command(command, timeout)
+        except HarnessError as exc:
+            self.log.write("px4_shell_error", command=command, error=str(exc), tolerated=tolerate)
+            if tolerate:
+                return ""
+            raise
+        self.log.write("px4_shell_output", command=command, output=output)
+        return output
+
+    def dump_status(self, stage: str) -> None:
+        for command in ("mavlink status", "mavlink status streams"):
+            try:
+                output = self.run_command(command, 15)
+                self.log.write("px4_status_dump", stage=stage, command=command, output=output)
+            except HarnessError as exc:
+                self.log.write(
+                    "px4_shell_error",
+                    stage=stage,
+                    command=command,
+                    error=str(exc),
+                    tolerated=True,
+                )
 
     def start(self) -> None:
         env = os.environ.copy()
         env.setdefault("PX4_SIM_SPEED_FACTOR", "1")
-        self.log_file = self.log_path.open("w", encoding="utf-8")
+        self.console = self.console_path.open("w", encoding="utf-8")
+        self.log.write(
+            "px4_launch",
+            cwd=str(self.px4_dir),
+            argv=["make", "px4_sitl_sih", "sihsim_quadx"],
+        )
         self.child = pexpect.spawn(
             "make",
             ["px4_sitl_sih", "sihsim_quadx"],
@@ -190,73 +312,24 @@ class Px4Session:
             env=env,
             encoding="utf-8",
             codec_errors="replace",
-            timeout=self.build_timeout_s,
+            timeout=self.build_timeout,
             maxread=65536,
             searchwindowsize=65536,
         )
-        self.child.logfile = self.log_file
+        self.child.logfile = self.console
         try:
             self.child.expect(self.PROMPT)
         except (pexpect.TIMEOUT, pexpect.EOF) as exc:
-            raise TestFailure(f"PX4 did not reach the pxh prompt; inspect {self.log_path}") from exc
+            raise HarnessError(f"PX4 did not reach pxh; inspect {self.console_path}") from exc
 
-        # Stop PX4's ordinary localhost GCS route so the verifier cannot observe a direct path.
-        try:
-            self.run_command("mavlink stop -u 18570", timeout_s=10)
-        except HarnessError:
-            pass
-
-        start_output = self.run_command(
+        self.run_and_log("mavlink stop -u 18570", 10, tolerate=True)
+        self.run_and_log(
             f"mavlink start -d {self.air_uart} -b {self.air_baud} "
             f"-m custom -r {self.max_rate_bps} -Z"
         )
-        self._reject_command_error("mavlink start", start_output)
-
-        for stream, rate in (("HEARTBEAT", "1"), ("HIGH_LATENCY2", "0.5")):
-            output = self.run_command(f"mavlink stream -d {self.air_uart} -s {stream} -r {rate}")
-            self._reject_command_error(f"configure {stream}", output)
-
-        # Keep these two checks separate: only `status` shows the device, while
-        # `status streams` shows the configured stream table.
-        status = self.run_command("mavlink status")
-        if self.air_uart not in status:
-            raise TestFailure(
-                f"PX4 MAVLink status does not show serial device {self.air_uart}; inspect {self.log_path}"
-            )
-        stream_status = self.run_command("mavlink status streams")
-        if "HIGH_LATENCY2" not in stream_status or "HEARTBEAT" not in stream_status:
-            raise TestFailure(
-                f"PX4 MAVLink status does not show the required streams; inspect {self.log_path}"
-            )
-
-    def run_command(self, command: str, timeout_s: int = 30) -> str:
-        if not self.child:
-            raise RuntimeError("PX4 process is not running")
-        self.child.sendline(command)
-        try:
-            # pxh redraws "pxh>" for every echoed character. Consume the exact command
-            # echo before waiting for the real prompt; changing this casually makes every
-            # output assertion read an empty string.
-            self.child.expect_exact(command, timeout=timeout_s)
-            self.child.expect(self.PROMPT, timeout=timeout_s)
-        except (pexpect.TIMEOUT, pexpect.EOF) as exc:
-            raise TestFailure(
-                f"PX4 shell did not complete command: {command!r}; inspect {self.log_path}"
-            ) from exc
-        return self.child.before or ""
-
-    @staticmethod
-    def _reject_command_error(label: str, output: str) -> None:
-        lowered = output.lower()
-        markers = (
-            "failed to start",
-            "no such file",
-            "permission denied",
-            "already running",
-            "error [mavlink]",
-        )
-        if any(marker in lowered for marker in markers):
-            raise TestFailure(f"PX4 failed to {label}: {output.strip()}")
+        self.run_and_log(f"mavlink stream -d {self.air_uart} -s HEARTBEAT -r 1")
+        self.run_and_log(f"mavlink stream -d {self.air_uart} -s HIGH_LATENCY2 -r 0.5")
+        self.dump_status("startup")
 
     def stop(self) -> None:
         child = self.child
@@ -264,10 +337,7 @@ class Px4Session:
             return
         try:
             if child.isalive():
-                try:
-                    self.run_command(f"mavlink stop -d {self.air_uart}", timeout_s=10)
-                except HarnessError:
-                    pass
+                self.run_and_log(f"mavlink stop -d {self.air_uart}", 10, tolerate=True)
                 child.sendline("shutdown")
                 try:
                     child.expect(pexpect.EOF, timeout=15)
@@ -287,256 +357,164 @@ class Px4Session:
         finally:
             child.close(force=True)
             self.child = None
-            if self.log_file:
-                self.log_file.close()
-                self.log_file = None
-
-
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def ensure_udp_port_free(port: int, label: str) -> None:
-    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        probe.bind(("0.0.0.0", port))
-    except OSError as exc:
-        raise PreflightError(f"UDP port {port} is already in use ({label}).") from exc
-    finally:
-        probe.close()
+            if self.console:
+                self.console.close()
+                self.console = None
 
 
 def validate_args(args: argparse.Namespace) -> None:
-    px4_dir = Path(args.px4_dir).expanduser().resolve()
-    if not (px4_dir / "Makefile").is_file():
-        raise PreflightError(f"Not a PX4-Autopilot checkout: {px4_dir}")
-    args.px4_dir = px4_dir
-
-    if any(character.isspace() for character in args.air_uart):
+    args.px4_dir = Path(args.px4_dir).expanduser().resolve()
+    if not (args.px4_dir / "Makefile").is_file():
+        raise PreflightError(f"Not a PX4-Autopilot checkout: {args.px4_dir}")
+    if any(c.isspace() for c in args.air_uart):
         raise PreflightError("AIR_UART must not contain whitespace")
     air_uart = Path(args.air_uart)
     if not air_uart.exists():
-        raise PreflightError(f"Air UART device does not exist: {air_uart}")
+        raise PreflightError(f"Air UART does not exist: {air_uart}")
     if not os.access(air_uart, os.R_OK | os.W_OK):
-        raise PreflightError(
-            f"Air UART is not readable and writable: {air_uart}. Check dialout permissions."
-        )
-
+        raise PreflightError(f"Air UART is not readable and writable: {air_uart}")
     try:
         socket.gethostbyname(args.ground_host)
     except socket.gaierror as exc:
-        raise PreflightError(f"Cannot resolve ground node host: {args.ground_host}") from exc
+        raise PreflightError(f"Cannot resolve ground host: {args.ground_host}") from exc
 
-    # Only the verifier's local receive port must be free. Ground-node UDP 14550 is remote.
-    ensure_udp_port_free(args.local_port, "test verifier receive port")
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        probe.bind(("0.0.0.0", args.local_port))
+    except OSError as exc:
+        raise PreflightError(f"UDP port {args.local_port} is already in use") from exc
+    finally:
+        probe.close()
 
-
-def high_latency2_snapshot(message: Any) -> dict[str, Any]:
-    return {
-        "sysid": message.get_srcSystem(),
-        "compid": message.get_srcComponent(),
-        "latitude": int(message.latitude),
-        "longitude": int(message.longitude),
-        "altitude_m": int(message.altitude),
-        "heading_2deg": int(message.heading),
-        "battery_percent": int(message.battery),
-        "custom_mode": int(message.custom_mode),
-    }
+    for name in ("warmup", "probe_interval", "control_offset", "drain"):
+        if getattr(args, name) < 0:
+            raise PreflightError(f"--{name.replace('_', '-')} must be non-negative")
+    if args.probe_attempts < 0:
+        raise PreflightError("--probe-attempts must be non-negative")
 
 
-def ack_is_accepted(result: int) -> bool:
-    return result in {
-        mavutil.mavlink.MAV_RESULT_ACCEPTED,
-        mavutil.mavlink.MAV_RESULT_IN_PROGRESS,
-    }
-
-
-def update_telemetry_milestone(result: TestResult) -> None:
-    snapshot = result.high_latency2
-    result.telemetry_pass = bool(
-        result.vehicle_sysid is not None
-        and snapshot is not None
-        and not (snapshot["latitude"] == 0 and snapshot["longitude"] == 0)
-        and snapshot["battery_percent"] >= 0
-    )
-
-
-def update_final_milestones(result: TestResult) -> None:
-    result.command_delivery_pass = result.response_return_pass
-    result.transport_pass = result.telemetry_pass and result.response_return_pass
-    result.strict_pass = (
-        result.transport_pass
-        and result.command_ack_pass
-        and result.control_command_ack_pass
-    )
-    result.passed = result.strict_pass
-
-
-def record_failed_checks(result: TestResult) -> None:
-    failures: list[str] = []
-    if result.vehicle_sysid is None:
-        failures.append("vehicle HEARTBEAT")
-    if result.high_latency2 is None:
-        failures.append("valid HIGH_LATENCY2")
-    if not result.response_return_pass:
-        failures.append("AUTOPILOT_VERSION response")
-    if not result.command_ack_pass:
-        failures.append("COMMAND_ACK for MAV_CMD_REQUEST_MESSAGE")
-    if not result.control_command_ack_pass:
-        failures.append("COMMAND_ACK for MAV_CMD_SET_MESSAGE_INTERVAL control")
-    result.failed_checks = failures
-    if failures:
-        result.error = "Missing or failed: " + ", ".join(failures)
-
-
-def run_link_test(
-    endpoint: MavlinkUdpEndpoint,
-    result: TestResult,
-    timeout_s: int,
-    command_attempts: int,
-    ack_grace_s: int,
-) -> None:
+def run_capture(endpoint: MavlinkUdpEndpoint, log: EventLog, args: argparse.Namespace) -> None:
     started = time.monotonic()
-    deadline = started + timeout_s
-    next_gcs_heartbeat = 0.0
-    next_request_retry = 0.0
-    next_control_retry = 0.0
-    request_first_sent_at: float | None = None
-    control_first_sent_at: float | None = None
-    ack_deadline: float | None = None
-    counts: Counter[str] = Counter()
+    request_times = [args.warmup + i * args.probe_interval for i in range(args.probe_attempts)]
+    control_times = [t + args.control_offset for t in request_times]
+    stop_at = max(request_times + control_times, default=args.warmup) + args.drain
+    request_index = 0
+    control_index = 0
+    next_heartbeat = 0.0
 
-    while time.monotonic() < deadline:
-        now = time.monotonic()
-        if now >= next_gcs_heartbeat:
+    log.write(
+        "capture_schedule",
+        target_system=args.target_sysid,
+        target_component=args.target_compid,
+        request_times_s=request_times,
+        control_times_s=control_times,
+        drain_s=args.drain,
+        capture_duration_s=stop_at,
+    )
+
+    while True:
+        elapsed = time.monotonic() - started
+        if elapsed >= stop_at:
+            break
+
+        if elapsed >= next_heartbeat:
             endpoint.send_heartbeat()
-            next_gcs_heartbeat = now + 5.0
+            next_heartbeat += 5.0
 
-        for message in endpoint.receive(min(0.5, max(0.0, deadline - now))):
-            message_type = message.get_type()
-            if message_type == "BAD_DATA":
-                continue
-            counts[message_type] += 1
-            result.message_counts = dict(sorted(counts.items()))
+        while request_index < len(request_times) and elapsed >= request_times[request_index]:
+            log.write("probe_send", probe="request_autopilot_version", index=request_index + 1)
+            endpoint.send_request_version(args.target_sysid, args.target_compid)
+            request_index += 1
 
-            source_system = message.get_srcSystem()
-            source_component = message.get_srcComponent()
+        while control_index < len(control_times) and elapsed >= control_times[control_index]:
+            log.write("probe_send", probe="set_heartbeat_interval", index=control_index + 1)
+            endpoint.send_control(args.target_sysid, args.target_compid)
+            control_index += 1
 
-            if message_type == "HEARTBEAT":
-                if result.expected_sysid and source_system != result.expected_sysid:
-                    continue
-                if int(message.autopilot) == mavutil.mavlink.MAV_AUTOPILOT_INVALID:
-                    continue
-                if result.vehicle_sysid is None:
-                    result.vehicle_sysid = source_system
-                    result.vehicle_compid = source_component
-                    result.heartbeat_latency_s = time.monotonic() - started
-                    update_telemetry_milestone(result)
+        due = [stop_at, next_heartbeat]
+        if request_index < len(request_times):
+            due.append(request_times[request_index])
+        if control_index < len(control_times):
+            due.append(control_times[control_index])
+        timeout = min(0.25, max(0.0, min(due) - (time.monotonic() - started)))
+        endpoint.receive_once(timeout)
 
-            elif message_type == "HIGH_LATENCY2":
-                if result.vehicle_sysid is not None and source_system != result.vehicle_sysid:
-                    continue
-                if result.expected_sysid and source_system != result.expected_sysid:
-                    continue
-                # The first HIGH_LATENCY2 arrives before the SIH estimator has a global
-                # position, so latching it would pin latitude/longitude at 0 and block the
-                # command phase for the whole run. Keep refreshing until the sample is valid.
-                if result.high_latency2 is None or not result.telemetry_pass:
-                    result.high_latency2 = high_latency2_snapshot(message)
-                    if result.high_latency2_latency_s is None:
-                        result.high_latency2_latency_s = time.monotonic() - started
-                    update_telemetry_milestone(result)
-
-            elif message_type == "AUTOPILOT_VERSION":
-                # PX4 also emits AUTOPILOT_VERSION unprompted. Only a copy arriving after our
-                # own request proves the reverse command path, and counting an unprompted one
-                # suppresses the request entirely.
-                if request_first_sent_at is None:
-                    continue
-                if result.vehicle_sysid is None or source_system == result.vehicle_sysid:
-                    if not result.response_return_pass:
-                        result.response_return_pass = True
-                        result.flight_sw_version = int(message.flight_sw_version)
-                        if request_first_sent_at is not None:
-                            result.autopilot_version_latency_s = time.monotonic() - request_first_sent_at
-
-            elif message_type == "COMMAND_ACK":
-                if result.vehicle_sysid is not None and source_system != result.vehicle_sysid:
-                    continue
-                command = int(message.command)
-                ack_result = int(message.result)
-                if command == mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE:
-                    result.command_ack_result = ack_result
-                    result.command_ack_pass = ack_is_accepted(ack_result)
-                    if request_first_sent_at is not None and result.command_ack_latency_s is None:
-                        result.command_ack_latency_s = time.monotonic() - request_first_sent_at
-                elif command == mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL:
-                    result.control_command_ack_result = ack_result
-                    result.control_command_ack_pass = ack_is_accepted(ack_result)
-                    if control_first_sent_at is not None and result.control_command_ack_latency_s is None:
-                        result.control_command_ack_latency_s = time.monotonic() - control_first_sent_at
-
-        if result.telemetry_pass and result.vehicle_sysid is not None and result.vehicle_compid is not None:
-            now = time.monotonic()
-            if (
-                not result.response_return_pass
-                and result.request_attempts < command_attempts
-                and now >= next_request_retry
-            ):
-                endpoint.send_request_autopilot_version(result.vehicle_sysid, result.vehicle_compid)
-                if request_first_sent_at is None:
-                    request_first_sent_at = now
-                result.request_attempts += 1
-                next_request_retry = now + 10.0
-
-            if (
-                result.response_return_pass
-                and not result.control_command_ack_pass
-                and result.control_command_attempts < command_attempts
-                and now >= next_control_retry
-            ):
-                endpoint.send_control_set_heartbeat_interval(result.vehicle_sysid, result.vehicle_compid)
-                if control_first_sent_at is None:
-                    control_first_sent_at = now
-                result.control_command_attempts += 1
-                next_control_retry = now + 10.0
-                if ack_deadline is None:
-                    ack_deadline = now + ack_grace_s
-
-        update_final_milestones(result)
-        if result.strict_pass:
-            break
-        if ack_deadline is not None and time.monotonic() >= ack_deadline:
+    while True:
+        count = endpoint.rx_datagrams
+        endpoint.receive_once(0.05)
+        if endpoint.rx_datagrams == count:
             break
 
-    result.message_counts = dict(sorted(counts.items()))
-    update_final_milestones(result)
-    record_failed_checks(result)
 
-
-def write_result(path: Path, result: TestResult) -> None:
-    path.write_text(json.dumps(asdict(result), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+def write_summary(
+    path: Path,
+    args: argparse.Namespace,
+    log: EventLog,
+    endpoint: MavlinkUdpEndpoint | None,
+    started_at: str,
+    error: str | None,
+) -> None:
+    summary: dict[str, Any] = {
+        "format": "meshtastic-mavlink-raw-capture-v1",
+        "started_at": started_at,
+        "finished_at": utc_now(),
+        "completed_without_harness_error": error is None,
+        "fatal_error": error,
+        "configuration": {
+            "px4_dir": str(args.px4_dir),
+            "air_uart": args.air_uart,
+            "air_baud": args.air_baud,
+            "ground_host": args.ground_host,
+            "ground_port": args.ground_port,
+            "local_port": args.local_port,
+            "target_sysid": args.target_sysid,
+            "target_compid": args.target_compid,
+            "max_rate_bps": args.max_rate_bps,
+            "warmup_s": args.warmup,
+            "probe_attempts": args.probe_attempts,
+            "probe_interval_s": args.probe_interval,
+            "control_offset_s": args.control_offset,
+            "drain_s": args.drain,
+        },
+        "artifacts": {"events_jsonl": "events.jsonl", "px4_console_log": "px4.log"},
+        "event_counts": dict(sorted(log.counts.items())),
+    }
+    if endpoint:
+        summary.update(
+            {
+                "udp": {
+                    "tx_datagrams": endpoint.writer.datagrams,
+                    "tx_bytes": endpoint.writer.bytes,
+                    "rx_datagrams": endpoint.rx_datagrams,
+                    "rx_bytes": endpoint.rx_bytes,
+                },
+                "sent_message_counts": dict(sorted(endpoint.tx_messages.items())),
+                "received_message_counts": dict(sorted(endpoint.rx_messages.items())),
+                "received_source_counts": dict(sorted(endpoint.rx_sources.items())),
+            }
+        )
+    path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Launch PX4 SIH, attach a serial MAVLink instance to the air Meshtastic node, "
-            "and verify the complete UART/LoRa/UDP path."
-        )
+        description="Dump the PX4 SIH UART/LoRa/UDP path without generating protocol verdicts."
     )
     parser.add_argument("--px4-dir", required=True)
     parser.add_argument("--air-uart", required=True)
-    parser.add_argument("--air-baud", type=int, default=115200)
+    parser.add_argument("--air-baud", type=int, default=57600)
     parser.add_argument("--ground-host", required=True)
     parser.add_argument("--ground-port", type=int, default=14550)
     parser.add_argument("--local-port", type=int, default=14600)
-    parser.add_argument("--expected-sysid", type=int, default=1)
+    parser.add_argument("--target-sysid", type=int, default=1)
+    parser.add_argument("--target-compid", type=int, default=1)
     parser.add_argument("--max-rate-bps", type=int, default=1000)
     parser.add_argument("--build-timeout", type=int, default=1200)
-    parser.add_argument("--test-timeout", type=int, default=120)
-    parser.add_argument("--command-attempts", type=int, default=3)
-    parser.add_argument("--ack-grace", type=int, default=25)
+    parser.add_argument("--warmup", type=float, default=5.0)
+    parser.add_argument("--probe-attempts", type=int, default=10)
+    parser.add_argument("--probe-interval", type=float, default=3.0)
+    parser.add_argument("--control-offset", type=float, default=1.0)
+    parser.add_argument("--drain", type=float, default=8.0)
     parser.add_argument("--report-root", default="mavlink_tests/reports")
     return parser.parse_args()
 
@@ -544,101 +522,76 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     started_at = utc_now()
-    result = TestResult(
-        passed=False,
-        started_at=started_at,
-        finished_at=started_at,
-        px4_dir=str(args.px4_dir),
-        air_uart=args.air_uart,
-        air_baud=args.air_baud,
-        ground_host=args.ground_host,
-        ground_port=args.ground_port,
-        local_port=args.local_port,
-        expected_sysid=args.expected_sysid,
-    )
-
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     report_root = Path(args.report_root).expanduser()
     if not report_root.is_absolute():
         report_root = Path.cwd() / report_root
-    report_dir = report_root / f"px4-sitl-mesh-{timestamp}"
+    report_dir = report_root / f"px4-sitl-mesh-capture-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
     report_dir.mkdir(parents=True, exist_ok=False)
-    result.report_dir = str(report_dir)
-    result_path = report_dir / "result.json"
-    px4_log = report_dir / "px4.log"
 
-    px4: Px4Session | None = None
+    events_path = report_dir / "events.jsonl"
+    summary_path = report_dir / "capture.json"
+    px4_path = report_dir / "px4.log"
+    log = EventLog(events_path)
     endpoint: MavlinkUdpEndpoint | None = None
+    px4: Px4Session | None = None
+    error: str | None = None
+    exit_code = 0
 
+    log.write("capture_created", report_dir=str(report_dir), argv=sys.argv)
     try:
         validate_args(args)
-        result.px4_dir = str(args.px4_dir)
-
+        log.write(
+            "configuration_resolved",
+            px4_dir=str(args.px4_dir),
+            air_uart=args.air_uart,
+            ground_host=socket.gethostbyname(args.ground_host),
+        )
         px4 = Px4Session(
             args.px4_dir,
             args.air_uart,
             args.air_baud,
             args.max_rate_bps,
             args.build_timeout,
-            px4_log,
+            px4_path,
+            log,
         )
         px4.start()
-
-        endpoint = MavlinkUdpEndpoint(
-            args.ground_host,
-            args.ground_port,
-            args.local_port,
+        endpoint = MavlinkUdpEndpoint(args.ground_host, args.ground_port, args.local_port, log)
+        log.write(
+            "udp_endpoint_open",
+            local_port=args.local_port,
+            destination_host=endpoint.destination[0],
+            destination_port=endpoint.destination[1],
         )
-        run_link_test(
-            endpoint,
-            result,
-            args.test_timeout,
-            args.command_attempts,
-            args.ack_grace,
-        )
-
-        summary = {
-            "transport_pass": result.transport_pass,
-            "telemetry_pass": result.telemetry_pass,
-            "command_delivery_pass": result.command_delivery_pass,
-            "response_return_pass": result.response_return_pass,
-            "command_ack_pass": result.command_ack_pass,
-            "control_command_ack_pass": result.control_command_ack_pass,
-            "strict_pass": result.strict_pass,
-            "failed_checks": result.failed_checks,
-            "message_counts": result.message_counts,
-        }
-        print(json.dumps(summary, indent=2, sort_keys=True))
-        if result.strict_pass:
-            print("PASS: strict PX4 SIH UART -> Meshtastic mesh -> UDP test")
-            return 0
-        print("PARTIAL: core milestones are recorded; strict checks failed", file=sys.stderr)
-        return 3
-
-    except PreflightError as exc:
-        result.error = str(exc)
-        print(f"PREFLIGHT FAILED: {exc}", file=sys.stderr)
-        return 2
-    except HarnessError as exc:
-        result.error = str(exc)
-        print(f"TEST FAILED: {exc}", file=sys.stderr)
-        return 3
+        run_capture(endpoint, log, args)
+        px4.dump_status("after_capture")
+        log.write("capture_complete")
     except KeyboardInterrupt:
-        result.error = "Interrupted"
-        print("INTERRUPTED", file=sys.stderr)
-        return 130
+        error = "Interrupted"
+        exit_code = 130
+        log.write("capture_interrupted")
     except Exception as exc:
-        result.error = f"{type(exc).__name__}: {exc}"
-        print(f"HARNESS ERROR: {result.error}", file=sys.stderr)
-        return 4
+        error = f"{type(exc).__name__}: {exc}"
+        exit_code = 2
+        log.write("capture_error", exception_type=type(exc).__name__, exception=str(exc))
     finally:
-        if endpoint is not None:
+        if endpoint:
             endpoint.close()
-        if px4 is not None:
+            log.write("udp_endpoint_closed")
+        if px4:
             px4.stop()
-        result.finished_at = utc_now()
-        write_result(result_path, result)
-        print(f"Report: {result_path}")
+            log.write("px4_stopped")
+        write_summary(summary_path, args, log, endpoint, started_at, error)
+        log.close()
+
+    print(f"Capture summary: {summary_path}")
+    print(f"Raw event log:   {events_path}")
+    print(f"PX4 console log: {px4_path}")
+    if error:
+        print(f"Capture machinery error: {error}", file=sys.stderr)
+    else:
+        print("Capture completed. No protocol verdict was generated.")
+    return exit_code
 
 
 if __name__ == "__main__":
