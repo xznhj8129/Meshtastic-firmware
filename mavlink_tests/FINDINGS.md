@@ -109,6 +109,12 @@ wrote message 77 to the physical UART.
 The claim that single frames were already proven lost inside the Meshtastic mesh in both
 directions was too strong. The data showed end-to-end one-shot failure, not the exact hop.
 
+The claim that `RADIO_STATUS` was 38% of mesh traffic and the largest contributor to channel
+congestion was wrong. `RADIO_STATUS` is generated locally by the bridge and written to the
+local endpoint; it never crosses LoRa. The 60 frames counted came from recorder-side totals,
+which include locally injected frames. Measured mesh load is 96 frames against 97 LoRa packets,
+one frame per packet, none of them `RADIO_STATUS`.
+
 ## Current capture procedure
 
 Run:

@@ -29,22 +29,44 @@ transmitted. The air-to-ground telemetry stream is consuming the channel, and th
 cannot obtain airtime for outbound commands. Four `Can not send yet, busyRx` deferrals appear
 alongside.
 
-Received message mix at the recorder, 156 messages in ~43 s:
+### `RADIO_STATUS` does not cross the mesh
 
-| Message | Count | Share |
+The recorder saw 156 frames, of which 60 were `RADIO_STATUS` from source `255:68`
+(`MAV_COMP_ID_TELEMETRY_RADIO`, `MESHTASTIC_MAVLINK_RADIO_STATUS_SYSID`). Those are generated
+locally by the **ground** node's bridge and written straight to its local UDP endpoint. They
+are never encapsulated for Meshtastic, which is what the design specifies.
+
+The arithmetic confirms it:
+
+```text
+frames received by recorder      156
+RADIO_STATUS (local injection)    60
+non-RADIO_STATUS frames           96
+ground LoRa packets from air      97
+```
+
+96 against 97 is one mesh packet per MAVLink frame. `RADIO_STATUS` consumes no airtime.
+
+### Actual mesh load
+
+96 frames in 42.7 s, 2.25/s, all originating from PX4:
+
+| Frame | Count | Share of mesh traffic |
 | --- | ---: | ---: |
-| `RADIO_STATUS` | 60 | 38% |
-| `HEARTBEAT` | 32 | 21% |
-| `MISSION_CURRENT` | 29 | 19% |
-| `HIGH_LATENCY2` | 13 | 8% |
-| `UNKNOWN_410`/`411` | 17 | 11% |
-| `COMMAND_LONG` | 3 | 2% |
-| `AUTOPILOT_VERSION` | 1 | <1% |
-| `COMMAND_ACK` | 1 | <1% |
+| `HEARTBEAT` | 32 | 33% |
+| `MISSION_CURRENT` | 29 | 30% |
+| `UNKNOWN_410`/`411` | 17 | 18% |
+| `HIGH_LATENCY2` | 13 | 14% |
+| `COMMAND_LONG` | 3 | 3% |
+| `AUTOPILOT_VERSION` | 1 | 1% |
+| `COMMAND_ACK` | 1 | 1% |
 
-`RADIO_STATUS`, generated locally by the bridge every 500 ms, is the single largest contributor
-to the traffic occupying the link. Stated as an observation only. No flow-control change is
-proposed or made here.
+Two streams were configured — `HEARTBEAT` at 1 Hz and `HIGH_LATENCY2` at 0.5 Hz, so 1.5
+frames/s. The measured load is 2.25/s. The excess is PX4 emitting `MISSION_CURRENT` at ~0.7/s
+plus `CURRENT_MODE`/`AVAILABLE_MODES` (410/411) under `-m custom`, none of which were
+requested. The unrequested PX4 streams are half again the configured load.
+
+Stated as observation only. No flow-control or stream change is proposed or made here.
 
 ## Air-to-ground one-shot loss, also measured
 
@@ -73,6 +95,12 @@ room.
 `ToPhone queue is full, drop packet` appears 100 times and is **not** relevant — that is the
 phone/API queue discarding inbound packets with no phone client attached. It was briefly
 mistaken for the radio queue during analysis.
+
+The first version of this file, and the commit message of `332f20ba2`, claimed `RADIO_STATUS`
+was 38% of mesh traffic and the largest contributor to congestion. That was **wrong**.
+`RADIO_STATUS` is locally injected at the ground node and never crosses LoRa; it was counted
+from recorder-side totals without checking that those include locally generated frames. The
+corrected accounting is above.
 
 ## Observability gaps
 
