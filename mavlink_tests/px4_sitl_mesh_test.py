@@ -162,7 +162,6 @@ class Px4Session:
             timeout=self.build_timeout_s,
             maxread=65536,
             searchwindowsize=65536,
-            preexec_fn=os.setsid,
         )
         self.child.logfile = self.log_file
         try:
@@ -187,11 +186,13 @@ class Px4Session:
             output = self.run_command(f"mavlink stream -d {self.air_uart} -s {stream} -r {rate}")
             self._reject_command_error(f"configure {stream}", output)
 
-        status = self.run_command("mavlink status streams")
+        # Only "mavlink status" reports the device; "mavlink status streams" prints the rate table alone.
+        status = self.run_command("mavlink status")
         if self.air_uart not in status:
             raise TestFailure(
                 f"PX4 MAVLink status does not show serial device {self.air_uart}; inspect {self.log_path}"
             )
+        status = self.run_command("mavlink status streams")
         if "HIGH_LATENCY2" not in status or "HEARTBEAT" not in status:
             raise TestFailure(
                 f"PX4 MAVLink status does not show the required streams; inspect {self.log_path}"
@@ -202,6 +203,10 @@ class Px4Session:
             raise RuntimeError("PX4 process is not running")
         self.child.sendline(command)
         try:
+            # pxh redraws "pxh>" for every echoed character, so the prompt pattern also
+            # matches inside the echo. Consume the echo before waiting for the real prompt,
+            # otherwise `before` is empty and every output assertion reads nothing.
+            self.child.expect_exact(command, timeout=timeout_s)
             self.child.expect(self.PROMPT, timeout=timeout_s)
         except (pexpect.TIMEOUT, pexpect.EOF) as exc:
             raise TestFailure(

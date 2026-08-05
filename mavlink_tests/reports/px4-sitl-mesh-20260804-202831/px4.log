@@ -1,0 +1,166 @@
+[0/1] cd PX4-Autopilot/build/px4_sitl_sih/src/modules/simulation/simulator_sih && /usr/bin/cmake -E env PX4_SIM_MODEL=sihsim_quadx PX4_SIMULATOR=sihsim PX4-Autopilot/build/px4_sitl_sih/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+[0mINFO  [37m[px4] [0mstartup script: /bin/sh etc/init.d-posix/rcS 0[0m
+INFO  [init] found model autostart file as SYS_AUTOSTART=10040
+[0mINFO  [37m[param] [0mselected parameter default file parameters.bson[0m
+[0mINFO  [37m[param] [0mselected parameter backup file parameters_backup.bson[0m
+[0m  SYS_AUTOCONFIG: [0m[0mcurr: 0[0m[0m -> new: 1
+[0m[0m  SYS_AUTOSTART: [0m[0mcurr: 0[0m[0m -> new: 10040
+[0m[0m  CAL_ACC0_ID: [0m[0mcurr: 0[0m[0m -> new: 1310988
+[0m[0m  CAL_GYRO0_ID: [0m[0mcurr: 0[0m[0m -> new: 1310988
+[0m[0m  CAL_ACC1_ID: [0m[0mcurr: 0[0m[0m -> new: 1310996
+[0m[0m  CAL_GYRO1_ID: [0m[0mcurr: 0[0m[0m -> new: 1310996
+[0m[0m  CAL_ACC2_ID: [0m[0mcurr: 0[0m[0m -> new: 1311004
+[0m[0m  CAL_GYRO2_ID: [0m[0mcurr: 0[0m[0m -> new: 1311004
+[0m[0m  CAL_MAG0_ID: [0m[0mcurr: 0[0m[0m -> new: 197388
+[0m[0m  CAL_MAG0_PRIO: [0m[0mcurr: -1[0m[0m -> new: 50
+[0m[0m  CAL_MAG1_ID: [0m[0mcurr: 0[0m[0m -> new: 197644
+[0m[0m  CAL_MAG1_PRIO: [0m[0mcurr: -1[0m[0m -> new: 50
+[0m[0m  SENS_BOARD_X_OFF: [0m[0mcurr: 0.0000[0m[0m -> new: 0.0000
+[0m[0m  SENS_DPRES_OFF: [0m[0mcurr: 0.0000[0m[0m -> new: 0.0010
+[0mCOM_DL_LOSS_T set to 10
+COM_RC_LOSS_T set to 1
+[0m  COM_RC_LOSS_T: [0m[0mcurr: 0.5000[0m[0m -> new: 1.0000
+[0mCOM_OF_LOSS_T set to 1
+COM_DISARM_PRFLT set to 10
+[0mINFO  [37m[dataman] [0mdata manager file './dataman' size is 1208528 bytes[0m
+INFO  [init] SIH simulator
+[0mINFO  [37m[simulator_sih] [0mSimulation loop with 250 Hz (4000 us sim time interval)[0m
+[0mINFO  [37m[simulator_sih] [0mSimulation with 1.0x speedup. Loop with (4000 us wall time interval)[0m
+[0mINFO  [37m[lockstep_scheduler] [0msetting initial absolute time to 4000 us[0m
+[0mINFO  [37m[commander] [0mLED: open /dev/led0 failed (22)[0m
+[0mINFO  [37m[tone_alarm] [0mhome set[0m
+[0mINFO  [37m[vision_target_estimator] [0mVTE for static target init[0m
+[0mINFO  [37m[uxrce_dds_client] [0minit UDP agent IP:127.0.0.1, port:8888[0m
+[0mINFO  [37m[mavlink] [0mmode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550[0m
+[0mINFO  [37m[mavlink] [0mmode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540[0m
+[0mINFO  [37m[mavlink] [0mmode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030[0m
+[0mINFO  [37m[mavlink] [0mmode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280[0m
+[0mINFO  [37m[mavlink] [0mmode: Custom, data rate: 400000 B/s on udp port 19450 remote port 19410[0m
+[0mINFO  [37m[logger] [0mlogger started (mode=all)[0m
+[0mINFO  [37m[logger] [0mMax log file size: 1024 MiB[0m
+[0mINFO  [37m[logger] [0mStart file log (type: full)[0m
+[0mINFO  [37m[logger] [0m[logger] ./log/2026-08-05/00_28_32.ulg	[0m
+[0mINFO  [37m[logger] [0mOpened full log file: ./log/2026-08-05/00_28_32.ulg[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[px4] [0mStartup script returned successfully[0m
+pxh> mavlink stop -u 18570
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavlimavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1000 -Z
+mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT -r 1
+mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.5
+mavlink status
+mavlink stop -d /dev/ttyUSB0
+[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sto[2Kpxh> mavlink stop[2Kpxh> mavlink stop [2Kpxh> mavlink stop -[2Kpxh> mavlink stop -u[2Kpxh> mavlink stop -u [2Kpxh> mavlink stop -u 1[2Kpxh> mavlink stop -u 18[2Kpxh> mavlink stop -u 185[2Kpxh> mavlink stop -u 1857[2Kpxh> mavlink stop -u 18570
+[0mINFO  [37m[mavlink] [0mexiting channel 0[0m
+pxh> [2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink star[2Kpxh> mavlink start[2Kpxh> mavlink start [2Kpxh> mavlink start -[2Kpxh> mavlink start -d[2Kpxh> mavlink start -d [2Kpxh> mavlink start -d /[2Kpxh> mavlink start -d /d[2Kpxh> mavlink start -d /de[2Kpxh> mavlink start -d /dev[2Kpxh> mavlink start -d /dev/[2Kpxh> mavlink start -d /dev/t[2Kpxh> mavlink start -d /dev/tt[2Kpxh> mavlink start -d /dev/tty[2Kpxh> mavlink start -d /dev/ttyU[2Kpxh> mavlink start -d /dev/ttyUS[2Kpxh> mavlink start -d /dev/ttyUSB[2Kpxh> mavlink start -d /dev/ttyUSB0[2Kpxh> mavlink start -d /dev/ttyUSB0 [2Kpxh> mavlink start -d /dev/ttyUSB0 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b[2Kpxh> mavlink start -d /dev/ttyUSB0 -b [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 5[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 576[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 5760[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m c[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cu[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cus[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cust[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custo[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 10[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 100[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1000[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1000 [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1000 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1000 -Z
+[0mINFO  [37m[mavlink] [0mmode: Custom, data rate: 1000 B/s on /dev/ttyUSB0 @ 57600B[0m
+pxh> [2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink str[2Kpxh> mavlink stre[2Kpxh> mavlink strea[2Kpxh> mavlink stream[2Kpxh> mavlink stream [2Kpxh> mavlink stream -[2Kpxh> mavlink stream -d[2Kpxh> mavlink stream -d [2Kpxh> mavlink stream -d /[2Kpxh> mavlink stream -d /d[2Kpxh> mavlink stream -d /de[2Kpxh> mavlink stream -d /dev[2Kpxh> mavlink stream -d /dev/[2Kpxh> mavlink stream -d /dev/t[2Kpxh> mavlink stream -d /dev/tt[2Kpxh> mavlink stream -d /dev/tty[2Kpxh> mavlink stream -d /dev/ttyU[2Kpxh> mavlink stream -d /dev/ttyUS[2Kpxh> mavlink stream -d /dev/ttyUSB[2Kpxh> mavlink stream -d /dev/ttyUSB0[2Kpxh> mavlink stream -d /dev/ttyUSB0 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s H[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HE[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEA[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEAR[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEART[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTB[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBE[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEA[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT -r[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT -r [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HEARTBEAT -r 1
+pxh> [2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink str[2Kpxh> mavlink stre[2Kpxh> mavlink strea[2Kpxh> mavlink stream[2Kpxh> mavlink stream [2Kpxh> mavlink stream -[2Kpxh> mavlink stream -d[2Kpxh> mavlink stream -d [2Kpxh> mavlink stream -d /[2Kpxh> mavlink stream -d /d[2Kpxh> mavlink stream -d /de[2Kpxh> mavlink stream -d /dev[2Kpxh> mavlink stream -d /dev/[2Kpxh> mavlink stream -d /dev/t[2Kpxh> mavlink stream -d /dev/tt[2Kpxh> mavlink stream -d /dev/tty[2Kpxh> mavlink stream -d /dev/ttyU[2Kpxh> mavlink stream -d /dev/ttyUS[2Kpxh> mavlink stream -d /dev/ttyUSB[2Kpxh> mavlink stream -d /dev/ttyUSB0[2Kpxh> mavlink stream -d /dev/ttyUSB0 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s H[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HI[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIG[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_L[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LA[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LAT[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATE[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATEN[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENC[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.5
+pxh> [2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink stat[2Kpxh> mavlink statu[2Kpxh> mavlink status
+
+instance #0:
+	mavlink chan: #0
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 0.721
+	  tx rate max: 1000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	Received Messages:
+	  sysid:255, compid: 68, Total: 1 (lost: 0)
+	FTP enabled: NO, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: serial (/dev/ttyUSB0 @57600)
+
+instance #1:
+	mavlink chan: #1
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 4000000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14580, remote port: 14540)
+	Broadcast enabled: NO
+
+instance #2:
+	mavlink chan: #2
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 0.127
+	  tx rate max: 4000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14280, remote port: 14030)
+	Broadcast enabled: NO
+
+instance #3:
+	mavlink chan: #3
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Gimbal
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (13030, remote port: 13280)
+	Broadcast enabled: NO
+
+instance #4:
+	mavlink chan: #4
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: UDP (19450, remote port: 19410)
+	Broadcast enabled: NO
+pxh> [2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sto[2Kpxh> mavlink stop[2Kpxh> mavlink stop [2Kpxh> mavlink stop -[2Kpxh> mavlink stop -d[2Kpxh> mavlink stop -d [2Kpxh> mavlink stop -d /[2Kpxh> mavlink stop -d /d[2Kpxh> mavlink stop -d /de[2Kpxh> mavlink stop -d /dev[2Kpxh> mavlink stop -d /dev/[2Kpxh> mavlink stop -d /dev/t[2Kpxh> mavlink stop -d /dev/tt[2Kpxh> mavlink stop -d /dev/tty[2Kpxh> mavlink stop -d /dev/ttyU[2Kpxh> mavlink stop -d /dev/ttyUS[2Kpxh> mavlink stop -d /dev/ttyUSB[2Kpxh> mavlink stop -d /dev/ttyUSB0
+shutdown
+[0mINFO  [37m[mavlink] [0mexiting channel 0[0m
+pxh> [2Kpxh> s[2Kpxh> sh[2Kpxh> shu[2Kpxh> shut[2Kpxh> shutd[2Kpxh> shutdo[2Kpxh> shutdow[2Kpxh> shutdown
+Exiting NOW.
