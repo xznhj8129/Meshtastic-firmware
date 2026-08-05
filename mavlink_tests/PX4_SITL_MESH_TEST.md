@@ -32,13 +32,22 @@ This is an incremental PX4 make invocation. It does not clean the PX4 tree, Plat
 
 Do not pre-clean or separately rebuild PX4. Do not delete `.pio/build`. Do not run the optional native suite as part of this hardware test.
 
-Changes under `mavlink_tests/` require no Meshtastic firmware rebuild or reflashing.
+Harness-only changes under `mavlink_tests/` require no Meshtastic reflash. The current ACK-localization phase also changes `src/modules/Mavlink/`, so flash both nodes once with an ordinary incremental target build. Do not clean first.
+
+Typical local sequence:
+
+```bash
+pio run -e heltec-wsl-v3
+pio run -e heltec-wsl-v3 -t upload --upload-port <node-port>
+```
+
+Repeat only the upload command for the second node as appropriate. Use the existing local method and ports; do not use a tool that rewrites project configuration or invalidates the cache.
 
 ## Hardware contract
 
 ### Air node
 
-- tested `mavlink` firmware;
+- current `mavlink` firmware with ACK tracing;
 - Serial module enabled in MAVLink mode;
 - RX/TX pins configured;
 - baud matching `AIR_BAUD`;
@@ -56,7 +65,7 @@ Use `/dev/serial/by-id/...` when adapters expose unique serial values. Use `/dev
 
 ### Ground node
 
-- tested `mavlink` firmware;
+- current `mavlink` firmware with ACK tracing;
 - Serial module enabled in MAVLink mode;
 - RX and TX unset so it operates as a UDP-only endpoint;
 - Wi-Fi connected and reachable from the test host;
@@ -120,7 +129,7 @@ message = HEARTBEAT
 interval = 1 second
 ```
 
-This requests the interval already configured by the harness and provides an independent ACK-path control without arming, moving, landing, or reconfiguring the vehicle materially.
+This requests the interval already configured by the harness. In the tested PX4 source it remains on the direct ACK path and does not arm, move, land, or materially reconfigure the vehicle.
 
 12. Waits only for the focused ACK grace period, then shuts down and writes the report.
 
@@ -153,6 +162,22 @@ strict_pass = false
 
 The process still exits nonzero when the strict checks fail, but `result.json` shows exactly what passed.
 
+## Firmware ACK trace
+
+The node logs emit markers only when message ID 77 is involved:
+
+```text
+MAVLink COMMAND_ACK local ingress
+MAVLink COMMAND_ACK transport queued
+MAVLink COMMAND_ACK mesh transmission committed
+MAVLink COMMAND_ACK mesh reassembled
+MAVLink COMMAND_ACK local endpoint delivered
+```
+
+The air-node sequence localizes PX4-to-mesh behavior. The ground-node sequence localizes mesh-to-UDP behavior. Drop markers identify queue or endpoint loss.
+
+No broad packet logging was added.
+
 ## Output
 
 Each run creates:
@@ -173,4 +198,10 @@ Exit status:
 130 interrupted
 ```
 
-For the next run, report `result.json`. The two ACK milestone values determine whether the missing response is specific to `MAV_CMD_REQUEST_MESSAGE` or common to the serial ACK path.
+For the next run, retain:
+
+- `result.json`;
+- the ACK-related lines from the air-node log;
+- the ACK-related lines from the ground-node log.
+
+The two ACK milestone values and the first missing firmware marker identify the next boundary without another broad investigation.
