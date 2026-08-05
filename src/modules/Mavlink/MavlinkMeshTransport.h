@@ -48,6 +48,11 @@ class MavlinkMeshTransport
         uint32_t reassembledFrames = 0;
         uint32_t inboundFramesDropped = 0;
         uint32_t inboundDropBytes = 0;
+        uint32_t commandAckFramesQueued = 0;
+        uint32_t commandAckFramesSent = 0;
+        uint32_t commandAckOutboundDrops = 0;
+        uint32_t commandAckFramesReassembled = 0;
+        uint32_t commandAckInboundDrops = 0;
         size_t outboundHighWater = 0;
         size_t inboundHighWater = 0;
     };
@@ -97,6 +102,8 @@ class MavlinkMeshTransport
 
         frame.nextFragment++;
         if (frame.nextFragment >= fragmentCount(frame.len)) {
+            if (isCommandAckFrame(frame.bytes, frame.len))
+                counters.commandAckFramesSent++;
             txHead = (txHead + 1) % TX_QUEUE_DEPTH;
             txCount--;
             counters.outboundFramesSent++;
@@ -108,6 +115,8 @@ class MavlinkMeshTransport
     {
         if (!txCount)
             return;
+        if (isCommandAckFrame(txFrames[txHead].bytes, txFrames[txHead].len))
+            counters.commandAckOutboundDrops++;
         counters.outboundFramesDropped++;
         counters.outboundDropBytes += txFrames[txHead].len;
         txHead = (txHead + 1) % TX_QUEUE_DEPTH;
@@ -221,6 +230,25 @@ class MavlinkMeshTransport
 
     static uint16_t getU16(const uint8_t *in) { return (uint16_t)in[0] | ((uint16_t)in[1] << 8); }
 
+    static bool frameHasMessageId(const uint8_t *frame, size_t len, uint32_t wanted)
+    {
+        if (!frame)
+            return false;
+        if (len >= 6 && frame[0] == 0xfe)
+            return frame[5] == wanted;
+        if (len >= 10 && frame[0] == 0xfd) {
+            const uint32_t msgid =
+                (uint32_t)frame[7] | ((uint32_t)frame[8] << 8) | ((uint32_t)frame[9] << 16);
+            return msgid == wanted;
+        }
+        return false;
+    }
+
+    static bool isCommandAckFrame(const uint8_t *frame, size_t len)
+    {
+        return frameHasMessageId(frame, len, MAVLINK_MSG_ID_COMMAND_ACK);
+    }
+
     static uint8_t fragmentCount(size_t frameLen)
     {
         return (uint8_t)((frameLen + MAX_FRAGMENT_DATA - 1) / MAX_FRAGMENT_DATA);
@@ -276,7 +304,10 @@ class MavlinkMeshTransport
             counters.framingErrors++;
             return;
         }
+        const bool commandAck = isCommandAckFrame(rawFrame, rawLen);
         if (txCount >= TX_QUEUE_DEPTH) {
+            if (commandAck)
+                counters.commandAckOutboundDrops++;
             counters.outboundFramesDropped++;
             counters.outboundDropBytes += rawLen;
             return;
@@ -291,6 +322,8 @@ class MavlinkMeshTransport
         memcpy(frame.bytes, rawFrame, rawLen);
         txCount++;
         counters.localFramesQueued++;
+        if (commandAck)
+            counters.commandAckFramesQueued++;
         counters.outboundHighWater = max(counters.outboundHighWater, txCount);
     }
 
@@ -344,7 +377,10 @@ class MavlinkMeshTransport
 
     void enqueueInbound(const uint8_t *data, size_t len)
     {
+        const bool commandAck = isCommandAckFrame(data, len);
         if (rxCount >= RX_QUEUE_DEPTH) {
+            if (commandAck)
+                counters.commandAckInboundDrops++;
             counters.inboundFramesDropped++;
             counters.inboundDropBytes += len;
             return;
@@ -354,6 +390,8 @@ class MavlinkMeshTransport
         memcpy(frame.bytes, data, len);
         rxCount++;
         counters.reassembledFrames++;
+        if (commandAck)
+            counters.commandAckFramesReassembled++;
         counters.inboundHighWater = max(counters.inboundHighWater, rxCount);
     }
 
