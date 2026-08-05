@@ -36,22 +36,23 @@ fi
     -r "${SCRIPT_DIR}/requirements-px4-sitl-mesh.txt"
 
 cd "${REPO_ROOT}"
-
-# The harness uses direct pymavlink parser instances, so choose MAVLink 2 before import.
 export MAVLINK20=1
 
 exec "${VENV_DIR}/bin/python" "${SCRIPT_DIR}/px4_sitl_mesh_test.py" \
     --px4-dir "${PX4_DIR}" \
     --air-uart "${AIR_UART}" \
-    --air-baud "${AIR_BAUD:-115200}" \
+    --air-baud "${AIR_BAUD:-57600}" \
     --ground-host "${GROUND_HOST}" \
     --ground-port "${GROUND_PORT:-14550}" \
     --local-port "${LOCAL_PORT:-14600}" \
-    --expected-sysid "${EXPECTED_SYSID:-1}" \
+    --target-sysid "${TARGET_SYSID:-${EXPECTED_SYSID:-1}}" \
+    --target-compid "${TARGET_COMPID:-1}" \
     --max-rate-bps "${MAX_RATE_BPS:-1000}" \
     --build-timeout "${BUILD_TIMEOUT:-1200}" \
-    --test-timeout "${TEST_TIMEOUT:-120}" \
-    --command-attempts "${COMMAND_ATTEMPTS:-3}" \
-    --ack-grace "${ACK_GRACE:-25}" \
+    --warmup "${WARMUP_SECONDS:-5}" \
+    --probe-attempts "${PROBE_ATTEMPTS:-${COMMAND_ATTEMPTS:-10}}" \
+    --probe-interval "${PROBE_INTERVAL_SECONDS:-3}" \
+    --control-offset "${CONTROL_OFFSET_SECONDS:-1}" \
+    --drain "${DRAIN_SECONDS:-8}" \
     --report-root "${REPORT_ROOT:-mavlink_tests/reports}" \
     "$@"
