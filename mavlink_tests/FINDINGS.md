@@ -469,3 +469,62 @@ The ground node console stopped emitting text after the `hop_limit` write, so it
 was not captured for the `hop_limit = 1` runs. The node is healthy and reachable
 (`2.8.0.2fae116`, mesh and UDP both working); only the console log is missing. That capture
 needs to be recovered before the arbitration question can be answered.
+
+# Default CLIENT role: no change, and HIGH_LATENCY2 is the only useful frame
+
+Capture `20260805-034858`. Both nodes set to device role `CLIENT` (was 7, TAK) and the ground
+node rebooted, which restored its console logging. `-m custom`, 9600 baud.
+
+## Result: role is not the variable
+
+```text
+commands reaching PX4        0 of 20   (uLog acks: {211: 2}, PX4's own only)
+ground txGood               +7, of which 6 were relays -> ONE own transmission
+ground TX queue full        71
+ground rxGood               +85
+air txGood                  +88 (2.12/s), txRelay 0
+```
+
+Identical to the TAK-role runs. Role is not the cause.
+
+The ground node received 85 packets and attempted to rebroadcast them; its queue overflowed 71
+times and one own packet got out. Whether `hop_limit` was still 1 at this point was not
+confirmed before the session ended, so the relay-versus-arbitration question remains open. The
+earlier `hop_limit = 1` runs also failed to deliver commands, but their ground console was not
+captured, so neither explanation is settled.
+
+## What the frame mix actually shows
+
+| frame | count | carries |
+| --- | ---: | --- |
+| `HIGH_LATENCY2` | 18 | position, altitude, heading, battery, custom mode, failsafe |
+| `HEARTBEAT` | 38 | liveness only |
+| `MISSION_CURRENT` | 37 | a waypoint index, on a vehicle with no mission loaded |
+| `UNKNOWN_410`/`411` | 22 | mode enumeration |
+| `RADIO_STATUS` | 65 | local injection, never crosses the mesh |
+
+18 of 184 frames carry vehicle state. Roughly 90% of what crosses the link conveys almost
+nothing, and it is precisely the part that cannot be disabled.
+
+`HIGH_LATENCY2` is present because it was explicitly requested. PX4 treats it as a replacement
+for normal telemetry in exactly one place:
+
+```c
+case MAVLINK_MODE_IRIDIUM:
+    configure_stream_local("HIGH_LATENCY2", _high_latency_freq);
+    break;   // only stream, and the mandatory defaults are skipped
+```
+
+Everywhere else it is additive, so `-m custom` yields the compact all-in-one frame *plus* the
+entire floor it was designed to make unnecessary. That is the clearest statement of why IRIDIUM
+is the right shape for this link and why the mandatory floor, not stream tuning, is the defect.
+
+## Session end state
+
+- Nodes: firmware `2.8.0.2fae116`, role `CLIENT`, air UART 9600 baud, `hop_limit` last set to 1
+  but unverified after the role change and reboot.
+- Working configuration remains `-m iridium` with a non-heart-beating GCS: 28 of 29 commands
+  delivered, `HIGH_LATENCY2` at 15 per 43 s, no `COMMAND_ACK` (structurally impossible there).
+- Open: why the ground node cannot transmit at 22% channel duty. Relay load and transmit
+  arbitration are both still candidates; the measurement that separates them is the ground
+  console during a confirmed `hop_limit = 1` run.
