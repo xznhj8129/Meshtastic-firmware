@@ -12,7 +12,7 @@ import socket
 import sys
 import time
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -45,16 +45,31 @@ class TestResult:
     ground_port: int
     local_port: int
     expected_sysid: int
+
+    # Explicit milestones. `passed` remains the compatibility alias for strict_pass.
+    transport_pass: bool = False
+    telemetry_pass: bool = False
+    command_delivery_pass: bool = False
+    response_return_pass: bool = False
+    command_ack_pass: bool = False
+    control_command_ack_pass: bool = False
+    strict_pass: bool = False
+
     vehicle_sysid: int | None = None
     vehicle_compid: int | None = None
     heartbeat_latency_s: float | None = None
     high_latency2_latency_s: float | None = None
     command_ack_latency_s: float | None = None
+    control_command_ack_latency_s: float | None = None
     autopilot_version_latency_s: float | None = None
     high_latency2: dict[str, Any] | None = None
     command_ack_result: int | None = None
+    control_command_ack_result: int | None = None
     flight_sw_version: int | None = None
-    message_counts: dict[str, int] | None = None
+    message_counts: dict[str, int] = field(default_factory=dict)
+    request_attempts: int = 0
+    control_command_attempts: int = 0
+    failed_checks: list[str] = field(default_factory=list)
     report_dir: str | None = None
     error: str | None = None
 
@@ -108,6 +123,22 @@ class MavlinkUdpEndpoint:
             0,
             mavutil.mavlink.MAVLINK_MSG_ID_AUTOPILOT_VERSION,
             0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        )
+
+    def send_control_set_heartbeat_interval(self, target_system: int, target_component: int) -> None:
+        """Harmless ACK control: request the already-configured 1 Hz heartbeat interval."""
+        self.tx.command_long_send(
+            target_system,
+            target_component,
+            mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL,
+            0,
+            mavutil.mavlink.MAVLINK_MSG_ID_HEARTBEAT,
+            1_000_000,
             0,
             0,
             0,
@@ -169,8 +200,7 @@ class Px4Session:
         except (pexpect.TIMEOUT, pexpect.EOF) as exc:
             raise TestFailure(f"PX4 did not reach the pxh prompt; inspect {self.log_path}") from exc
 
-        # Remove PX4's ordinary localhost GCS route. The verifier binds a different port,
-        # but stopping this instance guarantees that all observed traffic uses the radio path.
+        # Stop PX4's ordinary localhost GCS route so the verifier cannot observe a direct path.
         try:
             self.run_command("mavlink stop -u 18570", timeout_s=10)
         except HarnessError:
@@ -186,14 +216,15 @@ class Px4Session:
             output = self.run_command(f"mavlink stream -d {self.air_uart} -s {stream} -r {rate}")
             self._reject_command_error(f"configure {stream}", output)
 
-        # Only "mavlink status" reports the device; "mavlink status streams" prints the rate table alone.
+        # Keep these two checks separate: only `status` shows the device, while
+        # `status streams` shows the configured stream table.
         status = self.run_command("mavlink status")
         if self.air_uart not in status:
             raise TestFailure(
                 f"PX4 MAVLink status does not show serial device {self.air_uart}; inspect {self.log_path}"
             )
-        status = self.run_command("mavlink status streams")
-        if "HIGH_LATENCY2" not in status or "HEARTBEAT" not in status:
+        stream_status = self.run_command("mavlink status streams")
+        if "HIGH_LATENCY2" not in stream_status or "HEARTBEAT" not in stream_status:
             raise TestFailure(
                 f"PX4 MAVLink status does not show the required streams; inspect {self.log_path}"
             )
@@ -203,9 +234,9 @@ class Px4Session:
             raise RuntimeError("PX4 process is not running")
         self.child.sendline(command)
         try:
-            # pxh redraws "pxh>" for every echoed character, so the prompt pattern also
-            # matches inside the echo. Consume the echo before waiting for the real prompt,
-            # otherwise `before` is empty and every output assertion reads nothing.
+            # pxh redraws "pxh>" for every echoed character. Consume the exact command
+            # echo before waiting for the real prompt; changing this casually makes every
+            # output assertion read an empty string.
             self.child.expect_exact(command, timeout=timeout_s)
             self.child.expect(self.PROMPT, timeout=timeout_s)
         except (pexpect.TIMEOUT, pexpect.EOF) as exc:
@@ -270,9 +301,7 @@ def ensure_udp_port_free(port: int, label: str) -> None:
     try:
         probe.bind(("0.0.0.0", port))
     except OSError as exc:
-        raise PreflightError(
-            f"UDP port {port} is already in use ({label}). Close QGroundControl or the process holding the port."
-        ) from exc
+        raise PreflightError(f"UDP port {port} is already in use ({label}).") from exc
     finally:
         probe.close()
 
@@ -298,8 +327,8 @@ def validate_args(args: argparse.Namespace) -> None:
     except socket.gaierror as exc:
         raise PreflightError(f"Cannot resolve ground node host: {args.ground_host}") from exc
 
-    ensure_udp_port_free(14550, "PX4/QGC bypass port")
-    ensure_udp_port_free(args.local_port, "test GCS receive port")
+    # Only the verifier's local receive port must be free. Ground-node UDP 14550 is remote.
+    ensure_udp_port_free(args.local_port, "test verifier receive port")
 
 
 def high_latency2_snapshot(message: Any) -> dict[str, Any]:
@@ -315,24 +344,67 @@ def high_latency2_snapshot(message: Any) -> dict[str, Any]:
     }
 
 
+def ack_is_accepted(result: int) -> bool:
+    return result in {
+        mavutil.mavlink.MAV_RESULT_ACCEPTED,
+        mavutil.mavlink.MAV_RESULT_IN_PROGRESS,
+    }
+
+
+def update_telemetry_milestone(result: TestResult) -> None:
+    snapshot = result.high_latency2
+    result.telemetry_pass = bool(
+        result.vehicle_sysid is not None
+        and snapshot is not None
+        and not (snapshot["latitude"] == 0 and snapshot["longitude"] == 0)
+        and snapshot["battery_percent"] >= 0
+    )
+
+
+def update_final_milestones(result: TestResult) -> None:
+    result.command_delivery_pass = result.response_return_pass
+    result.transport_pass = result.telemetry_pass and result.response_return_pass
+    result.strict_pass = (
+        result.transport_pass
+        and result.command_ack_pass
+        and result.control_command_ack_pass
+    )
+    result.passed = result.strict_pass
+
+
+def record_failed_checks(result: TestResult) -> None:
+    failures: list[str] = []
+    if result.vehicle_sysid is None:
+        failures.append("vehicle HEARTBEAT")
+    if result.high_latency2 is None:
+        failures.append("valid HIGH_LATENCY2")
+    if not result.response_return_pass:
+        failures.append("AUTOPILOT_VERSION response")
+    if not result.command_ack_pass:
+        failures.append("COMMAND_ACK for MAV_CMD_REQUEST_MESSAGE")
+    if not result.control_command_ack_pass:
+        failures.append("COMMAND_ACK for MAV_CMD_SET_MESSAGE_INTERVAL control")
+    result.failed_checks = failures
+    if failures:
+        result.error = "Missing or failed: " + ", ".join(failures)
+
+
 def run_link_test(
     endpoint: MavlinkUdpEndpoint,
-    expected_sysid: int,
+    result: TestResult,
     timeout_s: int,
     command_attempts: int,
-) -> dict[str, Any]:
+    ack_grace_s: int,
+) -> None:
     started = time.monotonic()
     deadline = started + timeout_s
     next_gcs_heartbeat = 0.0
-    heartbeat: Any | None = None
-    high_latency2: Any | None = None
-    command_ack: Any | None = None
-    autopilot_version: Any | None = None
-    command_sent_at: float | None = None
-    next_command_retry = 0.0
-    attempts = 0
+    next_request_retry = 0.0
+    next_control_retry = 0.0
+    request_first_sent_at: float | None = None
+    control_first_sent_at: float | None = None
+    ack_deadline: float | None = None
     counts: Counter[str] = Counter()
-    latencies: dict[str, float] = {}
 
     while time.monotonic() < deadline:
         now = time.monotonic()
@@ -345,101 +417,93 @@ def run_link_test(
             if message_type == "BAD_DATA":
                 continue
             counts[message_type] += 1
+            result.message_counts = dict(sorted(counts.items()))
 
             source_system = message.get_srcSystem()
+            source_component = message.get_srcComponent()
+
             if message_type == "HEARTBEAT":
-                if expected_sysid and source_system != expected_sysid:
+                if result.expected_sysid and source_system != result.expected_sysid:
                     continue
                 if int(message.autopilot) == mavutil.mavlink.MAV_AUTOPILOT_INVALID:
                     continue
-                if heartbeat is None:
-                    heartbeat = message
-                    latencies["heartbeat"] = time.monotonic() - started
+                if result.vehicle_sysid is None:
+                    result.vehicle_sysid = source_system
+                    result.vehicle_compid = source_component
+                    result.heartbeat_latency_s = time.monotonic() - started
+                    update_telemetry_milestone(result)
 
             elif message_type == "HIGH_LATENCY2":
-                if heartbeat is not None and source_system != heartbeat.get_srcSystem():
+                if result.vehicle_sysid is not None and source_system != result.vehicle_sysid:
                     continue
-                if expected_sysid and source_system != expected_sysid:
+                if result.expected_sysid and source_system != result.expected_sysid:
                     continue
-                if high_latency2 is None:
-                    high_latency2 = message
-                    latencies["high_latency2"] = time.monotonic() - started
-
-            elif message_type == "COMMAND_ACK":
-                if (
-                    int(message.command) == mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE
-                    and (heartbeat is None or source_system == heartbeat.get_srcSystem())
-                ):
-                    command_ack = message
-                    if command_sent_at is not None:
-                        latencies["command_ack"] = time.monotonic() - command_sent_at
+                if result.high_latency2 is None:
+                    snapshot = high_latency2_snapshot(message)
+                    result.high_latency2 = snapshot
+                    result.high_latency2_latency_s = time.monotonic() - started
+                    update_telemetry_milestone(result)
 
             elif message_type == "AUTOPILOT_VERSION":
-                if heartbeat is None or source_system == heartbeat.get_srcSystem():
-                    autopilot_version = message
-                    if command_sent_at is not None:
-                        latencies["autopilot_version"] = time.monotonic() - command_sent_at
+                if result.vehicle_sysid is None or source_system == result.vehicle_sysid:
+                    if not result.response_return_pass:
+                        result.response_return_pass = True
+                        result.flight_sw_version = int(message.flight_sw_version)
+                        if request_first_sent_at is not None:
+                            result.autopilot_version_latency_s = time.monotonic() - request_first_sent_at
 
-        if heartbeat is not None and high_latency2 is not None:
+            elif message_type == "COMMAND_ACK":
+                if result.vehicle_sysid is not None and source_system != result.vehicle_sysid:
+                    continue
+                command = int(message.command)
+                ack_result = int(message.result)
+                if command == mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE:
+                    result.command_ack_result = ack_result
+                    result.command_ack_pass = ack_is_accepted(ack_result)
+                    if request_first_sent_at is not None and result.command_ack_latency_s is None:
+                        result.command_ack_latency_s = time.monotonic() - request_first_sent_at
+                elif command == mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL:
+                    result.control_command_ack_result = ack_result
+                    result.control_command_ack_pass = ack_is_accepted(ack_result)
+                    if control_first_sent_at is not None and result.control_command_ack_latency_s is None:
+                        result.control_command_ack_latency_s = time.monotonic() - control_first_sent_at
+
+        if result.telemetry_pass and result.vehicle_sysid is not None and result.vehicle_compid is not None:
             now = time.monotonic()
-            if command_ack is None or autopilot_version is None:
-                if attempts < command_attempts and now >= next_command_retry:
-                    endpoint.send_request_autopilot_version(
-                        heartbeat.get_srcSystem(),
-                        heartbeat.get_srcComponent(),
-                    )
-                    if command_sent_at is None:
-                        command_sent_at = now
-                    attempts += 1
-                    next_command_retry = now + 10.0
+            if (
+                not result.response_return_pass
+                and result.request_attempts < command_attempts
+                and now >= next_request_retry
+            ):
+                endpoint.send_request_autopilot_version(result.vehicle_sysid, result.vehicle_compid)
+                if request_first_sent_at is None:
+                    request_first_sent_at = now
+                result.request_attempts += 1
+                next_request_retry = now + 10.0
 
-        if (
-            heartbeat is not None
-            and high_latency2 is not None
-            and command_ack is not None
-            and autopilot_version is not None
-        ):
-            ack_result = int(command_ack.result)
-            accepted_results = {
-                mavutil.mavlink.MAV_RESULT_ACCEPTED,
-                mavutil.mavlink.MAV_RESULT_IN_PROGRESS,
-            }
-            if ack_result not in accepted_results:
-                raise TestFailure(
-                    f"PX4 returned COMMAND_ACK result {ack_result} for MAV_CMD_REQUEST_MESSAGE"
-                )
+            if (
+                result.response_return_pass
+                and not result.control_command_ack_pass
+                and result.control_command_attempts < command_attempts
+                and now >= next_control_retry
+            ):
+                endpoint.send_control_set_heartbeat_interval(result.vehicle_sysid, result.vehicle_compid)
+                if control_first_sent_at is None:
+                    control_first_sent_at = now
+                result.control_command_attempts += 1
+                next_control_retry = now + 10.0
+                if ack_deadline is None:
+                    ack_deadline = now + ack_grace_s
 
-            snapshot = high_latency2_snapshot(high_latency2)
-            if snapshot["latitude"] == 0 and snapshot["longitude"] == 0:
-                raise TestFailure("HIGH_LATENCY2 arrived but contains no valid SIH position")
-            if snapshot["battery_percent"] < 0:
-                raise TestFailure("HIGH_LATENCY2 arrived but battery percentage is unknown")
+        update_final_milestones(result)
+        if result.strict_pass:
+            break
+        if ack_deadline is not None and time.monotonic() >= ack_deadline:
+            break
 
-            return {
-                "vehicle_sysid": heartbeat.get_srcSystem(),
-                "vehicle_compid": heartbeat.get_srcComponent(),
-                "heartbeat_latency_s": latencies.get("heartbeat"),
-                "high_latency2_latency_s": latencies.get("high_latency2"),
-                "command_ack_latency_s": latencies.get("command_ack"),
-                "autopilot_version_latency_s": latencies.get("autopilot_version"),
-                "high_latency2": snapshot,
-                "command_ack_result": ack_result,
-                "flight_sw_version": int(autopilot_version.flight_sw_version),
-                "message_counts": dict(sorted(counts.items())),
-            }
-
-    missing = []
-    if heartbeat is None:
-        missing.append("vehicle HEARTBEAT")
-    if high_latency2 is None:
-        missing.append("HIGH_LATENCY2")
-    if command_ack is None:
-        missing.append("COMMAND_ACK")
-    if autopilot_version is None:
-        missing.append("AUTOPILOT_VERSION")
-    raise TestFailure(
-        "Timed out waiting for " + ", ".join(missing) + f"; message counts: {dict(counts)}"
-    )
+    result.message_counts = dict(sorted(counts.items()))
+    update_final_milestones(result)
+    record_failed_checks(result)
 
 
 def write_result(path: Path, result: TestResult) -> None:
@@ -462,8 +526,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--expected-sysid", type=int, default=1)
     parser.add_argument("--max-rate-bps", type=int, default=1000)
     parser.add_argument("--build-timeout", type=int, default=1200)
-    parser.add_argument("--test-timeout", type=int, default=240)
+    parser.add_argument("--test-timeout", type=int, default=120)
     parser.add_argument("--command-attempts", type=int, default=3)
+    parser.add_argument("--ack-grace", type=int, default=25)
     parser.add_argument("--report-root", default="mavlink_tests/reports")
     return parser.parse_args()
 
@@ -516,19 +581,31 @@ def main() -> int:
             args.ground_port,
             args.local_port,
         )
-        observations = run_link_test(
+        run_link_test(
             endpoint,
-            args.expected_sysid,
+            result,
             args.test_timeout,
             args.command_attempts,
+            args.ack_grace,
         )
-        for key, value in observations.items():
-            setattr(result, key, value)
 
-        result.passed = True
-        print("PASS: PX4 SIH UART -> Meshtastic mesh -> UDP")
-        print(json.dumps(observations, indent=2, sort_keys=True))
-        return 0
+        summary = {
+            "transport_pass": result.transport_pass,
+            "telemetry_pass": result.telemetry_pass,
+            "command_delivery_pass": result.command_delivery_pass,
+            "response_return_pass": result.response_return_pass,
+            "command_ack_pass": result.command_ack_pass,
+            "control_command_ack_pass": result.control_command_ack_pass,
+            "strict_pass": result.strict_pass,
+            "failed_checks": result.failed_checks,
+            "message_counts": result.message_counts,
+        }
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        if result.strict_pass:
+            print("PASS: strict PX4 SIH UART -> Meshtastic mesh -> UDP test")
+            return 0
+        print("PARTIAL: core milestones are recorded; strict checks failed", file=sys.stderr)
+        return 3
 
     except PreflightError as exc:
         result.error = str(exc)
