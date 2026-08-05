@@ -188,3 +188,63 @@ in 102 packets, **1.05 frames per packet**. It never engages, because frames do 
 the bridge peeks the moment one is enqueued. Making it effective needs a coalescing hold before
 transmit, which is a scheduling change and a latency-versus-airtime decision that was not made.
 Oversized frames still use the original single-frame fragment format; the receiver handles both.
+
+# COMMAND_ACK resolved: PX4 suppresses its own ACKs in IRIDIUM mode
+
+Capture `20260805-004817`, both nodes on `128ff0a2d`, PX4 `-m iridium`.
+
+## Evidence
+
+PX4 created 19 acks. **Zero `MAVLink COMMAND_ACK` markers appeared on either node**, so message
+id 77 never reached the air node's UART. The frame was never serialized.
+
+`mavlink_main.cpp`, in the ack send path:
+
+```c
+if (_mode == MAVLINK_MODE_IRIDIUM) {
+    if (command_ack.from_external) {
+        // for MAVLINK_MODE_IRIDIUM send only if external
+        mavlink_msg_command_ack_send_struct(get_channel(), &msg);
+    }
+} else {
+    mavlink_msg_command_ack_send_struct(get_channel(), &msg);
+}
+```
+
+Every ack in the uLog carries `from_external=0`:
+
+```text
+command=512 from_external=0 target_system=255 target_component=190 result=0
+command=511 from_external=0 target_system=255 target_component=190 result=4
+(19 records, all from_external=0)
+```
+
+PX4 generates these acks itself, so `from_external` is never set, so in IRIDIUM mode every one
+is discarded before serialization. This is deliberate: do not spend bytes on acks over a
+pay-per-byte satellite link.
+
+The earlier `get_free_tx_buf()` and `component_was_seen()` theories are both dead.
+`get_free_tx_buf()` returns the constant `MAVLINK_MAX_PACKET_LEN` on POSIX, so it never gates.
+
+## The bind
+
+| mode | offered load | emits own COMMAND_ACK |
+| --- | --- | --- |
+| `-m custom` | floods the link; 0 of 20 commands delivered | yes |
+| `-m iridium` | usable; 19 of 20 delivered | never |
+
+There is no PX4 mode that both keeps the offered load survivable and returns its own
+`COMMAND_ACK`. The two requirements are mutually exclusive in the tested PX4.
+
+## Consequence for the test
+
+`COMMAND_ACK` is not a valid delivery criterion under `-m iridium`. Use instead:
+
+- the PX4 uLog `vehicle_command_ack` records, which prove reception and the result code; and
+- the requested-message response, which does return over the mesh.
+
+`MAV_CMD_REQUEST_MESSAGE` is acknowledged `result=0` (ACCEPTED). `MAV_CMD_SET_MESSAGE_INTERVAL`
+is acknowledged `result=4` (FAILED), because `HEARTBEAT` is not a configured stream in IRIDIUM
+mode, so that control command is not a useful probe in this configuration.
+
+Nothing in the Meshtastic firmware is implicated. No transport change is warranted by this.
