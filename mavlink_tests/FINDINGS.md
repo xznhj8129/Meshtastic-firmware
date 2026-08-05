@@ -417,3 +417,55 @@ transient that recovers; the downlink is healthy throughout while the uplink nev
 Non-high-latency operation is not achievable on this link without patching PX4. The mandatory
 floor alone consumes the channel. `-m iridium` works precisely because it is the only mode that
 drops those streams, which is also why it cannot return `COMMAND_ACK`.
+
+# Correction: the channel was never saturated
+
+Earlier entries in this file, and `INTERPRETATION.md` in captures `20260804-231359` and
+`20260805-021103`, describe the air-to-ground telemetry stream as "consuming the channel" and
+the link as saturated. Measured from the ground node console, that is wrong.
+
+## Measured occupancy
+
+```text
+on-air packet sizes   115, 112, 171, 127 bytes   (for 21 to 54 byte MAVLink frames)
+airtime               81 packets x 115 ms mean = 9.34 s of a 42.7 s window
+duty cycle            22%
+```
+
+SHORT_FAST is 10.94 kbps, about 1367 B/s. The link used roughly 300 B/s of airtime to deliver
+about 120 B/s of MAVLink payload. The channel was 78% idle.
+
+## Where the capacity actually goes
+
+A 21-byte `HEARTBEAT` leaves as a 115-byte packet. Roughly 9 bytes is our transport header; the
+rest is Meshtastic framing, and the node logs show `XEdDSA signed packet`, so a 64-byte
+signature is the single largest component. Payload efficiency is therefore about 9%, and small
+frames are the worst case: the overhead is fixed per packet regardless of contents.
+
+This is the strongest argument yet for frame aggregation, which currently exists but does not
+engage. Four 21-byte frames in one packet would pay the ~85 byte overhead once instead of four
+times.
+
+## What this does not explain
+
+At 22% duty the ground node should find the channel free. It does not behave that way:
+
+| air node rate | ground node result |
+| --- | --- |
+| 2.17 pkt/s (`-m custom`) | cannot deliver a command; 0 of 20 reach PX4 |
+| 0.16 pkt/s (`-m iridium`) | delivers 19 to 28 commands |
+
+`hop_limit = 1` was tested and did **not** fix it, so relay load is not the cause either. Both
+nodes are device role 7 (TAK), so role asymmetry is not the cause.
+
+The blocker is Meshtastic transmit arbitration or queueing under moderate channel occupancy, not
+airtime exhaustion and not relay overhead. That is on our side of the link, and it is the next
+thing to measure: the ground node's TX queue state and CSMA behaviour while the air node
+transmits at ~2 pkt/s.
+
+## Measurement note
+
+The ground node console stopped emitting text after the `hop_limit` write, so its queue state
+was not captured for the `hop_limit = 1` runs. The node is healthy and reachable
+(`2.8.0.2fae116`, mesh and UDP both working); only the console log is missing. That capture
+needs to be recovered before the arbitration question can be answered.
