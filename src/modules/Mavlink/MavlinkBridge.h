@@ -41,6 +41,13 @@ struct MavlinkBridgeStats {
     uint32_t reassemblyEvictions = 0;
     uint32_t uartTxStallDrops = 0;
     uint32_t radioStatusSent = 0;
+    uint32_t commandAckLocalIngress = 0;
+    uint32_t commandAckFramesQueued = 0;
+    uint32_t commandAckFramesSent = 0;
+    uint32_t commandAckOutboundDrops = 0;
+    uint32_t commandAckFramesReassembled = 0;
+    uint32_t commandAckInboundDrops = 0;
+    uint32_t commandAckLocalDelivery = 0;
     size_t inputHighWater = 0;
     size_t outputHighWater = 0;
 };
