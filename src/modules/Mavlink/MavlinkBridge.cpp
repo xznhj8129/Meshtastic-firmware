@@ -86,6 +86,10 @@ void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t 
     everActive = true;
     snoopSerialBytes(data, len, now);
     transport.ingestLocalBytes(data, len);
+    if (transport.hasOutbound() && !outboundPending) {
+        outboundPending = true;
+        outboundSinceMs = now;
+    }
     const auto &after = transport.getCounters();
     if (after.commandAckFramesQueued != before.commandAckFramesQueued) {
         LOG_INFO("MAVLink COMMAND_ACK transport queued count=%u",
@@ -99,8 +103,18 @@ void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t 
 
 bool MavlinkBridge::wantsMeshSend(uint32_t now) const
 {
-    (void)now;
-    return transport.hasOutbound();
+    if (!transport.hasOutbound())
+        return false;
+
+    // A full pack gains nothing from waiting.
+    if (transport.outboundCount() >= MavlinkMeshTransport::MAX_AGGREGATE_FRAMES)
+        return true;
+
+    // Without a recorded start the frame predates the window; do not strand it.
+    if (!outboundPending)
+        return true;
+
+    return (uint32_t)(now - outboundSinceMs) >= COALESCE_WINDOW_MS;
 }
 
 size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity)
@@ -110,13 +124,13 @@ size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity)
 
 void MavlinkBridge::commitMeshPayload(size_t len, uint32_t now)
 {
-    (void)now;
     const uint32_t ackSentBefore = transport.getCounters().commandAckFramesSent;
     if (transport.commitOutbound(len)) {
         stats.meshTxBytes += len;
         if (transport.getCounters().commandAckFramesSent != ackSentBefore)
             LOG_INFO("MAVLink COMMAND_ACK mesh transmission committed");
     }
+    restartCoalesceWindow(now);
 }
 
 void MavlinkBridge::dropCurrentMeshFrame()
@@ -125,6 +139,17 @@ void MavlinkBridge::dropCurrentMeshFrame()
     transport.dropOutbound();
     if (transport.getCounters().commandAckOutboundDrops != ackDropsBefore)
         LOG_WARN("MAVLink COMMAND_ACK mesh transmission dropped");
+    restartCoalesceWindow(millis());
+}
+
+void MavlinkBridge::restartCoalesceWindow(uint32_t now)
+{
+    if (transport.hasOutbound()) {
+        outboundPending = true;
+        outboundSinceMs = now;
+    } else {
+        outboundPending = false;
+    }
 }
 
 void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi, float rxSnr)

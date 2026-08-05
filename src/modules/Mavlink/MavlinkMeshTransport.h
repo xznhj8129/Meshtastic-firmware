@@ -77,6 +77,8 @@ class MavlinkMeshTransport
 
     bool hasOutbound() const { return txCount != 0; }
 
+    size_t outboundCount() const { return txCount; }
+
     size_t peekOutbound(uint8_t *out, size_t capacity) const
     {
         size_t framesPacked = 0;

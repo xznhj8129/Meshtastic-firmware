@@ -116,6 +116,11 @@ class MavlinkBridge
     static constexpr size_t MAX_FRAGMENT_DATA = MavlinkMeshTransport::MAX_FRAGMENT_DATA;
     static constexpr uint32_t UART_TX_STALL_MS = 500;
     static constexpr uint32_t RADIO_STATUS_INTERVAL_MS = 500;
+    // Hold briefly before transmitting so several frames can share one packet. Without this the
+    // send is issued the moment a frame is queued, the aggregate container finds exactly one
+    // frame waiting, and packing never engages. Sending starts early once a full pack is
+    // available, so the wait only applies while the payload is still filling.
+    static constexpr uint32_t COALESCE_WINDOW_MS = 250;
     static constexpr uint32_t ACTIVITY_WINDOW_MS = 10000;
     static constexpr uint32_t POSITION_THROTTLE_MS = 1000;
     static constexpr uint32_t GLOBAL_POS_FRESH_MS = 5000;
@@ -149,6 +154,7 @@ class MavlinkBridge
   private:
     void queueFrame(const mavlink_message_t &msg, uint32_t now);
     void flushPending(uint32_t now);
+    void restartCoalesceWindow(uint32_t now);
 
     void snoopSerialBytes(const uint8_t *data, size_t len, uint32_t now);
     void handleSnoopedMessage(const mavlink_message_t &msg, uint32_t now);
@@ -164,6 +170,9 @@ class MavlinkBridge
     size_t pendingLen = 0;
     size_t pendingOff = 0;
     uint32_t pendingSinceMs = 0;
+
+    uint32_t outboundSinceMs = 0;
+    bool outboundPending = false;
 
     uint32_t lastRadioStatusMs = 0;
     uint32_t lastActivityMs = 0;
