@@ -48,6 +48,7 @@ exec "${VENV_DIR}/bin/python" "${SCRIPT_DIR}/px4_sitl_mesh_test.py" \
     --target-sysid "${TARGET_SYSID:-${EXPECTED_SYSID:-1}}" \
     --target-compid "${TARGET_COMPID:-1}" \
     --max-rate-bps "${MAX_RATE_BPS:-1000}" \
+    --px4-mode "${PX4_MAVLINK_MODE:-iridium}" \
     --build-timeout "${BUILD_TIMEOUT:-1200}" \
     --warmup "${WARMUP_SECONDS:-5}" \
     --probe-attempts "${PROBE_ATTEMPTS:-${COMMAND_ATTEMPTS:-10}}" \

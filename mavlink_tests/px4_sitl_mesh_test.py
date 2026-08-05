@@ -272,6 +272,7 @@ class Px4Session:
         build_timeout: int,
         console_path: Path,
         log: EventLog,
+        px4_mode: str,
     ) -> None:
         self.px4_dir = px4_dir
         self.air_uart = air_uart
@@ -280,6 +281,7 @@ class Px4Session:
         self.build_timeout = build_timeout
         self.console_path = console_path
         self.log = log
+        self.px4_mode = px4_mode
         self.child: pexpect.spawn | None = None
         self.console: Any = None
 
@@ -358,9 +360,13 @@ class Px4Session:
         # is therefore not automatically a transport failure.
         self.run_and_log(
             f"mavlink start -d {self.air_uart} -b {self.air_baud} "
-            f"-m iridium -r {self.max_rate_bps} -Z"
+            f"-m {self.px4_mode} -r {self.max_rate_bps} -Z"
         )
         self.run_and_log(f"mavlink stream -d {self.air_uart} -s HIGH_LATENCY2 -r 0.5")
+        if self.px4_mode != "iridium":
+            # Every non-IRIDIUM mode adds STATUSTEXT at 20 Hz and 66 bytes. HEARTBEAT is also
+            # added and is a constant-rate stream that cannot be turned off.
+            self.run_and_log(f"mavlink stream -d {self.air_uart} -s STATUSTEXT -r 0")
         self.dump_status("startup")
 
     def stop(self) -> None:
@@ -455,8 +461,12 @@ def run_capture(endpoint: MavlinkUdpEndpoint, log: EventLog, args: argparse.Name
         # MAV_CMD_CONTROL_HIGH_LATENCY instead. This also keeps the ground node's UDP client
         # registration alive, which the heartbeat used to provide.
         if elapsed >= next_heartbeat:
-            log.write("probe_send", probe="control_high_latency_enable")
-            endpoint.send_control_high_latency(args.target_sysid, args.target_compid, True)
+            if args.px4_mode == "iridium":
+                log.write("probe_send", probe="control_high_latency_enable")
+                endpoint.send_control_high_latency(args.target_sysid, args.target_compid, True)
+            else:
+                # Non-IRIDIUM has no transmit gating, so behave like an ordinary GCS.
+                endpoint.send_heartbeat()
             next_heartbeat += 5.0
 
         while request_index < len(request_times) and elapsed >= request_times[request_index]:
@@ -547,6 +557,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-sysid", type=int, default=1)
     parser.add_argument("--target-compid", type=int, default=1)
     parser.add_argument("--max-rate-bps", type=int, default=1000)
+    parser.add_argument("--px4-mode", default="iridium")
     parser.add_argument("--build-timeout", type=int, default=1200)
     parser.add_argument("--warmup", type=float, default=5.0)
     parser.add_argument("--probe-attempts", type=int, default=10)
@@ -592,6 +603,7 @@ def main() -> int:
             args.build_timeout,
             px4_path,
             log,
+            args.px4_mode,
         )
         px4.start()
         endpoint = MavlinkUdpEndpoint(args.ground_host, args.ground_port, args.local_port, log)

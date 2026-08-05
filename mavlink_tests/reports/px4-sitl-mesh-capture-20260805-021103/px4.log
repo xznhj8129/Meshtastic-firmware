@@ -1,0 +1,574 @@
+[0/1] cd PX4-Autopilot/build/px4_sitl_sih/src/modules/simulation/simulator_sih && /usr/bin/cmake -E env PX4_SIM_MODEL=sihsim_quadx PX4_SIMULATOR=sihsim PX4-Autopilot/build/px4_sitl_sih/bin/px4
+
+______  __   __    ___ 
+| ___ \ \ \ / /   /   |
+| |_/ /  \ V /   / /| |
+|  __/   /   \  / /_| |
+| |     / /^\ \ \___  |
+\_|     \/   \/     |_/
+
+px4 starting.
+
+[0mINFO  [37m[px4] [0mstartup script: /bin/sh etc/init.d-posix/rcS 0[0m
+INFO  [init] found model autostart file as SYS_AUTOSTART=10040
+[0mINFO  [37m[param] [0mselected parameter default file parameters.bson[0m
+[0mINFO  [37m[param] [0mimporting from 'parameters.bson'[0m
+[0mINFO  [37m[parameters] [0mBSON document size 335 bytes, decoded 335 bytes (INT32:13, FLOAT:4)[0m
+[0mINFO  [37m[param] [0mselected parameter backup file parameters_backup.bson[0m
+COM_DL_LOSS_T set to 10
+COM_RC_LOSS_T set to 1
+COM_OF_LOSS_T set to 1
+COM_DISARM_PRFLT set to 10
+[0mINFO  [37m[dataman] [0mdata manager file './dataman' size is 1208528 bytes[0m
+INFO  [init] SIH simulator
+[0mINFO  [37m[simulator_sih] [0mSimulation loop with 250 Hz (4000 us sim time interval)[0m
+[0mINFO  [37m[simulator_sih] [0mSimulation with 1.0x speedup. Loop with (4000 us wall time interval)[0m
+[0mINFO  [37m[lockstep_scheduler] [0msetting initial absolute time to 4000 us[0m
+[0mINFO  [37m[commander] [0mLED: open /dev/led0 failed (22)[0m
+[0mINFO  [37m[tone_alarm] [0mhome set[0m
+[0mINFO  [37m[vision_target_estimator] [0mVTE for static target init[0m
+[0mINFO  [37m[uxrce_dds_client] [0minit UDP agent IP:127.0.0.1, port:8888[0m
+[0mINFO  [37m[mavlink] [0mmode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550[0m
+[0mINFO  [37m[mavlink] [0mmode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540[0m
+[0mINFO  [37m[mavlink] [0mmode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030[0m
+[0mINFO  [37m[mavlink] [0mmode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280[0m
+[0mINFO  [37m[mavlink] [0mmode: Custom, data rate: 400000 B/s on udp port 19450 remote port 19410[0m
+[0mINFO  [37m[logger] [0mlogger started (mode=all)[0m
+[0mINFO  [37m[logger] [0mMax log file size: 1024 MiB[0m
+[0mINFO  [37m[logger] [0mStart file log (type: full)[0m
+[0mINFO  [37m[logger] [0m[logger] ./log/2026-08-05/06_11_03.ulg	[0m
+[0mINFO  [37m[logger] [0mOpened full log file: ./log/2026-08-05/06_11_03.ulg[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[mavlink] [0mMAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)[0m
+[0mINFO  [37m[px4] [0mStartup script returned successfully[0m
+pxh> mavlink stop -u 18570
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sto[2Kpxh> mavlink stop[2Kpxh> mavlink stop [2Kpxh> mavlink stop -[2Kpxh> mavlink stop -u[2Kpxh> mavlink stop -u [2Kpxh> mavlink stop -u 1[2Kpxh> mavlink stop -u 18[2Kpxh> mavlink stop -u 185[2Kpxh> mavlink stop -u 1857[2Kpxh> mavlink stop -u 18570
+[0mINFO  [37m[mavlink] [0mexiting channel 0[0m
+pxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 150 -Z
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink star[2Kpxh> mavlink start[2Kpxh> mavlink start [2Kpxh> mavlink start -[2Kpxh> mavlink start -d[2Kpxh> mavlink start -d [2Kpxh> mavlink start -d /[2Kpxh> mavlink start -d /d[2Kpxh> mavlink start -d /de[2Kpxh> mavlink start -d /dev[2Kpxh> mavlink start -d /dev/[2Kpxh> mavlink start -d /dev/t[2Kpxh> mavlink start -d /dev/tt[2Kpxh> mavlink start -d /dev/tty[2Kpxh> mavlink start -d /dev/ttyU[2Kpxh> mavlink start -d /dev/ttyUS[2Kpxh> mavlink start -d /dev/ttyUSB[2Kpxh> mavlink start -d /dev/ttyUSB0[2Kpxh> mavlink start -d /dev/ttyUSB0 [2Kpxh> mavlink start -d /dev/ttyUSB0 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b[2Kpxh> mavlink start -d /dev/ttyUSB0 -b [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 5[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 576[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 5760[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m c[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cu[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cus[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m cust[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custo[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 1[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 15[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 150[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 150 [2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 150 -[2Kpxh> mavlink start -d /dev/ttyUSB0 -b 57600 -m custom -r 150 -Z
+[0mINFO  [37m[mavlink] [0mmode: Custom, data rate: 150 B/s on /dev/ttyUSB0 @ 57600B[0m
+pxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.5
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink str[2Kpxh> mavlink stre[2Kpxh> mavlink strea[2Kpxh> mavlink stream[2Kpxh> mavlink stream [2Kpxh> mavlink stream -[2Kpxh> mavlink stream -d[2Kpxh> mavlink stream -d [2Kpxh> mavlink stream -d /[2Kpxh> mavlink stream -d /d[2Kpxh> mavlink stream -d /de[2Kpxh> mavlink stream -d /dev[2Kpxh> mavlink stream -d /dev/[2Kpxh> mavlink stream -d /dev/t[2Kpxh> mavlink stream -d /dev/tt[2Kpxh> mavlink stream -d /dev/tty[2Kpxh> mavlink stream -d /dev/ttyU[2Kpxh> mavlink stream -d /dev/ttyUS[2Kpxh> mavlink stream -d /dev/ttyUSB[2Kpxh> mavlink stream -d /dev/ttyUSB0[2Kpxh> mavlink stream -d /dev/ttyUSB0 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s H[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HI[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIG[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_L[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LA[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LAT[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATE[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATEN[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENC[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s HIGH_LATENCY2 -r 0.5
+pxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT -r 0
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink str[2Kpxh> mavlink stre[2Kpxh> mavlink strea[2Kpxh> mavlink stream[2Kpxh> mavlink stream [2Kpxh> mavlink stream -[2Kpxh> mavlink stream -d[2Kpxh> mavlink stream -d [2Kpxh> mavlink stream -d /[2Kpxh> mavlink stream -d /d[2Kpxh> mavlink stream -d /de[2Kpxh> mavlink stream -d /dev[2Kpxh> mavlink stream -d /dev/[2Kpxh> mavlink stream -d /dev/t[2Kpxh> mavlink stream -d /dev/tt[2Kpxh> mavlink stream -d /dev/tty[2Kpxh> mavlink stream -d /dev/ttyU[2Kpxh> mavlink stream -d /dev/ttyUS[2Kpxh> mavlink stream -d /dev/ttyUSB[2Kpxh> mavlink stream -d /dev/ttyUSB0[2Kpxh> mavlink stream -d /dev/ttyUSB0 [2Kpxh> mavlink stream -d /dev/ttyUSB0 -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s S[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s ST[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STA[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STAT[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATU[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUS[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUST[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTE[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEX[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT -[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT -r[2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT -r [2Kpxh> mavlink stream -d /dev/ttyUSB0 -s STATUSTEXT -r 0
+pxh> mavlink status
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink stat[2Kpxh> mavlink statu[2Kpxh> mavlink status
+
+instance #0:
+	mavlink chan: #0
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 150 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	Received Messages:
+	  sysid:255, compid: 68, Total: 1 (lost: 0)
+	FTP enabled: NO, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: serial (/dev/ttyUSB0 @57600)
+
+instance #1:
+	mavlink chan: #1
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 4000000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14580, remote port: 14540)
+	Broadcast enabled: NO
+
+instance #2:
+	mavlink chan: #2
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 0.127
+	  tx rate max: 4000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14280, remote port: 14030)
+	Broadcast enabled: NO
+
+instance #3:
+	mavlink chan: #3
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Gimbal
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (13030, remote port: 13280)
+	Broadcast enabled: NO
+
+instance #4:
+	mavlink chan: #4
+	no radio status.
+	flow control: OFF
+	rates:
+	  tx: 0.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: UDP (19450, remote port: 19410)
+	Broadcast enabled: NO
+pxh> mavlink status streams
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink stat[2Kpxh> mavlink statu[2Kpxh> mavlink status[2Kpxh> mavlink status [2Kpxh> mavlink status s[2Kpxh> mavlink status st[2Kpxh> mavlink status str[2Kpxh> mavlink status stre[2Kpxh> mavlink status strea[2Kpxh> mavlink status stream[2Kpxh> mavlink status streams
+
+instance #0:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	COMMAND_LONG                  unlimited       
+	HIGH_LATENCY2                   0.50 (0.500)    54
+
+instance #1:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	TIMESYNC                       10.00 (10.000)   30
+	CAMERA_TRIGGER                unlimited       
+	HIGHRES_IMU                    50.00 (50.000)   75
+	LOCAL_POSITION_NED             30.00 (30.000)   40
+	ATTITUDE                      100.00 (100.000)  40
+	ALTITUDE                       10.00 (10.000)   44
+	DISTANCE_SENSOR                10.00 (10.000)   51
+	ESC_INFO                       10.00 (10.000)  174
+	ESC_STATUS                     10.00 (10.000)  207
+	ESC_EEPROM                    unlimited       
+	MOUNT_ORIENTATION              10.00 (10.000) 
+	OBSTACLE_DISTANCE              10.00 (10.000) 
+	ODOMETRY                       30.00 (30.000)  245
+	ADSB_VEHICLE                    5.00 (5.000)    50
+	ATTITUDE_QUATERNION            50.00 (50.000)   60
+	ATTITUDE_TARGET                10.00 (10.000)   49
+	AVAILABLE_MODES                 0.30 (0.300)  
+	BATTERY_STATUS                  0.50 (0.500)    66
+	CAMERA_IMAGE_CAPTURED         unlimited       
+	CURRENT_MODE                    0.50 (0.500)    21
+	EFI_STATUS                      2.00 (2.000)  
+	ESTIMATOR_STATUS                1.00 (1.000)    54
+	ESTIMATOR_SENSOR_FUSION_STATUS  1.00 (1.000)    66
+	EXTENDED_SYS_STATE              5.00 (5.000)    14
+	GIMBAL_DEVICE_ATTITUDE_STATUS   5.00 (5.000)  
+	GIMBAL_DEVICE_SET_ATTITUDE      5.00 (5.000)  
+	GIMBAL_MANAGER_STATUS           0.50 (0.500)  
+	GLOBAL_POSITION_INT            50.00 (50.000) 
+	GNSS_INTEGRITY                  1.00 (1.000)    29
+	GPS2_RAW                      unlimited       
+	GPS_GLOBAL_ORIGIN               1.00 (1.000)    32
+	GPS_RAW_INT                   unlimited         64
+	GPS_STATUS                      1.00 (1.000)  
+	HOME_POSITION                   0.50 (0.500)    72
+	HYGROMETER_SENSOR               1.00 (1.000)  
+	NAV_CONTROLLER_OUTPUT          10.00 (10.000) 
+	OPEN_DRONE_ID_LOCATION          1.00 (1.000)    71
+	OPEN_DRONE_ID_SYSTEM            1.00 (1.000)    66
+	OPEN_DRONE_ID_ARM_STATUS        1.00 (1.000)  
+	OPTICAL_FLOW_RAD               10.00 (10.000) 
+	ORBIT_EXECUTION_STATUS          5.00 (5.000)  
+	PING                            1.00 (1.000)    26
+	POSITION_TARGET_GLOBAL_INT     10.00 (10.000)   63
+	POSITION_TARGET_LOCAL_NED      10.00 (10.000)   63
+	RAW_RPM                         5.00 (5.000)  
+	RC_CHANNELS                    20.00 (20.000) 
+	SCALED_PRESSURE                 1.00 (1.000)    28
+	SERVO_OUTPUT_RAW_0             10.00 (10.000)   49
+	SYS_STATUS                      5.00 (5.000)    55
+	SYSTEM_TIME                     1.00 (1.000)    24
+	TIME_ESTIMATE_TO_TARGET         1.00 (1.000)    32
+	VFR_HUD                        10.00 (10.000)   32
+	VIBRATION                       0.50 (0.500)    44
+	WIND_COV                       10.00 (10.000) 
+	DEBUG                          10.00 (10.000) 
+	DEBUG_FLOAT_ARRAY              10.00 (10.000) 
+	DEBUG_VECT                     10.00 (10.000) 
+	NAMED_VALUE_FLOAT              10.00 (10.000) 
+	LINK_NODE_STATUS                1.00 (1.000)    48
+	FIGURE_EIGHT_EXECUTION_STATUS   5.00 (5.000)  
+	FUEL_STATUS                     1.00 (1.000)  
+
+instance #2:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (2.542)    66
+	COMMAND_LONG                  unlimited       
+	TIMESYNC                       10.00 (1.271)    30
+	CAMERA_TRIGGER                unlimited       
+	HIGHRES_IMU                    50.00 (6.355)    75
+	LOCAL_POSITION_NED             30.00 (3.813)    40
+	ATTITUDE                      100.00 (12.709)   40
+	ALTITUDE                       10.00 (1.271)    44
+	DISTANCE_SENSOR                10.00 (1.271)    51
+	ESC_INFO                       10.00 (1.271)   174
+	ESC_STATUS                     10.00 (1.271)   207
+	ESC_EEPROM                    unlimited       
+	MOUNT_ORIENTATION              10.00 (1.271)  
+	OBSTACLE_DISTANCE              10.00 (1.271)  
+	ODOMETRY                       30.00 (3.813)   245
+	ADSB_VEHICLE                    5.00 (5.000)    50
+	ATTITUDE_QUATERNION            50.00 (6.355)    60
+	ATTITUDE_TARGET                10.00 (1.271)    49
+	AVAILABLE_MODES                 0.30 (0.038)  
+	BATTERY_STATUS                  0.50 (0.064)    66
+	CAMERA_IMAGE_CAPTURED         unlimited       
+	CURRENT_MODE                    0.50 (0.064)    21
+	EFI_STATUS                      2.00 (0.254)  
+	ESTIMATOR_STATUS                1.00 (0.127)    54
+	ESTIMATOR_SENSOR_FUSION_STATUS  1.00 (0.127)    66
+	EXTENDED_SYS_STATE              5.00 (0.635)    14
+	GIMBAL_DEVICE_ATTITUDE_STATUS   5.00 (0.635)  
+	GIMBAL_DEVICE_SET_ATTITUDE      5.00 (0.635)  
+	GIMBAL_MANAGER_STATUS           0.50 (0.064)  
+	GLOBAL_POSITION_INT            50.00 (6.355)  
+	GNSS_INTEGRITY                  1.00 (0.127)    29
+	GPS2_RAW                      unlimited       
+	GPS_GLOBAL_ORIGIN               1.00 (0.127)    32
+	GPS_RAW_INT                   unlimited         64
+	GPS_STATUS                      1.00 (0.127)  
+	HOME_POSITION                   0.50 (0.064)    72
+	HYGROMETER_SENSOR               1.00 (0.127)  
+	NAV_CONTROLLER_OUTPUT          10.00 (1.271)  
+	OPEN_DRONE_ID_LOCATION          1.00 (0.127)    71
+	OPEN_DRONE_ID_SYSTEM            1.00 (0.127)    66
+	OPEN_DRONE_ID_ARM_STATUS        1.00 (0.127)  
+	OPTICAL_FLOW_RAD               10.00 (1.271)  
+	ORBIT_EXECUTION_STATUS          5.00 (0.635)  
+	PING                            1.00 (1.000)    26
+	POSITION_TARGET_GLOBAL_INT     10.00 (1.271)    63
+	POSITION_TARGET_LOCAL_NED      10.00 (1.271)    63
+	RAW_RPM                         5.00 (0.635)  
+	RC_CHANNELS                    20.00 (2.542)  
+	SCALED_PRESSURE                 1.00 (0.127)    28
+	SERVO_OUTPUT_RAW_0             10.00 (1.271)    49
+	SYS_STATUS                      5.00 (0.635)    55
+	SYSTEM_TIME                     1.00 (0.127)    24
+	TIME_ESTIMATE_TO_TARGET         1.00 (0.127)    32
+	VFR_HUD                        10.00 (1.271)    32
+	VIBRATION                       0.50 (0.064)    44
+	WIND_COV                       10.00 (1.271)  
+	DEBUG                          10.00 (1.271)  
+	DEBUG_FLOAT_ARRAY              10.00 (1.271)  
+	DEBUG_VECT                     10.00 (1.271)  
+	NAMED_VALUE_FLOAT              10.00 (1.271)  
+	LINK_NODE_STATUS                1.00 (0.127)    48
+	FIGURE_EIGHT_EXECUTION_STATUS   5.00 (0.635)  
+	FUEL_STATUS                     1.00 (0.127)  
+
+instance #3:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	AUTOPILOT_STATE_FOR_GIMBAL_DEVICE 20.00 (20.000)   69
+	GIMBAL_DEVICE_SET_ATTITUDE     20.00 (20.000) 
+
+instance #4:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	HIL_ACTUATOR_CONTROLS         200.00 (200.000)  93
+	HIL_STATE_QUATERNION           25.00 (25.000)   76
+pxh> mavlink status
+[33mWARN  [37m[health_and_arming_checks] [33mPreflight Fail: no heading reference[0m
+[0mINFO  [37m[commander] [0m[32mReady for takeoff![0m[0m
+[0mINFO  [37m[commander] [0mConnection to ground station lost	[0m
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink stat[2Kpxh> mavlink statu[2Kpxh> mavlink status
+
+instance #0:
+	mavlink chan: #0
+	type:		RADIO Link
+	  rssi:		90
+	  remote rssi:	255
+	  txbuf:	75
+	  noise:	77
+	  remote noise:	255
+	  rx errors:	0
+	  fixed:	0
+	flow control: OFF
+	rates:
+	  tx: 38.7 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 150 B/s
+	  rx: 41.7 B/s
+	  rx loss: 0.0%
+	Received Messages:
+	  sysid:255, compid: 68, Total: 74 (lost: 0)
+	    msgid:  109, Rate:  1.9 Hz, last 0.28s ago
+	  sysid:255, compid:190, Total: 1 (lost: 0)
+	FTP enabled: NO, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: serial (/dev/ttyUSB0 @57600)
+
+instance #1:
+	mavlink chan: #1
+	type:		GENERIC LINK OR RADIO
+	flow control: OFF
+	rates:
+	  tx: 25251.0 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 4000000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14580, remote port: 14540)
+	Broadcast enabled: NO
+
+instance #2:
+	mavlink chan: #2
+	type:		GENERIC LINK OR RADIO
+	flow control: OFF
+	rates:
+	  tx: 3447.2 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 0.119
+	  tx rate max: 4000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Onboard
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (14280, remote port: 14030)
+	Broadcast enabled: NO
+
+instance #3:
+	mavlink chan: #3
+	type:		GENERIC LINK OR RADIO
+	flow control: OFF
+	rates:
+	  tx: 1346.6 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Gimbal
+	Forwarding: On
+	MAVLink version: 2
+	transport protocol: UDP (13030, remote port: 13280)
+	Broadcast enabled: NO
+
+instance #4:
+	mavlink chan: #4
+	type:		GENERIC LINK OR RADIO
+	flow control: OFF
+	rates:
+	  tx: 13192.2 B/s
+	  txerr: 0.0 B/s
+	  tx rate mult: 1.000
+	  tx rate max: 400000 B/s
+	  rx: 0.0 B/s
+	  rx loss: 0.0%
+	FTP enabled: YES, TX enabled: YES
+	mode: Custom
+	Forwarding: Off
+	MAVLink version: 2
+	transport protocol: UDP (19450, remote port: 19410)
+	Broadcast enabled: NO
+pxh> mavlink status streams
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sta[2Kpxh> mavlink stat[2Kpxh> mavlink statu[2Kpxh> mavlink status[2Kpxh> mavlink status [2Kpxh> mavlink status s[2Kpxh> mavlink status st[2Kpxh> mavlink status str[2Kpxh> mavlink status stre[2Kpxh> mavlink status strea[2Kpxh> mavlink status stream[2Kpxh> mavlink status streams
+
+instance #0:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	COMMAND_LONG                  unlimited       
+	HIGH_LATENCY2                   0.50 (0.500)    54
+
+instance #1:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	TIMESYNC                       10.00 (10.000)   30
+	CAMERA_TRIGGER                unlimited       
+	HIGHRES_IMU                    50.00 (50.000)   75
+	LOCAL_POSITION_NED             30.00 (30.000)   40
+	ATTITUDE                      100.00 (100.000)  40
+	ALTITUDE                       10.00 (10.000)   44
+	DISTANCE_SENSOR                10.00 (10.000)   51
+	ESC_INFO                       10.00 (10.000)  174
+	ESC_STATUS                     10.00 (10.000)  207
+	ESC_EEPROM                    unlimited       
+	MOUNT_ORIENTATION              10.00 (10.000) 
+	OBSTACLE_DISTANCE              10.00 (10.000) 
+	ODOMETRY                       30.00 (30.000)  245
+	ADSB_VEHICLE                    5.00 (5.000)    50
+	ATTITUDE_QUATERNION            50.00 (50.000)   60
+	ATTITUDE_TARGET                10.00 (10.000)   49
+	AVAILABLE_MODES                 0.30 (0.300)  
+	BATTERY_STATUS                  0.50 (0.500)    66
+	CAMERA_IMAGE_CAPTURED         unlimited       
+	CURRENT_MODE                    0.50 (0.500)    21
+	EFI_STATUS                      2.00 (2.000)  
+	ESTIMATOR_STATUS                1.00 (1.000)    54
+	ESTIMATOR_SENSOR_FUSION_STATUS  1.00 (1.000)    66
+	EXTENDED_SYS_STATE              5.00 (5.000)    14
+	GIMBAL_DEVICE_ATTITUDE_STATUS   5.00 (5.000)  
+	GIMBAL_DEVICE_SET_ATTITUDE      5.00 (5.000)  
+	GIMBAL_MANAGER_STATUS           0.50 (0.500)  
+	GLOBAL_POSITION_INT            50.00 (50.000)   40
+	GNSS_INTEGRITY                  1.00 (1.000)    29
+	GPS2_RAW                      unlimited       
+	GPS_GLOBAL_ORIGIN               1.00 (1.000)    32
+	GPS_RAW_INT                   unlimited         64
+	GPS_STATUS                      1.00 (1.000)  
+	HOME_POSITION                   0.50 (0.500)    72
+	HYGROMETER_SENSOR               1.00 (1.000)  
+	NAV_CONTROLLER_OUTPUT          10.00 (10.000) 
+	OPEN_DRONE_ID_LOCATION          1.00 (1.000)    71
+	OPEN_DRONE_ID_SYSTEM            1.00 (1.000)    66
+	OPEN_DRONE_ID_ARM_STATUS        1.00 (1.000)  
+	OPTICAL_FLOW_RAD               10.00 (10.000) 
+	ORBIT_EXECUTION_STATUS          5.00 (5.000)  
+	PING                            1.00 (1.000)    26
+	POSITION_TARGET_GLOBAL_INT     10.00 (10.000)   63
+	POSITION_TARGET_LOCAL_NED      10.00 (10.000)   63
+	RAW_RPM                         5.00 (5.000)  
+	RC_CHANNELS                    20.00 (20.000) 
+	SCALED_PRESSURE                 1.00 (1.000)    28
+	SERVO_OUTPUT_RAW_0             10.00 (10.000)   49
+	SYS_STATUS                      5.00 (5.000)    55
+	SYSTEM_TIME                     1.00 (1.000)    24
+	TIME_ESTIMATE_TO_TARGET         1.00 (1.000)    32
+	VFR_HUD                        10.00 (10.000)   32
+	VIBRATION                       0.50 (0.500)    44
+	WIND_COV                       10.00 (10.000) 
+	DEBUG                          10.00 (10.000) 
+	DEBUG_FLOAT_ARRAY              10.00 (10.000) 
+	DEBUG_VECT                     10.00 (10.000) 
+	NAMED_VALUE_FLOAT              10.00 (10.000) 
+	LINK_NODE_STATUS                1.00 (1.000)    48
+	FIGURE_EIGHT_EXECUTION_STATUS   5.00 (5.000)  
+	FUEL_STATUS                     1.00 (1.000)  
+
+instance #2:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (2.379)    66
+	COMMAND_LONG                  unlimited       
+	TIMESYNC                       10.00 (1.189)    30
+	CAMERA_TRIGGER                unlimited       
+	HIGHRES_IMU                    50.00 (5.946)    75
+	LOCAL_POSITION_NED             30.00 (3.568)    40
+	ATTITUDE                      100.00 (11.893)   40
+	ALTITUDE                       10.00 (1.189)    44
+	DISTANCE_SENSOR                10.00 (1.189)    51
+	ESC_INFO                       10.00 (1.189)   174
+	ESC_STATUS                     10.00 (1.189)   207
+	ESC_EEPROM                    unlimited       
+	MOUNT_ORIENTATION              10.00 (1.189)  
+	OBSTACLE_DISTANCE              10.00 (1.189)  
+	ODOMETRY                       30.00 (3.568)   245
+	ADSB_VEHICLE                    5.00 (5.000)    50
+	ATTITUDE_QUATERNION            50.00 (5.946)    60
+	ATTITUDE_TARGET                10.00 (1.189)    49
+	AVAILABLE_MODES                 0.30 (0.036)  
+	BATTERY_STATUS                  0.50 (0.059)    66
+	CAMERA_IMAGE_CAPTURED         unlimited       
+	CURRENT_MODE                    0.50 (0.059)    21
+	EFI_STATUS                      2.00 (0.238)  
+	ESTIMATOR_STATUS                1.00 (0.119)    54
+	ESTIMATOR_SENSOR_FUSION_STATUS  1.00 (0.119)    66
+	EXTENDED_SYS_STATE              5.00 (0.595)    14
+	GIMBAL_DEVICE_ATTITUDE_STATUS   5.00 (0.595)  
+	GIMBAL_DEVICE_SET_ATTITUDE      5.00 (0.595)  
+	GIMBAL_MANAGER_STATUS           0.50 (0.059)  
+	GLOBAL_POSITION_INT            50.00 (5.946)    40
+	GNSS_INTEGRITY                  1.00 (0.119)    29
+	GPS2_RAW                      unlimited       
+	GPS_GLOBAL_ORIGIN               1.00 (0.119)    32
+	GPS_RAW_INT                   unlimited         64
+	GPS_STATUS                      1.00 (0.119)  
+	HOME_POSITION                   0.50 (0.059)    72
+	HYGROMETER_SENSOR               1.00 (0.119)  
+	NAV_CONTROLLER_OUTPUT          10.00 (1.189)  
+	OPEN_DRONE_ID_LOCATION          1.00 (0.119)    71
+	OPEN_DRONE_ID_SYSTEM            1.00 (0.119)    66
+	OPEN_DRONE_ID_ARM_STATUS        1.00 (0.119)  
+	OPTICAL_FLOW_RAD               10.00 (1.189)  
+	ORBIT_EXECUTION_STATUS          5.00 (0.595)  
+	PING                            1.00 (1.000)    26
+	POSITION_TARGET_GLOBAL_INT     10.00 (1.189)    63
+	POSITION_TARGET_LOCAL_NED      10.00 (1.189)    63
+	RAW_RPM                         5.00 (0.595)  
+	RC_CHANNELS                    20.00 (2.379)  
+	SCALED_PRESSURE                 1.00 (0.119)    28
+	SERVO_OUTPUT_RAW_0             10.00 (1.189)    49
+	SYS_STATUS                      5.00 (0.595)    55
+	SYSTEM_TIME                     1.00 (0.119)    24
+	TIME_ESTIMATE_TO_TARGET         1.00 (0.119)    32
+	VFR_HUD                        10.00 (1.189)    32
+	VIBRATION                       0.50 (0.059)    44
+	WIND_COV                       10.00 (1.189)  
+	DEBUG                          10.00 (1.189)  
+	DEBUG_FLOAT_ARRAY              10.00 (1.189)  
+	DEBUG_VECT                     10.00 (1.189)  
+	NAMED_VALUE_FLOAT              10.00 (1.189)  
+	LINK_NODE_STATUS                1.00 (0.119)    48
+	FIGURE_EIGHT_EXECUTION_STATUS   5.00 (0.595)  
+	FUEL_STATUS                     1.00 (0.119)  
+
+instance #3:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	AUTOPILOT_STATE_FOR_GIMBAL_DEVICE 20.00 (20.000)   69
+	GIMBAL_DEVICE_SET_ATTITUDE     20.00 (20.000) 
+
+instance #4:
+	Name                Rate Config (current) [Hz] Message Size (if active) [B]
+	HEARTBEAT                       1.00 (1.000)    21
+	STATUSTEXT                     20.00 (20.000)   66
+	COMMAND_LONG                  unlimited       
+	HIL_ACTUATOR_CONTROLS         200.00 (200.000)  93
+	HIL_STATE_QUATERNION           25.00 (25.000)   76
+pxh> mavlink stop -d /dev/ttyUSB0
+[2Kpxh> m[2Kpxh> ma[2Kpxh> mav[2Kpxh> mavl[2Kpxh> mavli[2Kpxh> mavlin[2Kpxh> mavlink[2Kpxh> mavlink [2Kpxh> mavlink s[2Kpxh> mavlink st[2Kpxh> mavlink sto[2Kpxh> mavlink stop[2Kpxh> mavlink stop [2Kpxh> mavlink stop -[2Kpxh> mavlink stop -d[2Kpxh> mavlink stop -d [2Kpxh> mavlink stop -d /[2Kpxh> mavlink stop -d /d[2Kpxh> mavlink stop -d /de[2Kpxh> mavlink stop -d /dev[2Kpxh> mavlink stop -d /dev/[2Kpxh> mavlink stop -d /dev/t[2Kpxh> mavlink stop -d /dev/tt[2Kpxh> mavlink stop -d /dev/tty[2Kpxh> mavlink stop -d /dev/ttyU[2Kpxh> mavlink stop -d /dev/ttyUS[2Kpxh> mavlink stop -d /dev/ttyUSB[2Kpxh> mavlink stop -d /dev/ttyUSB0
+[0mINFO  [37m[mavlink] [0mexiting channel 0[0m
+pxh> shutdown
+[2Kpxh> s[2Kpxh> sh[2Kpxh> shu[2Kpxh> shut[2Kpxh> shutd[2Kpxh> shutdo[2Kpxh> shutdow[2Kpxh> shutdown
+Exiting NOW.

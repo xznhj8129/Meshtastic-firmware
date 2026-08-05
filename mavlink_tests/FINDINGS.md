@@ -365,3 +365,55 @@ are not stream-table driven. PX4 throttled what it could and the rest went out r
 Consequence for the enforcement question: a working signalling channel PX4 honours already
 exists. What is missing is any way to make it bind on the traffic that actually overwhelms the
 link. An ingress-rate warning is therefore a diagnostic for local logs, not a control input.
+
+# Non-high-latency mode: measured, and not viable on this link
+
+Captures `20260805-021103` (57600 baud) and `20260805-025415` (9600 baud), `-m custom`,
+`STATUSTEXT` disabled, PX4 rate limit 150 B/s, `hop_limit` 1. Use
+`mavlink_tests/analyze_capture.py <report>` to reproduce the breakdown.
+
+## What PX4 sends when you ask for one 0.5 Hz stream
+
+| frame | rate | share of mesh traffic | source |
+| --- | ---: | ---: | --- |
+| `MISSION_CURRENT` | 0.94/s | 30% | `MavlinkMissionManager::_slow_rate_limiter{1000*1000}` |
+| `HEARTBEAT` | 0.91/s | 30% | `configure_stream("HEARTBEAT", 1.0f)`, mandatory |
+| `CURRENT_MODE` (411) | 0.30/s | 10% | `configure_stream_local("CURRENT_MODE", 0.5f)` |
+| `AVAILABLE_MODES` (410) | 0.26/s | 10% | `configure_stream_local("AVAILABLE_MODES", 0.3f)` |
+| `HIGH_LATENCY2` | 0.44/s | 15% | the only thing requested |
+
+We asked for 0.5 Hz. The measured floor is **2.8 frames/s**, matching the sum of the
+mandatory rates exactly. 85% of the traffic was never requested.
+
+## Every lever, and why each fails
+
+- **`mavlink stream -r 0`**: `HEARTBEAT` is documented in-source as a constant-rate stream whose
+  rate is never adjusted. `MISSION_CURRENT` is not a stream at all, so there is nothing to
+  address; it is a hardcoded 1 Hz rate limiter in the mission manager, sending a waypoint
+  sequence number for a vehicle with no mission loaded.
+- **`-r` data rate**: scales rate-configurable streams only. The mandatory traffic ignores it.
+  Measured at 150 B/s with no effect on the floor.
+- **UART baud**: PX4 rejects anything below 9600 (`_baudrate < 9600` in the argument parser),
+  and 9600 is 960 B/s against ~112 B/s offered, so the UART never becomes the bottleneck.
+  Measured at 9600 and 57600: identical, 2.17 vs 2.03 air packets/s. There is no usable setting
+  between rejected and ineffective.
+
+## Does it settle, or lock up?
+
+It settles immediately and stays locked, in an asymmetric steady state.
+
+```text
+downlink  stable and regular from ~t=17s, ~2.9 frames/s, ~120 B/s
+uplink    dead: ground node sent ONE own packet in 42s, 65 TX-queue-full rejections
+commands  0 of 20 reached PX4, in every non-HL run
+```
+
+The air node transmits ~2.1 packets/s at ~106 ms each, roughly 21 to 30% duty, and never goes
+idle. The ground node cannot win arbitration often enough to clear its queue. This is not a
+transient that recovers; the downlink is healthy throughout while the uplink never opens.
+
+## Conclusion
+
+Non-high-latency operation is not achievable on this link without patching PX4. The mandatory
+floor alone consumes the channel. `-m iridium` works precisely because it is the only mode that
+drops those streams, which is also why it cannot return `COMMAND_ACK`.
