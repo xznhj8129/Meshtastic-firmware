@@ -120,7 +120,7 @@ class MavlinkBridge
     // send is issued the moment a frame is queued, the aggregate container finds exactly one
     // frame waiting, and packing never engages. Sending starts early once a full pack is
     // available, so the wait only applies while the payload is still filling.
-    static constexpr uint32_t COALESCE_WINDOW_MS = 250;
+    static constexpr uint32_t COALESCE_WINDOW_MS = 50;
     static constexpr uint32_t ACTIVITY_WINDOW_MS = 10000;
     static constexpr uint32_t POSITION_THROTTLE_MS = 1000;
     static constexpr uint32_t GLOBAL_POS_FRESH_MS = 5000;

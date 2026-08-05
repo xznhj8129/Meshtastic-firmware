@@ -290,3 +290,51 @@ probes are themselves acknowledged (`2600` appears 12 times in the uLog), confir
 
 `COMMAND_ACK` is still absent, and every uLog record still carries `from_external=0`. No GCS
 behaviour affects that branch. The suppression is structural, as recorded above.
+
+# Open design question: enforcing the link profile
+
+The link's constraints are known to the Meshtastic node, but the autopilot's MAVLink mode is
+configured out of band on the PX4 side. Nothing currently enforces it. Measured consequence of
+getting it wrong: 0 of 20 commands delivered.
+
+## Sketch
+
+A serial-module sub-option, set through the normal config path so the CLI exposes it. Enum, not
+a bool, because non-high-latency operation is expected to be worked out later:
+
+```text
+serial.mavlink_link_profile
+  UNSET          (0)  current behaviour, bridge asserts nothing
+  HIGH_LATENCY   (1)  bridge asserts high-latency operation to the local autopilot
+  ...                 room for a normal/constrained profile once one is characterised
+```
+
+Under `HIGH_LATENCY` the bridge would periodically emit
+`MAV_CMD_CONTROL_HIGH_LATENCY(enable=1)` to the locally attached autopilot, using the sysid and
+compid already learned from its heartbeat, **written to the local UART only and never
+encapsulated for the mesh**.
+
+This costs one small frame every few seconds on a wire that is not the constrained link.
+
+## The part that does not work, stated plainly
+
+Asserting the command is not sufficient to enforce the profile. PX4 disables IRIDIUM
+transmission whenever `gcs_connection_lost` is false, and that branch ignores the commanded
+flag. So a third-party GCS that heartbeats normally will silence the vehicle no matter what the
+bridge asserts. Fully enforcing it would require the bridge to withhold `HEARTBEAT` frames from
+the local autopilot.
+
+That is message filtering, and it contradicts a stated principle of this bridge: it transports
+MAVLink, it does not maintain a whitelist or decide which services are permitted. Adding
+direction- and type-specific filtering to win a PX4 mode argument is a real architectural
+change, not a tweak.
+
+So the honest position: a toggle can *assert* the profile, it cannot *enforce* it without
+crossing that line. The choice belongs to whoever owns the architecture.
+
+## Cheaper middle ground
+
+The bridge already counts frames. It could log a rate warning when sustained local ingress
+exceeds what the current LoRa preset can carry, naming the offending rate. That is diagnostic
+rather than filtering, it would have made the root cause obvious within one run instead of
+several days, and it commits to nothing architecturally.
