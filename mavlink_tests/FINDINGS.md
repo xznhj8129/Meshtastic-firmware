@@ -97,7 +97,39 @@ The next-phase harness now:
 - shortens the focused run after the command response arrives instead of waiting the full former 240-second timeout;
 - continues to use incremental PX4 make without cleaning either PX4 or PlatformIO build state.
 
-No embedded router source was changed in this phase. The already-flashed firmware can be reused for the next run.
+## Embedded ACK trace
+
+The firmware now adds narrow, event-only tracing for `COMMAND_ACK` without changing routing, queue sizes, scheduling, flow control, build definitions, or dependencies.
+
+The expected trace boundaries are:
+
+```text
+MAVLink COMMAND_ACK local ingress
+MAVLink COMMAND_ACK transport queued
+MAVLink COMMAND_ACK mesh transmission committed
+MAVLink COMMAND_ACK mesh reassembled
+MAVLink COMMAND_ACK local endpoint delivered
+```
+
+Drop-only markers identify outbound queue loss, mesh-send drop, inbound queue loss, or local endpoint stall.
+
+Transport counters now separately record:
+
+- ACK frames queued from a local endpoint;
+- ACK frames fully committed to Meshtastic;
+- ACK outbound drops;
+- ACK frames reassembled from Meshtastic;
+- ACK inbound drops;
+- ACK frames delivered to the local UART/UDP endpoint.
+
+This trace requires a normal incremental firmware rebuild and reflash of the two nodes. It does **not** require or justify:
+
+- `pio run -t clean`;
+- deleting `.pio/build`;
+- touching PlatformIO configuration or variants;
+- changing dependencies or submodules;
+- running native/coverage builds;
+- rebuilding PX4 separately.
 
 ## Interpretation of the next run
 
@@ -107,10 +139,24 @@ control-command ACK present
     -> command-specific PX4 behavior
 
 both ACKs absent
-    -> shared PX4 serial ACK path or downstream message-ID-77 path
+no air-node local-ingress marker
+    -> ACK never reached the air-node UART
 
-ACK observed by verifier
-    -> strict path resolved without router changes
+local ingress present
+queue/send marker missing
+    -> air-node transport boundary
+
+mesh send present
+ground reassembly missing
+    -> Meshtastic transport boundary
+
+ground reassembly present
+local delivery missing
+    -> ground endpoint-delivery boundary
+
+local delivery present
+verifier sees no ACK
+    -> UDP/verifier parsing boundary
 ```
 
-Only after this result should temporary embedded ACK tracing be added, and only at the first boundary that still needs localization.
+Only the first missing marker should drive the next correction.
