@@ -338,3 +338,30 @@ The bridge already counts frames. It could log a rate warning when sustained loc
 exceeds what the current LoRa preset can carry, naming the offending rate. That is diagnostic
 rather than filtering, it would have made the root cause obvious within one run instead of
 several days, and it commits to nothing architecturally.
+
+## Correction: PX4 does receive our RADIO_STATUS
+
+An earlier reading of `no radio status` in `px4.log` was wrong. Those lines come from the
+startup dump, before any RADIO_STATUS has arrived, and from instances #1 to #4, which are UDP
+and legitimately have no radio. The mid-run dump for the serial instance shows:
+
+```text
+instance #0:
+	  rssi:		89
+	  remote rssi:	255
+	  txbuf:	100
+	  tx rate mult: 1.000
+```
+
+`txbuf` is the bridge's `outboundFreePercent()` and `rssi` is the bridge's mapping, so the
+backpressure loop works end to end: air node, PX4 UART, PX4 parse, PX4 rate scaling. This also
+explains `tx rate mult: 0.721` in the saturated capture — PX4 was throttling itself on our
+backpressure, correctly.
+
+It was not enough because `tx rate mult` scales rate-configurable streams only. The flood was
+`HEARTBEAT` (constant rate, never adjusted), plus `MISSION_CURRENT` and the mode messages, which
+are not stream-table driven. PX4 throttled what it could and the rest went out regardless.
+
+Consequence for the enforcement question: a working signalling channel PX4 honours already
+exists. What is missing is any way to make it bind on the traffic that actually overwhelms the
+link. An ingress-rate warning is therefore a diagnostic for local logs, not a control input.
