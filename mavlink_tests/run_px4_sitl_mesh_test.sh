@@ -9,7 +9,7 @@ PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
     echo "Missing ${ENV_FILE}" >&2
-    echo "Copy ${SCRIPT_DIR}/px4_sitl_mesh_test.env.example and fill in the three required values." >&2
+    echo "Copy ${SCRIPT_DIR}/px4_sitl_mesh_test.env.example and fill in the required values." >&2
     exit 2
 fi
 
@@ -50,7 +50,8 @@ exec "${VENV_DIR}/bin/python" "${SCRIPT_DIR}/px4_sitl_mesh_test.py" \
     --expected-sysid "${EXPECTED_SYSID:-1}" \
     --max-rate-bps "${MAX_RATE_BPS:-1000}" \
     --build-timeout "${BUILD_TIMEOUT:-1200}" \
-    --test-timeout "${TEST_TIMEOUT:-240}" \
+    --test-timeout "${TEST_TIMEOUT:-120}" \
     --command-attempts "${COMMAND_ATTEMPTS:-3}" \
+    --ack-grace "${ACK_GRACE:-25}" \
     --report-root "${REPORT_ROOT:-mavlink_tests/reports}" \
     "$@"
