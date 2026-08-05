@@ -1,0 +1,12 @@
+PX4 ulog extract for capture px4-sitl-mesh-capture-20260804-231359
+Source: 03_14_00.ulg (~9 MB, in the PX4 build tree). Only this extract is committed.
+
+vehicle_command: 1 records
+  t=    0.124s command= 211 target_system=  0 target_component=  0 from_external=0
+vehicle_command_ack: 2 records
+  t=    0.224s command= 211 target_system=  0 target_component=  1 from_external=0 result=5
+  t=    1.224s command= 211 target_system=  0 target_component=  1 from_external=0 result=0
+
+Neither command 512 (MAV_CMD_REQUEST_MESSAGE) nor command 511
+(MAV_CMD_SET_MESSAGE_INTERVAL) appears. None of the 20 transmitted
+commands reached PX4 during this capture. Command 211 is PX4's own.
