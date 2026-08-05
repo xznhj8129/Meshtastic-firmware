@@ -1,0 +1,25 @@
+PX4 ulog extract for capture 20260804-235621 (mavlink -m iridium)
+
+vehicle_command: 1 records -> {211: 1}
+  t=    0.128s command= 211 target_system=  0 target_component=  0
+vehicle_command_ack: 17 records -> {211: 2, 511: 8, 512: 7}
+  t=    0.228s command= 211 target_system=  0 target_component=  1 result=5
+  t=    1.228s command= 211 target_system=  0 target_component=  1 result=0
+  t=   13.828s command= 512 target_system=255 target_component=190 result=0
+  t=   14.940s command= 511 target_system=255 target_component=190 result=4
+  t=   16.036s command= 511 target_system=255 target_component=190 result=4
+  t=   18.044s command= 512 target_system=255 target_component=190 result=0
+  t=   18.960s command= 511 target_system=255 target_component=190 result=4
+  t=   20.944s command= 512 target_system=255 target_component=190 result=0
+  t=   21.896s command= 511 target_system=255 target_component=190 result=4
+  t=   23.836s command= 512 target_system=255 target_component=190 result=0
+  t=   24.996s command= 511 target_system=255 target_component=190 result=4
+  t=   26.860s command= 512 target_system=255 target_component=190 result=0
+  t=   27.868s command= 511 target_system=255 target_component=190 result=4
+  t=   29.752s command= 512 target_system=255 target_component=190 result=0
+  t=   30.732s command= 511 target_system=255 target_component=190 result=4
+  t=   32.688s command= 512 target_system=255 target_component=190 result=0
+  t=   33.756s command= 511 target_system=255 target_component=190 result=4
+
+511 = MAV_CMD_SET_MESSAGE_INTERVAL, 512 = MAV_CMD_REQUEST_MESSAGE, 211 is PX4's own.
+15 of 20 transmitted commands reached PX4 and were acknowledged.

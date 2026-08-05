@@ -22,6 +22,18 @@ class MavlinkMeshTransport
     static constexpr uint8_t MAGIC1 = 'V';
     static constexpr uint8_t VERSION = 1;
     static constexpr size_t HEADER_SIZE = 9;
+
+    // Aggregate container. Small frames dominate this link: a 21-byte HEARTBEAT costs the same
+    // airtime as a full payload, so one frame per packet wastes most of every transmission.
+    // Whole frames are packed together when several are queued; oversized frames still use the
+    // single-frame fragment format above.
+    //   [0] MAGIC0 [1] MAGIC1 [2] VERSION_AGGREGATE [3] frame count
+    //   then, per frame: uint16 length, followed by the exact MAVLink wire bytes
+    static constexpr uint8_t VERSION_AGGREGATE = 2;
+    static constexpr size_t AGGREGATE_HEADER_SIZE = 4;
+    static constexpr size_t AGGREGATE_LENGTH_PREFIX = 2;
+    // Bounded by both queue depths: never pack more frames than the receiver can enqueue at once.
+    static constexpr size_t MAX_AGGREGATE_FRAMES = 4;
     static constexpr size_t MAX_MESH_PAYLOAD = meshtastic_Constants_DATA_PAYLOAD_LEN - 32; // 201
     static constexpr size_t MAX_FRAGMENT_DATA = MAX_MESH_PAYLOAD - HEADER_SIZE;            // 192
     static constexpr size_t TX_QUEUE_DEPTH = 4;
@@ -67,47 +79,31 @@ class MavlinkMeshTransport
 
     size_t peekOutbound(uint8_t *out, size_t capacity) const
     {
-        if (!txCount || capacity < HEADER_SIZE)
-            return 0;
-
-        const TxFrame &frame = txFrames[txHead];
-        const size_t offset = (size_t)frame.nextFragment * MAX_FRAGMENT_DATA;
-        if (offset >= frame.len)
-            return 0;
-        const size_t fragmentLen = min(MAX_FRAGMENT_DATA, (size_t)frame.len - offset);
-        const size_t totalLen = HEADER_SIZE + fragmentLen;
-        if (capacity < totalLen)
-            return 0;
-
-        out[0] = MAGIC0;
-        out[1] = MAGIC1;
-        out[2] = VERSION;
-        putU16(out + 3, frame.frameId);
-        out[5] = frame.nextFragment;
-        out[6] = fragmentCount(frame.len);
-        putU16(out + 7, frame.len);
-        memcpy(out + HEADER_SIZE, frame.bytes + offset, fragmentLen);
-        return totalLen;
+        size_t framesPacked = 0;
+        return planOutbound(out, capacity, framesPacked);
     }
 
     bool commitOutbound(size_t payloadLen)
     {
         if (!txCount)
             return false;
-        TxFrame &frame = txFrames[txHead];
-        const size_t offset = (size_t)frame.nextFragment * MAX_FRAGMENT_DATA;
-        const size_t fragmentLen = min(MAX_FRAGMENT_DATA, (size_t)frame.len - offset);
-        if (payloadLen != HEADER_SIZE + fragmentLen)
+
+        // Replanning against the committed length reproduces the peek exactly: the queue has not
+        // changed, the packing is greedy, and the plan consumed precisely payloadLen bytes.
+        size_t framesPacked = 0;
+        if (planOutbound(nullptr, payloadLen, framesPacked) != payloadLen)
             return false;
 
-        frame.nextFragment++;
-        if (frame.nextFragment >= fragmentCount(frame.len)) {
-            if (isCommandAckFrame(frame.bytes, frame.len))
-                counters.commandAckFramesSent++;
-            txHead = (txHead + 1) % TX_QUEUE_DEPTH;
-            txCount--;
-            counters.outboundFramesSent++;
+        if (!framesPacked) {
+            TxFrame &frame = txFrames[txHead];
+            frame.nextFragment++;
+            if (frame.nextFragment >= fragmentCount(frame.len))
+                retireOutboundHead();
+            return true;
         }
+
+        for (size_t i = 0; i < framesPacked; i++)
+            retireOutboundHead();
         return true;
     }
 
@@ -131,7 +127,17 @@ class MavlinkMeshTransport
     void ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, uint32_t now)
     {
         expireReassembly(now);
-        if (!data || len < HEADER_SIZE || data[0] != MAGIC0 || data[1] != MAGIC1 || data[2] != VERSION) {
+        if (!data || len < AGGREGATE_HEADER_SIZE || data[0] != MAGIC0 || data[1] != MAGIC1) {
+            counters.malformedPayloads++;
+            return;
+        }
+
+        if (data[2] == VERSION_AGGREGATE) {
+            ingestAggregatePayload(data, len);
+            return;
+        }
+
+        if (data[2] != VERSION || len < HEADER_SIZE) {
             counters.malformedPayloads++;
             return;
         }
@@ -254,6 +260,86 @@ class MavlinkMeshTransport
         return (uint8_t)((frameLen + MAX_FRAGMENT_DATA - 1) / MAX_FRAGMENT_DATA);
     }
 
+    /**
+     * Build the next outbound payload, optionally writing it. Returns the payload length and
+     * reports how many whole frames were aggregated; a count of zero means the single-frame
+     * fragment format was used for the head frame.
+     *
+     * Called by both peek and commit so the two always agree without carrying pending state.
+     */
+    size_t planOutbound(uint8_t *out, size_t capacity, size_t &framesPacked) const
+    {
+        framesPacked = 0;
+        if (!txCount)
+            return 0;
+
+        const TxFrame &head = txFrames[txHead];
+        const size_t wholeCost = AGGREGATE_HEADER_SIZE + AGGREGATE_LENGTH_PREFIX + head.len;
+
+        // A frame already mid-fragmentation, or one too large to carry whole, keeps the
+        // single-frame format.
+        if (head.nextFragment != 0 || wholeCost > capacity) {
+            if (capacity < HEADER_SIZE)
+                return 0;
+            const size_t offset = (size_t)head.nextFragment * MAX_FRAGMENT_DATA;
+            if (offset >= head.len)
+                return 0;
+            const size_t fragmentLen = min(MAX_FRAGMENT_DATA, (size_t)head.len - offset);
+            const size_t totalLen = HEADER_SIZE + fragmentLen;
+            if (capacity < totalLen)
+                return 0;
+            if (out) {
+                out[0] = MAGIC0;
+                out[1] = MAGIC1;
+                out[2] = VERSION;
+                putU16(out + 3, head.frameId);
+                out[5] = head.nextFragment;
+                out[6] = fragmentCount(head.len);
+                putU16(out + 7, head.len);
+                memcpy(out + HEADER_SIZE, head.bytes + offset, fragmentLen);
+            }
+            return totalLen;
+        }
+
+        size_t used = AGGREGATE_HEADER_SIZE;
+        size_t count = 0;
+        while (count < txCount && count < MAX_AGGREGATE_FRAMES) {
+            const TxFrame &frame = txFrames[(txHead + count) % TX_QUEUE_DEPTH];
+            if (frame.nextFragment != 0 || !frame.len)
+                break;
+            const size_t need = AGGREGATE_LENGTH_PREFIX + frame.len;
+            if (used + need > capacity)
+                break;
+            if (out) {
+                putU16(out + used, frame.len);
+                memcpy(out + used + AGGREGATE_LENGTH_PREFIX, frame.bytes, frame.len);
+            }
+            used += need;
+            count++;
+        }
+        if (!count)
+            return 0;
+
+        if (out) {
+            out[0] = MAGIC0;
+            out[1] = MAGIC1;
+            out[2] = VERSION_AGGREGATE;
+            out[3] = (uint8_t)count;
+        }
+        framesPacked = count;
+        return used;
+    }
+
+    void retireOutboundHead()
+    {
+        const TxFrame &frame = txFrames[txHead];
+        if (isCommandAckFrame(frame.bytes, frame.len))
+            counters.commandAckFramesSent++;
+        txHead = (txHead + 1) % TX_QUEUE_DEPTH;
+        txCount--;
+        counters.outboundFramesSent++;
+    }
+
     void resetCapture()
     {
         rawLen = 0;
@@ -325,6 +411,35 @@ class MavlinkMeshTransport
         if (commandAck)
             counters.commandAckFramesQueued++;
         counters.outboundHighWater = max(counters.outboundHighWater, txCount);
+    }
+
+    /**
+     * Unpack an aggregate container. Every frame inside arrived whole, so no reassembly state is
+     * involved. A malformed length stops the whole payload rather than guessing at the remainder.
+     */
+    void ingestAggregatePayload(const uint8_t *data, size_t len)
+    {
+        const uint8_t count = data[3];
+        if (!count || count > MAX_AGGREGATE_FRAMES) {
+            counters.malformedPayloads++;
+            return;
+        }
+
+        size_t offset = AGGREGATE_HEADER_SIZE;
+        for (uint8_t i = 0; i < count; i++) {
+            if (offset + AGGREGATE_LENGTH_PREFIX > len) {
+                counters.malformedPayloads++;
+                return;
+            }
+            const uint16_t frameLen = getU16(data + offset);
+            offset += AGGREGATE_LENGTH_PREFIX;
+            if (!frameLen || frameLen > MAVLINK_MAX_PACKET_LEN || offset + frameLen > len) {
+                counters.malformedPayloads++;
+                return;
+            }
+            enqueueInbound(data + offset, frameLen);
+            offset += frameLen;
+        }
     }
 
     ReassemblySlot *findReassembly(NodeNum source, uint16_t frameId)

@@ -323,11 +323,19 @@ class Px4Session:
             raise HarnessError(f"PX4 did not reach pxh; inspect {self.console_path}") from exc
 
         self.run_and_log("mavlink stop -u 18570", 10, tolerate=True)
+        # `-m custom` does NOT mean "only what I configure". PX4 adds HEARTBEAT and STATUSTEXT
+        # unconditionally for every mode except IRIDIUM, and HEARTBEAT is a fixed-rate stream that
+        # cannot be disabled with `-r 0`. IRIDIUM is the only mode that carries HIGH_LATENCY2
+        # alone, which is what this link is sized for.
+        #
+        # Caveat when reading a capture: IRIDIUM transmission is gated on GCS connection state.
+        # PX4 stops transmitting once it believes a GCS is connected and resumes when the link is
+        # considered lost, unless commanded on with MAV_CMD_CONTROL_HIGH_LATENCY. A quiet capture
+        # is therefore not automatically a transport failure.
         self.run_and_log(
             f"mavlink start -d {self.air_uart} -b {self.air_baud} "
-            f"-m custom -r {self.max_rate_bps} -Z"
+            f"-m iridium -r {self.max_rate_bps} -Z"
         )
-        self.run_and_log(f"mavlink stream -d {self.air_uart} -s HEARTBEAT -r 1")
         self.run_and_log(f"mavlink stream -d {self.air_uart} -s HIGH_LATENCY2 -r 0.5")
         self.dump_status("startup")
 

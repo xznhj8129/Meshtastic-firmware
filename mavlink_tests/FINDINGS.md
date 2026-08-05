@@ -135,3 +135,56 @@ completes after the configured drain interval and exits successfully unless the 
 machinery itself failed.
 
 Interpret `events.jsonl` chronologically beside `px4.log`, the PX4 uLog, and both node logs.
+
+# Root cause: PX4 MAVLink mode, not the mesh
+
+Capture `20260804-235621`. One change from the previous capture: `mavlink start … -m custom`
+became `-m iridium`.
+
+```text
+vehicle_command_ack: 17 records -> {211: 2, 511: 8, 512: 7}
+```
+
+15 of 20 transmitted commands reached PX4 and were acknowledged. Every prior capture delivered
+0 to 2.
+
+| Measure | `-m custom` | `-m iridium` |
+| --- | ---: | ---: |
+| mesh frames from air | 96–107 | 7 |
+| ground `TX queue is full` | 80–86 | 0 |
+| ground txGood delta | +3 to +7 | +31 |
+| air LoRa RX from ground | 0–2 | 20 |
+| commands reaching PX4 | 0 | 15 |
+
+`-m custom` does not mean "only the streams I configure". PX4 adds `HEARTBEAT` and `STATUSTEXT`
+unconditionally for every mode except `IRIDIUM`, and `HEARTBEAT` is a constant-rate stream that
+cannot be disabled with `-r 0`. With `MISSION_CURRENT` and the mode messages arriving from their
+own components, PX4 offered roughly 2.25 frames/s to a link that could not carry it. `IRIDIUM`
+is the only mode that carries `HIGH_LATENCY2` alone and is the mode intended for slow,
+packet-metered links.
+
+## Consequence for earlier conclusions
+
+Every congestion finding — ground TX-queue starvation, relay overhead, arbitration asymmetry —
+was a true observation of a link carrying roughly 14x the traffic it should have. All symptoms,
+not causes. The relay tax (`hop_limit` 3 broadcast in a two-node network, ground node spending
+6 of 7 transmissions relaying) is real and still worth fixing, but was only fatal under the
+excess load.
+
+## Still open
+
+- `HIGH_LATENCY2` arrived 6 times in ~43 s against 0.5 Hz configured. IRIDIUM gates transmission
+  on GCS connection state and goes quiet when it believes a GCS is connected, unless commanded
+  on with `MAV_CMD_CONTROL_HIGH_LATENCY`. A quiet capture in this mode is not automatically a
+  transport failure.
+- No `COMMAND_ACK` reached the verifier despite PX4 creating 15. The original question is now
+  testable for the first time without congestion confounding it.
+
+## Frame aggregation: implemented, does not engage
+
+Transport now supports an aggregate container (`VERSION_AGGREGATE = 2`) packing whole frames up
+to the payload limit, bounded by the queue depths. Measured under `-m custom`: 107 mesh frames
+in 102 packets, **1.05 frames per packet**. It never engages, because frames do not accumulate —
+the bridge peeks the moment one is enqueued. Making it effective needs a coalescing hold before
+transmit, which is a scheduling change and a latency-versus-airtime decision that was not made.
+Oversized frames still use the original single-frame fragment format; the receiver handles both.
