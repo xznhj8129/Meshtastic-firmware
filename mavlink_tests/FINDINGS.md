@@ -1,74 +1,116 @@
-# PX4 SITL mesh test — findings
+# PX4 SITL mesh test findings
 
-First hardware run, 2026-08-04. Firmware `2.8.0.69c06a6` on both nodes (heltec-wsl-v3),
-PX4 `v1.18.0-beta1-216`, air node UART at 57600 on GPIO 47/48.
+First physical run: 2026-08-04.
 
-## Open
+Tested:
 
-### 1. COMMAND_ACK is starved by the bridge's RADIO_STATUS txbuf
+- Meshtastic firmware `2.8.0.69c06a6` on two `heltec-wsl-v3` nodes;
+- PX4 `v1.18.0-beta1-216`;
+- air-node UART on GPIO 47/48 at 57600 baud;
+- physical path `PX4 -> UART -> air node -> LoRa -> ground node -> UDP verifier`.
 
-| | |
-| --- | --- |
-| Where | `src/modules/Mavlink/MavlinkBridge.cpp:136`, `MavlinkBridge.h:111` |
-| Status | Open — no fix attempted |
-| Evidence | `reports/px4-sitl-mesh-20260804-202938/` |
+## Proven working
 
-PX4 gates the ack send on `get_free_tx_buf() >= COMMAND_ACK_TOTAL_LEN`
-(`mavlink_main.cpp:2994`). `get_free_tx_buf()` is driven by the RADIO_STATUS `txbuf`
-the bridge emits every 500 ms (`rs.txbuf = transport.outboundFreePercent()`).
+The physical router path works in both directions.
 
-Observed: 376 RADIO_STATUS in one 240 s run, PX4 reporting `tx rate mult: 0.721`.
-No `COMMAND_ACK` reached the GCS at all — it is absent from the message counts, which
-are tallied before any filtering. PX4 logged neither `Ignore command` nor
-`vehicle_command_ack lost`, so the command was accepted and the ack was simply never
-transmitted.
-
-`AUTOPILOT_VERSION` still arrived 3×, because `handle_request_message_command` sends it
-directly and bypasses that gate. So the mesh path is not at fault — the txbuf reporting
-is throttling PX4 hard enough to suppress the ack.
-
-### 2. The documented pass condition cannot be met as specified
-
-`PX4_SITL_MESH_TEST.md` enables only `HEARTBEAT` and `HIGH_LATENCY2`, then requires
-`COMMAND_ACK` to return. Given finding 1, those two requirements are in conflict.
-
-### 3. Stale machine-specific values in the doc
-
-| Documented | Actual |
-| --- | --- |
-| `PX4_DIR` = `other_software/PX4-Autopilot` | does not exist; the live checkout is `px4dev/PX4-Autopilot` |
-| `GROUND_HOST` = `192.168.0.232` | `192.168.0.244` (mDNS `_meshtastic._tcp`, `id=!3a180e17`) |
-| air baud 115200 | node is configured 57600 |
-| "Use the stable `/dev/serial/by-id/...` path" | unusable here — both CP2102 bridges report serial `0001`, so the by-id name collides and resolves to whichever enumerated. Use `/dev/serial/by-path/`. |
-
-## Fixed
-
-All three prevented the harness from ever completing a run, on any machine.
-
-| # | Defect | Where |
-| --- | --- | --- |
-| 4 | `pexpect.spawn(preexec_fn=os.setsid)` raised `PermissionError: [Errno 1]` every run. `pty.fork()` already makes the child a session leader, so the second `setsid()` is EPERM by definition. `os.killpg` still works without it — the child is its own process-group leader. | `px4_sitl_mesh_test.py:165` |
-| 5 | Serial-device assertion read `mavlink status streams`, which prints only the stream rate table. Only `mavlink status` prints `transport protocol: serial (<dev> @<baud>)`. | `px4_sitl_mesh_test.py:189` |
-| 6 | `PROMPT = pxh>\s*` matched inside the command's own echo — pxh redraws `pxh>` for every echoed character. `run_command` returned an empty string, so **every** assertion on command output was silently reading nothing. Now consumes the echo with `expect_exact(command)` first. | `px4_sitl_mesh_test.py:206` |
-
-## Verified working
-
-Complete MAVLink frames cross UART → LoRa → UDP in both directions.
+Observed in the final run:
 
 | Message | Count |
-| --- | --- |
-| HEARTBEAT | 148 |
-| HIGH_LATENCY2 | 69 |
-| AUTOPILOT_VERSION | 3 |
-| RADIO_STATUS | 376 |
-| MISSION_CURRENT | 142 |
-| PARAM_VALUE / COMMAND_LONG | 3 / 3 |
+| --- | ---: |
+| `HEARTBEAT` | 148 |
+| `HIGH_LATENCY2` | 69 |
+| `AUTOPILOT_VERSION` | 3 |
+| `COMMAND_LONG` | 3 |
+| `RADIO_STATUS` | 376 |
+| `MISSION_CURRENT` | 142 |
+| `PARAM_VALUE` | 3 |
 
-PX4 bound the real UART (`transport protocol: serial (/dev/ttyUSB0 @57600)`), streams
-applied exactly as configured (`HEARTBEAT 1.00`, `HIGH_LATENCY2 0.50`), the localhost GCS
-instance on 18570 was stopped, and `MAV_CMD_REQUEST_MESSAGE` sent through the mesh reached
-PX4 and was answered. `COMMAND_LONG` appears in the counts because the UDP server tees every
-locally completed frame back to the client.
+PX4 bound the real serial device at 57600 baud. The verifier sent three targeted `MAV_CMD_REQUEST_MESSAGE(AUTOPILOT_VERSION)` commands through the mesh and received three corresponding `AUTOPILOT_VERSION` responses.
 
-`UNKNOWN_410` / `UNKNOWN_411` are PX4 messages newer than the pinned pymavlink dialect, not
-corruption.
+Therefore:
+
+```text
+PX4 UART binding: PASS
+air-to-ground telemetry: PASS
+ground-to-air command delivery: PASS
+PX4 response return path: PASS
+complete UART + LoRa + UDP transport: PASS
+```
+
+`UNKNOWN_410` and `UNKNOWN_411` are newer PX4 dialect messages not named by the pinned pymavlink dialect. They are not evidence of corruption.
+
+## Open: COMMAND_ACK not observed
+
+No `COMMAND_ACK` was observed for `MAV_CMD_REQUEST_MESSAGE`.
+
+The established sequence is:
+
+```text
+COMMAND_LONG reaches PX4
+AUTOPILOT_VERSION returns
+COMMAND_ACK is not observed
+```
+
+The first boundary where message ID 77 disappears is not yet known.
+
+Possible boundaries include:
+
+- PX4 does not publish an ACK for this exact command path;
+- the serial MAVLink instance does not select or serialize it;
+- the ACK does not reach the air-node UART parser;
+- the bridge loses it between local parsing and mesh transmission;
+- the ground node loses it before UDP delivery;
+- valid UDP bytes are not recognized by the verifier dialect.
+
+## Rejected diagnosis
+
+The earlier claim that bridge `RADIO_STATUS.txbuf` starved the ACK is rejected as unsupported.
+
+The PX4 serial instance reported:
+
+```text
+no radio status.
+tx rate mult: 0.721
+```
+
+The multiplier is therefore not evidence that received bridge `RADIO_STATUS` suppressed the ACK. Do not change bridge flow-control behavior based on that theory.
+
+## Harness defects fixed before the first run
+
+These fixes are valid and retained:
+
+1. Removed redundant `preexec_fn=os.setsid`, which failed after `pty.fork()` had already created the child session.
+2. Used `mavlink status` for serial-device verification and `mavlink status streams` for stream verification.
+3. Consumed the exact PX4 command echo before matching the real `pxh>` prompt.
+
+The prompt handling is brittle but now hardware-tested. Do not casually refactor it.
+
+## Next-phase harness changes
+
+The next-phase harness now:
+
+- preserves partial observations when a strict assertion fails;
+- reports separate transport, telemetry, command, response, and ACK milestones;
+- removes QGroundControl wording and the irrelevant host-local UDP 14550 check;
+- keeps only the verifier's local UDP 14600 availability check;
+- adds a harmless independent ACK control using `MAV_CMD_SET_MESSAGE_INTERVAL` for the already-configured 1 Hz heartbeat;
+- shortens the focused run after the command response arrives instead of waiting the full former 240-second timeout;
+- continues to use incremental PX4 make without cleaning either PX4 or PlatformIO build state.
+
+No embedded router source was changed in this phase. The already-flashed firmware can be reused for the next run.
+
+## Interpretation of the next run
+
+```text
+request-message ACK absent
+control-command ACK present
+    -> command-specific PX4 behavior
+
+both ACKs absent
+    -> shared PX4 serial ACK path or downstream message-ID-77 path
+
+ACK observed by verifier
+    -> strict path resolved without router changes
+```
+
+Only after this result should temporary embedded ACK tracing be added, and only at the first boundary that still needs localization.
