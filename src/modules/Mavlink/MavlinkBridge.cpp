@@ -12,6 +12,58 @@ MavlinkBridge *mavlinkBridge;
 
 static NullStream mavlinkNullStream;
 
+namespace
+{
+bool decodeCommandAckFrame(const uint8_t *frame, size_t len, uint16_t &command, uint8_t &result, uint8_t &sysid,
+                           uint8_t &compid, uint8_t &seq)
+{
+    if (!frame)
+        return false;
+
+    size_t headerLen = 0;
+    size_t payloadLen = 0;
+    uint32_t msgid = 0;
+    if (len >= 6 && frame[0] == 0xfe) {
+        payloadLen = frame[1];
+        headerLen = 6;
+        seq = frame[2];
+        sysid = frame[3];
+        compid = frame[4];
+        msgid = frame[5];
+    } else if (len >= 10 && frame[0] == 0xfd) {
+        payloadLen = frame[1];
+        headerLen = 10;
+        seq = frame[4];
+        sysid = frame[5];
+        compid = frame[6];
+        msgid = (uint32_t)frame[7] | ((uint32_t)frame[8] << 8) | ((uint32_t)frame[9] << 16);
+    } else {
+        return false;
+    }
+
+    if (msgid != MAVLINK_MSG_ID_COMMAND_ACK || payloadLen < 3 || len < headerLen + payloadLen + 2)
+        return false;
+
+    const uint8_t *payload = frame + headerLen;
+    command = (uint16_t)payload[0] | ((uint16_t)payload[1] << 8);
+    result = payload[2];
+    return true;
+}
+
+void logCommandAckFrame(const char *stage, const uint8_t *frame, size_t len)
+{
+    uint16_t command = 0;
+    uint8_t result = 0;
+    uint8_t sysid = 0;
+    uint8_t compid = 0;
+    uint8_t seq = 0;
+    if (decodeCommandAckFrame(frame, len, command, result, sysid, compid, seq)) {
+        LOG_INFO("MAVLink COMMAND_ACK %s command=%u result=%u sysid=%u compid=%u seq=%u", stage,
+                 (unsigned)command, (unsigned)result, (unsigned)sysid, (unsigned)compid, (unsigned)seq);
+    }
+}
+} // namespace
+
 MavlinkBridge::MavlinkBridge(Stream *serial) : uart(serial ? serial : &mavlinkNullStream)
 {
     if (moduleConfig.serial.peer_node)
@@ -28,11 +80,21 @@ void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t 
 {
     if (!data || !len)
         return;
+    const auto before = transport.getCounters();
     stats.uartRxBytes += len;
     lastActivityMs = now;
     everActive = true;
     snoopSerialBytes(data, len, now);
     transport.ingestLocalBytes(data, len);
+    const auto &after = transport.getCounters();
+    if (after.commandAckFramesQueued != before.commandAckFramesQueued) {
+        LOG_INFO("MAVLink COMMAND_ACK transport queued count=%u",
+                 (unsigned)(after.commandAckFramesQueued - before.commandAckFramesQueued));
+    }
+    if (after.commandAckOutboundDrops != before.commandAckOutboundDrops) {
+        LOG_WARN("MAVLink COMMAND_ACK transport outbound drop count=%u",
+                 (unsigned)(after.commandAckOutboundDrops - before.commandAckOutboundDrops));
+    }
 }
 
 bool MavlinkBridge::wantsMeshSend(uint32_t now) const
@@ -49,19 +111,27 @@ size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity)
 void MavlinkBridge::commitMeshPayload(size_t len, uint32_t now)
 {
     (void)now;
-    if (transport.commitOutbound(len))
+    const uint32_t ackSentBefore = transport.getCounters().commandAckFramesSent;
+    if (transport.commitOutbound(len)) {
         stats.meshTxBytes += len;
+        if (transport.getCounters().commandAckFramesSent != ackSentBefore)
+            LOG_INFO("MAVLink COMMAND_ACK mesh transmission committed");
+    }
 }
 
 void MavlinkBridge::dropCurrentMeshFrame()
 {
+    const uint32_t ackDropsBefore = transport.getCounters().commandAckOutboundDrops;
     transport.dropOutbound();
+    if (transport.getCounters().commandAckOutboundDrops != ackDropsBefore)
+        LOG_WARN("MAVLink COMMAND_ACK mesh transmission dropped");
 }
 
 void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi, float rxSnr)
 {
     if (!data || !len)
         return;
+    const auto before = transport.getCounters();
     stats.meshRxBytes += len;
     lastActivityMs = millis();
     everActive = true;
@@ -71,6 +141,13 @@ void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_
         haveRxMetadata = true;
     }
     transport.ingestMeshPayload(source, data, len, millis());
+    const auto &after = transport.getCounters();
+    if (after.commandAckFramesReassembled != before.commandAckFramesReassembled) {
+        LOG_INFO("MAVLink COMMAND_ACK mesh reassembled from node 0x%08x", source);
+    }
+    if (after.commandAckInboundDrops != before.commandAckInboundDrops) {
+        LOG_WARN("MAVLink COMMAND_ACK dropped from inbound queue, source node 0x%08x", source);
+    }
 }
 
 void MavlinkBridge::processOutput(uint32_t now)
@@ -113,9 +190,25 @@ void MavlinkBridge::flushPending(uint32_t now)
         if (mavlinkUdpServer)
             mavlinkUdpServer->writeFrame(pendingFrame, pendingLen, now);
 #endif
+        uint16_t command = 0;
+        uint8_t result = 0;
+        uint8_t sysid = 0;
+        uint8_t compid = 0;
+        uint8_t seq = 0;
+        if (decodeCommandAckFrame(pendingFrame, pendingLen, command, result, sysid, compid, seq)) {
+            stats.commandAckLocalDelivery++;
+            logCommandAckFrame("local endpoint delivered", pendingFrame, pendingLen);
+        }
         pendingLen = pendingOff = 0;
         stats.framesToUart++;
     } else if ((now - pendingSinceMs) >= UART_TX_STALL_MS) {
+        uint16_t command = 0;
+        uint8_t result = 0;
+        uint8_t sysid = 0;
+        uint8_t compid = 0;
+        uint8_t seq = 0;
+        if (decodeCommandAckFrame(pendingFrame, pendingLen, command, result, sysid, compid, seq))
+            LOG_WARN("MAVLink COMMAND_ACK local endpoint stalled and dropped");
         stats.uartTxStallDrops++;
         pendingLen = pendingOff = 0;
     }
@@ -165,6 +258,11 @@ const MavlinkBridgeStats &MavlinkBridge::getStats()
     stats.duplicateFragments = transportStats.duplicateFragments;
     stats.reassemblyTimeouts = transportStats.reassemblyTimeouts;
     stats.reassemblyEvictions = transportStats.reassemblyEvictions;
+    stats.commandAckFramesQueued = transportStats.commandAckFramesQueued;
+    stats.commandAckFramesSent = transportStats.commandAckFramesSent;
+    stats.commandAckOutboundDrops = transportStats.commandAckOutboundDrops;
+    stats.commandAckFramesReassembled = transportStats.commandAckFramesReassembled;
+    stats.commandAckInboundDrops = transportStats.commandAckInboundDrops;
     stats.inputHighWater = transportStats.outboundHighWater;
     stats.outputHighWater = transportStats.inboundHighWater;
     return stats;
@@ -176,8 +274,17 @@ void MavlinkBridge::snoopSerialBytes(const uint8_t *data, size_t len, uint32_t n
         mavlink_message_t msg;
         mavlink_status_t status;
         uint8_t res = mavlink_frame_char_buffer(&snoopWorking, &snoopStatus, data[i], &msg, &status);
-        if (res == MAVLINK_FRAMING_OK)
+        if (res == MAVLINK_FRAMING_OK) {
+            if (msg.msgid == MAVLINK_MSG_ID_COMMAND_ACK) {
+                mavlink_command_ack_t ack;
+                mavlink_msg_command_ack_decode(&msg, &ack);
+                stats.commandAckLocalIngress++;
+                LOG_INFO("MAVLink COMMAND_ACK local ingress command=%u result=%u sysid=%u compid=%u seq=%u",
+                         (unsigned)ack.command, (unsigned)ack.result, (unsigned)msg.sysid, (unsigned)msg.compid,
+                         (unsigned)msg.seq);
+            }
             handleSnoopedMessage(msg, now);
+        }
     }
 }
 
