@@ -1,0 +1,22 @@
+PX4 ulog extract: vehicle_command and vehicle_command_ack
+Decisive evidence for COMMAND_ACK boundary localization.
+Source ulogs live in the PX4 build tree (tens of MB); only this extract is committed.
+
+=== 2026-08-04 20:29 -- firmware 69c06a6 (3 requests -> 3 AUTOPILOT_VERSION) ===
+  vehicle_command: 1 records
+    command= 211 target_system=  0 target_component=  0 from_external=0
+  vehicle_command_ack: 4 records
+    command= 211 target_system=  0 target_component=  1 from_external=0 result=5
+    command= 211 target_system=  0 target_component=  1 from_external=0 result=0
+    command= 512 target_system=255 target_component=190 from_external=0 result=0
+    command= 512 target_system=255 target_component=190 from_external=0 result=0
+
+=== 2026-08-04 22:03 -- firmware 6d533cc (3 requests -> 0 AUTOPILOT_VERSION) ===
+  vehicle_command: 1 records
+    command= 211 target_system=  0 target_component=  0 from_external=0
+  vehicle_command_ack: 4 records
+    command= 211 target_system=  0 target_component=  1 from_external=0 result=5
+    command= 211 target_system=  0 target_component=  1 from_external=0 result=0
+    command= 512 target_system=255 target_component=190 from_external=0 result=0
+    command= 512 target_system=255 target_component=190 from_external=0 result=0
+

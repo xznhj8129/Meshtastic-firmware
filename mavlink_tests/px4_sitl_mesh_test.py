@@ -438,13 +438,21 @@ def run_link_test(
                     continue
                 if result.expected_sysid and source_system != result.expected_sysid:
                     continue
-                if result.high_latency2 is None:
-                    snapshot = high_latency2_snapshot(message)
-                    result.high_latency2 = snapshot
-                    result.high_latency2_latency_s = time.monotonic() - started
+                # The first HIGH_LATENCY2 arrives before the SIH estimator has a global
+                # position, so latching it would pin latitude/longitude at 0 and block the
+                # command phase for the whole run. Keep refreshing until the sample is valid.
+                if result.high_latency2 is None or not result.telemetry_pass:
+                    result.high_latency2 = high_latency2_snapshot(message)
+                    if result.high_latency2_latency_s is None:
+                        result.high_latency2_latency_s = time.monotonic() - started
                     update_telemetry_milestone(result)
 
             elif message_type == "AUTOPILOT_VERSION":
+                # PX4 also emits AUTOPILOT_VERSION unprompted. Only a copy arriving after our
+                # own request proves the reverse command path, and counting an unprompted one
+                # suppresses the request entirely.
+                if request_first_sent_at is None:
+                    continue
                 if result.vehicle_sysid is None or source_system == result.vehicle_sysid:
                     if not result.response_return_pass:
                         result.response_return_pass = True
