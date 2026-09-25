@@ -253,9 +253,10 @@ void MavlinkBridge::logStats(uint32_t now)
     const auto &s = getStats();
     const auto &t = transport.getCounters();
     // Several short lines: the firmware log buffer truncates anything much past 190 characters.
-    LOG_INFO("MAVLink tx: queue=%u/%u router=%u frames=%u unicast=%u broadcast=%u", (unsigned)transport.outboundCount(),
-             (unsigned)MavlinkMeshTransport::TX_QUEUE_DEPTH, (unsigned)routerQueuedCount(), (unsigned)t.outboundFramesSent,
-             (unsigned)t.unicastPackets, (unsigned)t.broadcastPackets);
+    LOG_INFO("MAVLink tx: queue=%u/%u router=%u frames=%u unicast=%u broadcast=%u discovery=%u",
+             (unsigned)transport.outboundCount(), (unsigned)MavlinkMeshTransport::TX_QUEUE_DEPTH, (unsigned)routerQueuedCount(),
+             (unsigned)t.outboundFramesSent, (unsigned)t.unicastPackets, (unsigned)t.broadcastPackets,
+             (unsigned)t.discoveryBroadcasts);
     LOG_INFO("MAVLink acks: requested=%u acked=%u implicit=%u failed=%u noresult=%u inflight=%u ms=%u/%u",
              (unsigned)t.ackRequestedPackets, (unsigned)s.meshPacketsAcked, (unsigned)s.meshPacketsImplicitAck,
              (unsigned)s.meshPacketsFailed, (unsigned)s.meshPacketsNoResult, (unsigned)inFlightCount(),

@@ -49,6 +49,8 @@ class MavlinkMeshTransport
     static constexpr uint32_t REASSEMBLY_TIMEOUT_MS = 5000;
     static constexpr size_t ROUTE_SLOTS = 8;
     static constexpr uint32_t ROUTE_TIMEOUT_MS = 120000;
+    // With no route yet, at most one broadcast per interval travels the configured hop limit; the rest stay at 0 hops.
+    static constexpr uint32_t DISCOVERY_INTERVAL_MS = 10000;
     static constexpr size_t MAX_FRAGMENT_COUNT = (MAVLINK_MAX_PACKET_LEN + MAX_FRAGMENT_DATA - 1) / MAX_FRAGMENT_DATA;
 
     static_assert(MAX_FRAGMENT_DATA > 0, "MAVLink mesh transport header exceeds payload capacity");
@@ -69,6 +71,7 @@ class MavlinkMeshTransport
         uint32_t broadcastPackets = 0;
         uint32_t ackRequestedPackets = 0;
         uint32_t routesLearned = 0;
+        uint32_t discoveryBroadcasts = 0;
         uint32_t corruptFrames = 0;
         uint32_t framingErrors = 0;
         uint32_t malformedPayloads = 0;
@@ -138,6 +141,11 @@ class MavlinkMeshTransport
             counters.unicastPackets++;
         if (plan.wantAck)
             counters.ackRequestedPackets++;
+        if (plan.discovery) {
+            discoverySent = true;
+            lastDiscoveryMs = plan.plannedAtMs;
+            counters.discoveryBroadcasts++;
+        }
 
         if (plan.fragment) {
             TxFrame &frame = txFrames[plan.slots[0]];
@@ -407,7 +415,9 @@ class MavlinkMeshTransport
         bool valid = false;
         bool fragment = false;
         bool wantAck = false;
+        bool discovery = false;
         int8_t hopLimit = -1;
+        uint32_t plannedAtMs = 0;
         NodeNum dest = NODENUM_BROADCAST;
         size_t len = 0;
         size_t count = 0;
@@ -599,6 +609,13 @@ class MavlinkMeshTransport
         const TxFrame &head = txFrames[lead];
         plan.dest = resolveDestination(head, now);
         plan.hopLimit = hopsFor(plan.dest, now);
+        plan.plannedAtMs = now;
+        if (isBroadcast(plan.dest) && activeRouteCount(now) == 0) {
+            // Nobody is known to be listening: every relay would repeat this across the mesh, and close
+            // high-SNR relayers wait longest, clogging their TX queues. Only a periodic discovery goes far.
+            plan.discovery = !discoverySent || (uint32_t)(now - lastDiscoveryMs) >= DISCOVERY_INTERVAL_MS;
+            plan.hopLimit = plan.discovery ? -1 : 0;
+        }
         const size_t wholeCost = AGGREGATE_HEADER_SIZE + AGGREGATE_LENGTH_PREFIX + head.len;
 
         if (head.nextFragment != 0 || wholeCost > capacity) {
@@ -938,6 +955,8 @@ class MavlinkMeshTransport
 
     ReassemblySlot reassembly[REASSEMBLY_SLOTS];
     Route routes[ROUTE_SLOTS];
+    bool discoverySent = false;
+    uint32_t lastDiscoveryMs = 0;
 
     mavlink_message_t localWorking{};
     mavlink_status_t localStatus{};

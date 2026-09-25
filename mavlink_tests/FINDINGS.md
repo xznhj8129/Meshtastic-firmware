@@ -713,3 +713,87 @@ The last command of each run was sent 5 s before the end and is not a loss.
 The tail latency (p90 11-17 s) is channel contention from the deliberate state firehose: 208 air
 broadcasts in 180 s in run 4. Reducing it is a state airtime budget at the bridge and a quiet
 autopilot profile, not further transport reliability work.
+
+# INAV 10.x high-latency mode over the mesh (2026-09-25)
+
+## Rig
+
+`mavlink_tests/inav_hl_bench.py`: INAV SITL on the JSBSim bench (`inav_development/inav-jsbsim-bench`,
+quad), built from `gcs-control` `6514f87c` = `maintenance-10.x` + 20 No-RC-control commits (inactive
+under the default `control_mode = PILOT`). SITL's MAVLink TCP port is bridged with socat to the WSL V3
+air UART (57600). Ground: T-Beam, WiFi UDP. INAV runs `mavlink_port1_high_latency = ON`. The quad arms,
+holds, flies out, holds, and returns home under INAV navigation. The GCS heartbeats at 1 Hz and sends
+`CONTROL_HIGH_LATENCY(1)` every 15 s; high latency is switched off over the mesh from 60 to 90 s.
+Reports: `reports/inav-hl-20260925-141108` (probe schedule flawed, see below) and `-141658`.
+
+## INAV behaviour (bench, no mesh)
+
+- High latency: `HIGH_LATENCY2` every 5.0 s and nothing else periodic, except `MISSION_CURRENT` at
+  1 Hz. No `HEARTBEAT`. Commands are processed and answered with a normal `COMMAND_ACK`.
+- `CONTROL_HIGH_LATENCY` toggles the port per instance and is ACKed `ACCEPTED`. Off gives the full
+  stream, about 19 messages/s across 13 types.
+- `MISSION_CURRENT` leaks: `mavlink_mission.c` sends it to every active port (`mavlinkActivePortMask()`)
+  without checking the port's `highLatencyEnabled`. `SET_MESSAGE_INTERVAL` cannot stop it: message 42
+  is not in `mavlinkPeriodicMessageFromMessageId()`, so the command returns `MAV_RESULT_UNSUPPORTED`.
+  The `HIGH_LATENCY2` interval is not settable either (also `UNSUPPORTED`; hardcoded 5 s).
+
+## Over the mesh (run `141658`)
+
+- Commands: 13 sent, 13 `COMMAND_ACK` (all `ACCEPTED`). Round trip median 2.7 s, range 1.6-9 s;
+  the ACK for the 90 s `hl_on` arrived after the next probe.
+- `HIGH_LATENCY2`: 9, 0 and 21 received in the on, off and on phases; it stops and resumes exactly
+  with the command sent over the mesh. Contents match JSBSim truth: altitude within 1-2 m, ground
+  speed 20.6-21.6 m/s against a true 20-22 m/s, heading, and mode (ArduPilot numbering, POSHOLD 16
+  then RTL 6). Position error at receipt is speed times about 1 s while moving, 0.0-0.2 m while
+  holding. `battery` reads 0 throughout (the bench feeds no battery voltage; not investigated).
+- High latency off, 30 s: about 100 messages of 12 types delivered against about 19/s emitted; state
+  replacement kept the newest of each.
+- The `MISSION_CURRENT` leak dominates airtime: the air node sent 185 broadcasts in 200 s where
+  `HIGH_LATENCY2` alone needs about 40.
+- Startup stall: the ground broadcast GCS heartbeats at the default hop limit until it learned a
+  route, the air node relayed them, and Meshtastic gives close, high-SNR relayers the longest delay.
+  The air TX queue held 5 relays; a 24-byte bridge packet waited 13.6 s, and the first `HIGH_LATENCY2`
+  of each run arrived about 10 s stale.
+
+The first run's probe was `CONTROL_HIGH_LATENCY(1)` on a fixed clock, which re-enabled high latency
+inside the off window; the rig now pauses probes there.
+
+## With the INAV fix branch (run `144132`)
+
+Same flight and bridge (both nodes now on `5dae4b8`), SITL from `inav-claude/inav`
+`fix/mavlink-mission-current-interval` `0fb1751a` (`maintenance-10.x` `3d2c8fdcd` + one commit that sends
+`MISSION_CURRENT` from the per-port scheduler, under the high-latency early return and settable with
+`SET_MESSAGE_INTERVAL`). Bench check without the mesh: high latency on gives `HIGH_LATENCY2` only;
+off restores `MISSION_CURRENT` at 1 Hz with the full stream.
+
+| | unpatched `141658` | fix `144132` |
+| --- | --- | --- |
+| received in high latency (0-60 s) | 9 HL2 + 32 `MISSION_CURRENT` | 10 HL2 only |
+| air broadcasts, whole run | 185 | 100 |
+| commands ACKed | 13/13 | 13/13 |
+| command round trip, median / max | 2.7 s / about 9 s | 1.7 s / 2.8 s |
+| ground routing-ACK failures | 1 | 0 |
+| delivered in the 30 s full-stream window | about 100, 10 `GLOBAL_POSITION_INT` | about 220, 24 `GLOBAL_POSITION_INT` |
+
+The startup stall is unchanged: it is the bridge's pre-route discovery, not INAV. The first
+`HIGH_LATENCY2` again arrived showing the pre-takeoff state.
+
+## Pre-route discovery cap (run `151436`)
+
+With no live route, broadcasts now go at hop limit 0 except one full-hop discovery broadcast per
+10 s (`DISCOVERY_INTERVAL_MS`). Same flight and INAV fix SITL as `144132`:
+
+| | `144132` | `151436` |
+| --- | --- | --- |
+| ground broadcasts at hop 3 | 4 | 2 (1 MAVLink discovery, 1 Meshtastic's own) |
+| air relays of ground traffic | 4 | 2 |
+| first `HIGH_LATENCY2` | 21.9 s, pre-takeoff state (at least 7 s old) | 17.2 s, climb starting (about 2 s old) |
+| commands ACKed, round trip median | 13/13, 1.7 s | 13/13, 1.8 s |
+
+The air node sent no discovery broadcast at all: it learned the ground's route from the ground's
+first discovery before it had anything to send.
+
+Build note: alternating `heltec-wsl-v3` (ESP32-S3) and `tbeam` (ESP32) builds reinstalls and
+re-customizes the shared `framework-arduinoespressif32` package on every switch (both envs use
+`custom_sdkconfig`), then recompiles everything: about 2000 files and 10 minutes per env, against
+306 files when the same env is rebuilt.
