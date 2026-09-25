@@ -645,3 +645,71 @@ filter the GCS direction needs anyway.
 
 If the project were ever PX4-only on a fixed preset, the custom mode would be less total code and
 the trade would reverse.
+
+# Phase 2 transport bench, no autopilot (2026-09-25)
+
+## Rig
+
+```text
+pymavlink vehicle (sysid 1) -> USB-UART -> WSL V3 GPIO47/48 @57600 (air, heltec-wsl-v3)
+  -> LoRa SHORT_FAST, channel "serial"
+  -> T-Beam (ground, tbeam) WiFi UDP 14550 -> pymavlink GCS (sysid 255)
+```
+
+`mavlink_tests/bench_rig.py`: the vehicle deliberately over-emits state (HEARTBEAT, GLOBAL_POSITION_INT,
+VFR_HUD at 1 Hz, ATTITUDE at 2 Hz, SYS_STATUS at 0.5 Hz, about 5.5 frames/s) so the link is congested.
+The GCS heartbeats at 1 Hz and sends one `COMMAND_LONG` every 5 s carrying its index in `param1`;
+the vehicle answers `COMMAND_ACK` with the index in `result_param2`. At 90 s the GCS sends
+`PARAM_REQUEST_LIST`; the vehicle answers with 20 `PARAM_VALUE` at 5 Hz. The bench GCS does not
+retry commands. 180 s per run. Reports: `reports/bench-*` (events.jsonl, air-node.log, ground-node.log).
+
+## Transport under test
+
+Classes by message id (transaction, event, state, bulk). Transactions, events and bulk go unicast
+to the learned node with `want_ack`; state broadcasts unacknowledged and the newest unsent copy
+per (sysid, compid, msgid) replaces the older one. Routes `sysid -> node` are learned from inbound
+frames. Frames leave in arrival order per sender stream; priority reorders only between streams.
+
+## Runs
+
+| Run | Change | Commands acked | RTT p50 / p90 | Params | Router TX-queue drops |
+| --- | --- | --- | --- | --- | --- |
+| 1 `042441` | classes, routes, unicast `want_ack` | 33/34 | 4.85 / 13.9 s | 17/20 | 38 air, 18 ground |
+| 2 `045153` | at most 2 bridge packets in the router queue; ACK classes use the 40 % utilization limit | 26/34 | 6.56 / 45.6 s | 20/20 | 0 air, 15 ground |
+| 3 `051930` | hop limit scoped to learned peer distance | 33/34 | 3.59 / 11.5 s | 18/20 | 0 / 0 |
+| 4 `065333` | routing failure no longer drops the route | 31/34 | 4.71 / 17.3 s | 20/20 | 0 / 0 |
+
+The last command of each run was sent 5 s before the end and is not a loss.
+
+## Observations
+
+- **Unacknowledged unicast is not usable for state.** Once our first acknowledged packet is ACKed,
+  `NextHopRouter` learns `next_hop` for the peer. From then on every unacknowledged unicast we
+  originate waits for an implicit ACK the destination never sends: it is retransmitted, re-flooded,
+  the route is marked failed, and a local `MAX_RETRANSMIT` NAK is raised. State therefore broadcasts.
+- **Run 1: the utilization gate caused the latency.** The bridge used the polite 25 % limit for
+  everything, so commands waited behind telemetry. When the gate reopened it pushed 7 packets into
+  the router in 1.2 s and overflowed its TX queue; stale state then waited in the router FIFO, where
+  replacement cannot reach it.
+- **Run 2: `LOCAL_ONLY` still relays our own channel.** The ground node rebroadcast every air state
+  broadcast at hop limit 2 (about 50 per 30 s), filled its own TX queue ("no lower-priority packet
+  available to evict"), and held two of its own command packets untransmitted for 30 s.
+- **Run 3: hop scoping removed relaying.** The 3 and 7 relays left in that run followed route
+  drops (next point); run 4 had 2 and 1.
+- **Most routing failures are lost ACKs.** Run 3: all 6 failed packets were received by the peer.
+  Run 4: 14 of 15. The missed ACKs were sent back to back after another transmission from the same node.
+  Dropping the route on failure (run 3) sent the next packets as default-hop broadcasts, the peer
+  relayed them, and the added load produced more failures (clustered at 131/134/137 s).
+- **One real loss in run 4:** command 16's `COMMAND_LONG` did not reach the air node in three
+  attempts over about 20 s. MAVLink command retry, which QGC performs and the bench GCS does not, is
+  the layer that recovers this.
+- **Broadcasts carry a 64-byte XEdDSA signature on this upstream line.** A 21-byte GCS heartbeat is
+  115 bytes on air.
+- **Bulk still overflows at ingest when the vehicle ignores `RADIO_STATUS`.** Runs 1 and 3 lost 2-3
+  `PARAM_VALUE` to a full queue during the burst. The drops are now logged ("MAVLink queue full").
+
+## Remaining
+
+The tail latency (p90 11-17 s) is channel contention from the deliberate state firehose: 208 air
+broadcasts in 180 s in run 4. Reducing it is a state airtime budget at the bridge and a quiet
+autopilot profile, not further transport reliability work.

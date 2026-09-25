@@ -48,7 +48,7 @@ class SerialModuleRadio : public SinglePortModule
     void sendPayload(NodeNum dest = NODENUM_BROADCAST, bool wantReplies = false);
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
-    /// Send one frame-aware MAVLink transport packet. The initial any-to-any policy broadcasts it.
+    /// Send one frame-aware MAVLink transport packet to its learned destination, or broadcast.
     bool sendMavlinkChunk();
 
   private:
@@ -61,6 +61,10 @@ class SerialModuleRadio : public SinglePortModule
 
   protected:
     virtual ProcessMessage handleReceived(const meshtastic_MeshPacket &mp) override;
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+    /// MAVLink mode also watches routing ACK/NAKs so the bridge can match them to its packets.
+    virtual bool wantPacket(const meshtastic_MeshPacket *p) override;
+#endif
 };
 
 extern SerialModuleRadio *serialModuleRadio;

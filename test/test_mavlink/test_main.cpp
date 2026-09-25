@@ -59,8 +59,7 @@ static void putU16(uint8_t *out, uint16_t value)
     out[1] = value >> 8;
 }
 
-static size_t buildMeshFragment(uint16_t frameId, uint8_t fragmentIndex, const uint8_t *frame, size_t frameLen,
-                                uint8_t *out)
+static size_t buildMeshFragment(uint16_t frameId, uint8_t fragmentIndex, const uint8_t *frame, size_t frameLen, uint8_t *out)
 {
     const size_t maxData = MavlinkBridge::MAX_FRAGMENT_DATA;
     const uint8_t fragmentCount = (frameLen + maxData - 1) / maxData;
@@ -93,11 +92,13 @@ void test_complete_mavlink_frame_round_trip()
 
     TEST_ASSERT_TRUE(sender.wantsMeshSend(1000));
     uint8_t packet[meshtastic_Constants_DATA_PAYLOAD_LEN];
-    const size_t packetLen = sender.peekMeshPayload(packet, sizeof(packet));
+    const size_t packetLen = sender.peekMeshPayload(packet, sizeof(packet), 1000);
     TEST_ASSERT_GREATER_THAN(MavlinkBridge::TRANSPORT_HEADER_SIZE, packetLen);
     TEST_ASSERT_EQUAL_UINT8(MavlinkMeshTransport::MAGIC0, packet[0]);
     TEST_ASSERT_EQUAL_UINT8(MavlinkMeshTransport::MAGIC1, packet[1]);
-    TEST_ASSERT_EQUAL_UINT8(MavlinkMeshTransport::VERSION, packet[2]);
+    TEST_ASSERT_EQUAL_UINT8(MavlinkMeshTransport::VERSION_AGGREGATE, packet[2]);
+    TEST_ASSERT_EQUAL_HEX32(NODENUM_BROADCAST, sender.plannedDestination()); // no route learned yet
+    TEST_ASSERT_FALSE(sender.plannedWantAck());
 
     receiver.ingestMeshPayload(0x11111111, packet, packetLen);
     sender.commitMeshPayload(packetLen, 1001);
@@ -112,7 +113,7 @@ void test_complete_mavlink_frame_round_trip()
 void test_interleaved_sources_reassemble_independently()
 {
     TestStream sinkStream;
-    MavlinkBridge receiver(&sinkStream, 0x12345678); // legacy peer argument must not restrict sources
+    MavlinkBridge receiver(&sinkStream);
 
     const size_t frameALen = MavlinkBridge::MAX_FRAGMENT_DATA + 17;
     const size_t frameBLen = MavlinkBridge::MAX_FRAGMENT_DATA + 7;
@@ -140,7 +141,6 @@ void test_interleaved_sources_reassemble_independently()
     TEST_ASSERT_EQUAL_UINT8_ARRAY(frameA, sinkStream.written + frameBLen, frameALen);
     TEST_ASSERT_EQUAL_UINT32(2, receiver.getStats().framesFromMesh);
     TEST_ASSERT_EQUAL_UINT32(0, receiver.getStats().rejectedSourceChunks);
-    TEST_ASSERT_EQUAL_HEX32(0, receiver.getPeer());
 }
 
 void test_malformed_transport_payload_is_dropped()

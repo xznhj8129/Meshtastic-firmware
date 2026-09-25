@@ -4,6 +4,7 @@
 
 #include "DebugConfiguration.h"
 #include "NodeDB.h"
+#include "Router.h"
 #if MESHTASTIC_MAVLINK_UDP
 #include "MavlinkUdpServer.h"
 #endif
@@ -14,8 +15,8 @@ static NullStream mavlinkNullStream;
 
 namespace
 {
-bool decodeCommandAckFrame(const uint8_t *frame, size_t len, uint16_t &command, uint8_t &result, uint8_t &sysid,
-                           uint8_t &compid, uint8_t &seq)
+bool decodeCommandAckFrame(const uint8_t *frame, size_t len, uint16_t &command, uint8_t &result, uint8_t &sysid, uint8_t &compid,
+                           uint8_t &seq)
 {
     if (!frame)
         return false;
@@ -58,8 +59,8 @@ void logCommandAckFrame(const char *stage, const uint8_t *frame, size_t len)
     uint8_t compid = 0;
     uint8_t seq = 0;
     if (decodeCommandAckFrame(frame, len, command, result, sysid, compid, seq)) {
-        LOG_INFO("MAVLink COMMAND_ACK %s command=%u result=%u sysid=%u compid=%u seq=%u", stage,
-                 (unsigned)command, (unsigned)result, (unsigned)sysid, (unsigned)compid, (unsigned)seq);
+        LOG_INFO("MAVLink COMMAND_ACK %s command=%u result=%u sysid=%u compid=%u seq=%u", stage, (unsigned)command,
+                 (unsigned)result, (unsigned)sysid, (unsigned)compid, (unsigned)seq);
     }
 }
 } // namespace
@@ -67,13 +68,8 @@ void logCommandAckFrame(const char *stage, const uint8_t *frame, size_t len)
 MavlinkBridge::MavlinkBridge(Stream *serial) : uart(serial ? serial : &mavlinkNullStream)
 {
     if (moduleConfig.serial.peer_node)
-        LOG_WARN("MAVLink mesh mode ignores serial.peer_node; routing is any-to-any");
-}
-
-MavlinkBridge::MavlinkBridge(Stream *serial, NodeNum legacyPeer) : MavlinkBridge(serial)
-{
-    if (legacyPeer)
-        LOG_WARN("MAVLink legacy peer 0x%08x ignored; routing is any-to-any", legacyPeer);
+        LOG_WARN("MAVLink mesh mode ignores serial.peer_node 0x%08x; routes are learned from traffic",
+                 moduleConfig.serial.peer_node);
 }
 
 void MavlinkBridge::ingestSerialBytes(const uint8_t *data, size_t len, uint32_t now)
@@ -117,9 +113,9 @@ bool MavlinkBridge::wantsMeshSend(uint32_t now) const
     return (uint32_t)(now - outboundSinceMs) >= COALESCE_WINDOW_MS;
 }
 
-size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity)
+size_t MavlinkBridge::peekMeshPayload(uint8_t *out, size_t capacity, uint32_t now)
 {
-    return transport.peekOutbound(out, min(capacity, MAX_CHUNK));
+    return transport.peekOutbound(out, min(capacity, MAX_CHUNK), now);
 }
 
 void MavlinkBridge::commitMeshPayload(size_t len, uint32_t now)
@@ -133,13 +129,148 @@ void MavlinkBridge::commitMeshPayload(size_t len, uint32_t now)
     restartCoalesceWindow(now);
 }
 
-void MavlinkBridge::dropCurrentMeshFrame()
+void MavlinkBridge::noteSubmitted(PacketId id, NodeNum dest, bool wantAck, size_t len, uint32_t now)
 {
-    const uint32_t ackDropsBefore = transport.getCounters().commandAckOutboundDrops;
-    transport.dropOutbound();
-    if (transport.getCounters().commandAckOutboundDrops != ackDropsBefore)
-        LOG_WARN("MAVLink COMMAND_ACK mesh transmission dropped");
-    restartCoalesceWindow(millis());
+    LOG_DEBUG("MAVLink mesh packet 0x%08x submitted to 0x%08x want_ack=%d bytes=%u", id, dest, wantAck, (unsigned)len);
+    recentIds[recentIdNext] = id;
+    recentIdNext = (recentIdNext + 1) % RECENT_PACKET_IDS;
+    if (!wantAck)
+        return;
+    InFlight *slot = nullptr;
+    for (auto &record : inFlight) {
+        if (!record.used) {
+            slot = &record;
+            break;
+        }
+    }
+    if (!slot) {
+        // Every record busy: keep tracking the newest packets, count what fell off.
+        slot = &inFlight[0];
+        for (auto &record : inFlight) {
+            if ((int32_t)(record.submittedMs - slot->submittedMs) < 0)
+                slot = &record;
+        }
+        stats.inFlightOverflow++;
+        LOG_WARN("MAVLink in-flight table full; untracking packet 0x%08x to 0x%08x", slot->id, slot->dest);
+    }
+    slot->used = true;
+    slot->id = id;
+    slot->dest = dest;
+    slot->bytes = (uint16_t)len;
+    slot->submittedMs = now;
+}
+
+void MavlinkBridge::handleRoutingResult(PacketId requestId, NodeNum from, meshtastic_Routing_Error error, uint32_t now)
+{
+    InFlight *record = nullptr;
+    for (auto &candidate : inFlight) {
+        if (candidate.used && candidate.id == requestId) {
+            record = &candidate;
+            break;
+        }
+    }
+    if (!record)
+        return;
+
+    const uint32_t latency = now - record->submittedMs;
+    if (error != meshtastic_Routing_Error_NONE) {
+        // Not treated as route loss: on a direct link MAX_RETRANSMIT is usually a lost ACK for data
+        // that arrived. Routes expire only through silence.
+        stats.meshPacketsFailed++;
+        LOG_WARN("MAVLink mesh packet 0x%08x to 0x%08x: no routing ACK after %u ms, error=%d", requestId, record->dest,
+                 (unsigned)latency, (int)error);
+        record->used = false;
+        return;
+    }
+    if (from != record->dest) {
+        // A relay rebroadcasting our packet; ReliableRouter stops retrying, the destination's ACK may still come.
+        stats.meshPacketsImplicitAck++;
+        LOG_INFO("MAVLink mesh packet 0x%08x to 0x%08x implicit ACK via 0x%08x after %u ms", requestId, record->dest, from,
+                 (unsigned)latency);
+        return;
+    }
+    stats.meshPacketsAcked++;
+    stats.lastAckLatencyMs = latency;
+    stats.maxAckLatencyMs = max(stats.maxAckLatencyMs, latency);
+    LOG_INFO("MAVLink mesh packet 0x%08x ACK from 0x%08x after %u ms (%u bytes)", requestId, from, (unsigned)latency,
+             (unsigned)record->bytes);
+    record->used = false;
+}
+
+size_t MavlinkBridge::inFlightCount() const
+{
+    size_t n = 0;
+    for (const auto &record : inFlight)
+        n += record.used ? 1 : 0;
+    return n;
+}
+
+size_t MavlinkBridge::routerQueuedCount() const
+{
+    if (!router)
+        return 0;
+    size_t n = 0;
+    for (PacketId id : recentIds)
+        n += (id && router->findInTxQueue(nodeDB->getNodeNum(), id)) ? 1 : 0;
+    return n;
+}
+
+void MavlinkBridge::logQueueOverflow(uint32_t now)
+{
+    const auto &t = transport.getCounters();
+    if (t.outboundFramesDropped == loggedDropped && t.outboundFramesEvicted == loggedEvicted)
+        return;
+    if (lastOverflowLogMs && (uint32_t)(now - lastOverflowLogMs) < OVERFLOW_LOG_INTERVAL_MS)
+        return;
+    lastOverflowLogMs = now;
+    LOG_WARN("MAVLink queue full: %u new frames dropped, %u queued state/bulk frames evicted (totals %u/%u)",
+             (unsigned)(t.outboundFramesDropped - loggedDropped), (unsigned)(t.outboundFramesEvicted - loggedEvicted),
+             (unsigned)t.outboundFramesDropped, (unsigned)t.outboundFramesEvicted);
+    loggedDropped = t.outboundFramesDropped;
+    loggedEvicted = t.outboundFramesEvicted;
+}
+
+void MavlinkBridge::serviceHousekeeping(uint32_t now)
+{
+    for (auto &record : inFlight) {
+        if (record.used && (uint32_t)(now - record.submittedMs) >= IN_FLIGHT_TIMEOUT_MS) {
+            stats.meshPacketsNoResult++;
+            LOG_WARN("MAVLink mesh packet 0x%08x to 0x%08x: no routing result after %u ms", record.id, record.dest,
+                     (unsigned)(now - record.submittedMs));
+            record.used = false;
+        }
+    }
+    logQueueOverflow(now);
+    if (everActive && (now - lastActivityMs) <= ACTIVITY_WINDOW_MS &&
+        (lastStatsLogMs == 0 || (uint32_t)(now - lastStatsLogMs) >= STATS_LOG_INTERVAL_MS)) {
+        lastStatsLogMs = now;
+        logStats(now);
+    }
+}
+
+void MavlinkBridge::logStats(uint32_t now)
+{
+    const auto &s = getStats();
+    const auto &t = transport.getCounters();
+    // Several short lines: the firmware log buffer truncates anything much past 190 characters.
+    LOG_INFO("MAVLink tx: queue=%u/%u router=%u frames=%u unicast=%u broadcast=%u", (unsigned)transport.outboundCount(),
+             (unsigned)MavlinkMeshTransport::TX_QUEUE_DEPTH, (unsigned)routerQueuedCount(), (unsigned)t.outboundFramesSent,
+             (unsigned)t.unicastPackets, (unsigned)t.broadcastPackets);
+    LOG_INFO("MAVLink acks: requested=%u acked=%u implicit=%u failed=%u noresult=%u inflight=%u ms=%u/%u",
+             (unsigned)t.ackRequestedPackets, (unsigned)s.meshPacketsAcked, (unsigned)s.meshPacketsImplicitAck,
+             (unsigned)s.meshPacketsFailed, (unsigned)s.meshPacketsNoResult, (unsigned)inFlightCount(),
+             (unsigned)s.lastAckLatencyMs, (unsigned)s.maxAckLatencyMs);
+    LOG_INFO("MAVLink queue: uart_in=%u replaced=%u evicted=%u dropped=%u", (unsigned)s.uartRxBytes,
+             (unsigned)t.stateFramesReplaced, (unsigned)t.outboundFramesEvicted, (unsigned)t.outboundFramesDropped);
+    LOG_INFO("MAVLink rx: frames=%u dropped=%u malformed=%u reasm_timeout=%u uart_stall=%u", (unsigned)t.reassembledFrames,
+             (unsigned)t.inboundFramesDropped, (unsigned)t.malformedPayloads, (unsigned)t.reassemblyTimeouts,
+             (unsigned)s.uartTxStallDrops);
+    const auto *routes = transport.getRoutes();
+    for (size_t i = 0; i < MavlinkMeshTransport::ROUTE_SLOTS; i++) {
+        if (transport.routeLive(routes[i], now))
+            LOG_INFO("MAVLink route: sysid %u via 0x%08x, %d hops, heard %u ms ago", (unsigned)routes[i].sysid, routes[i].node,
+                     (int)routes[i].hops, (unsigned)(now - routes[i].lastSeenMs));
+    }
 }
 
 void MavlinkBridge::restartCoalesceWindow(uint32_t now)
@@ -152,7 +283,8 @@ void MavlinkBridge::restartCoalesceWindow(uint32_t now)
     }
 }
 
-void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi, float rxSnr)
+void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_t len, int32_t rxRssi, float rxSnr,
+                                      int8_t hopsAway)
 {
     if (!data || !len)
         return;
@@ -165,7 +297,7 @@ void MavlinkBridge::ingestMeshPayload(NodeNum source, const uint8_t *data, size_
         lastRxSnr = rxSnr;
         haveRxMetadata = true;
     }
-    transport.ingestMeshPayload(source, data, len, millis());
+    transport.ingestMeshPayload(source, data, len, millis(), hopsAway);
     const auto &after = transport.getCounters();
     if (after.commandAckFramesReassembled != before.commandAckFramesReassembled) {
         LOG_INFO("MAVLink COMMAND_ACK mesh reassembled from node 0x%08x", source);
@@ -251,14 +383,20 @@ void MavlinkBridge::serviceFlowControl(uint32_t now)
     lastRadioStatusMs = now;
 
     mavlink_radio_status_t rs{};
-    rs.txbuf = transport.outboundFreePercent();
+    // The tightest of: our frame queue, Meshtastic's TX queue, and acknowledged packets still awaiting a result.
+    uint8_t txbuf = transport.outboundFreePercent();
+    if (router) {
+        const meshtastic_QueueStatus qs = router->getQueueStatus();
+        if (qs.maxlen)
+            txbuf = min(txbuf, (uint8_t)((qs.free * 100U) / qs.maxlen));
+    }
+    rs.txbuf = min(txbuf, (uint8_t)(((IN_FLIGHT_SLOTS - inFlightCount()) * 100U) / IN_FLIGHT_SLOTS));
     rs.rssi = haveRxMetadata ? (uint8_t)constrain(lastRxRssi + 127, 0, 254) : UINT8_MAX;
     rs.noise = haveRxMetadata ? (uint8_t)constrain((int32_t)(lastRxRssi - lastRxSnr) + 127, 0, 254) : UINT8_MAX;
     rs.remrssi = UINT8_MAX;
     rs.remnoise = UINT8_MAX;
     const auto &transportStats = transport.getCounters();
-    rs.rxerrors = (uint16_t)min(transportStats.corruptFrames + transportStats.framingErrors +
-                                    transportStats.malformedPayloads,
+    rs.rxerrors = (uint16_t)min(transportStats.corruptFrames + transportStats.framingErrors + transportStats.malformedPayloads,
                                 (uint32_t)UINT16_MAX);
     rs.fixed = 0;
 

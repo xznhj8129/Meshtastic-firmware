@@ -377,6 +377,7 @@ int32_t SerialModule::runOnce()
 #endif
                     mavlinkBridge->processOutput(millis());
                     mavlinkBridge->serviceFlowControl(millis());
+                    mavlinkBridge->serviceHousekeeping(millis());
                     applyMavlinkPosition();
                     if (serialModuleRadio)
                         serialModuleRadio->sendMavlinkChunk();
@@ -477,6 +478,13 @@ void SerialModuleRadio::sendPayload(NodeNum dest, bool wantReplies)
 }
 
 #if !MESHTASTIC_EXCLUDE_MAVLINK
+bool SerialModuleRadio::wantPacket(const meshtastic_MeshPacket *p)
+{
+    if (mavlinkBridge && p->decoded.portnum == meshtastic_PortNum_ROUTING_APP)
+        return true;
+    return SinglePortModule::wantPacket(p);
+}
+
 bool SerialModuleRadio::sendMavlinkChunk()
 {
     uint32_t now = millis();
@@ -484,12 +492,8 @@ bool SerialModuleRadio::sendMavlinkChunk()
         return false;
     if (Throttle::isWithinTimespanMs(mavlinkBackoffStartMs, mavlinkBackoffMs))
         return false;
-
-    if (!airTime->isTxAllowedChannelUtil(true)) {
-        mavlinkBackoffStartMs = now;
-        mavlinkBackoffMs = 250; // isTxAllowedChannelUtil logs on denial; don't hammer it
+    if (mavlinkBridge->routerBacklogged())
         return false;
-    }
     if (router->getQueueStatus().free == 0) {
         mavlinkBackoffStartMs = now;
         mavlinkBackoffMs = 100;
@@ -502,16 +506,29 @@ bool SerialModuleRadio::sendMavlinkChunk()
         return false;
     }
 
-    size_t len = mavlinkBridge->peekMeshPayload(p->decoded.payload.bytes, sizeof(p->decoded.payload.bytes));
+    size_t len = mavlinkBridge->peekMeshPayload(p->decoded.payload.bytes, sizeof(p->decoded.payload.bytes), now);
     if (len == 0) {
         packetPool.release(p);
         return false;
     }
 
-    // Direct-message the locked peer once known (gets ACK/retransmit); broadcast only for discovery
-    NodeNum peer = mavlinkBridge->getPeer();
-    p->to = peer ? peer : NODENUM_BROADCAST;
-    p->want_ack = peer != 0;
+    // Packets carrying acknowledged traffic yield only at the normal channel-utilization limit;
+    // state and bulk yield at the polite one. The check logs every denial, so back off between tries.
+    const bool urgent = mavlinkBridge->plannedWantAck();
+    if (!airTime->isTxAllowedChannelUtil(!urgent)) {
+        packetPool.release(p);
+        mavlinkBackoffStartMs = now;
+        mavlinkBackoffMs = urgent ? 250 : 1000;
+        return false;
+    }
+
+    // Learned destination, or broadcast until one is known. Acknowledged classes engage ReliableRouter's retry.
+    p->to = mavlinkBridge->plannedDestination();
+    p->want_ack = mavlinkBridge->plannedWantAck();
+    // Reach the peers that want this and no further; otherwise every node in between relays our state.
+    const int8_t hops = mavlinkBridge->plannedHopLimit();
+    if (hops >= 0 && hops < (int8_t)p->hop_limit)
+        p->hop_limit = (uint8_t)hops;
     const meshtastic_Channel *ch = (boundChannel != NULL) ? &channels.getByName(boundChannel) : NULL;
     if (ch != NULL) {
         p->channel = ch->index;
@@ -526,14 +543,20 @@ bool SerialModuleRadio::sendMavlinkChunk()
     p->decoded.payload.size = len;
     p->decoded.want_response = false;
 
-    // Commit the FIFO bytes only when the mesh actually accepted the packet; on a transient
+    // sendToMesh() consumes the packet; keep what the routing result will be matched against.
+    const PacketId id = p->id;
+    const NodeNum to = p->to;
+    const bool wantAck = p->want_ack;
+
+    // Commit the frames only when the mesh actually accepted the packet; on a transient
     // router rejection (duty cycle, no interface, enqueue failure) leave them queued and retry.
     ErrorCode res = service->sendToMesh(p);
     if (res != ERRNO_OK) {
-        // TOO_LARGE / NO_CHANNEL are permanent for this chunk - retrying the identical bytes can
-        // never succeed and just head-of-line-blocks the FIFO forever. Drop the chunk so the
-        // stream keeps moving (the peer's MAVLink parser resyncs on the next frame start).
+        // TOO_LARGE / NO_CHANNEL are permanent for these frames - retrying the identical bytes can
+        // never succeed and would head-of-line-block the queue forever.
         if (res == meshtastic_Routing_Error_TOO_LARGE || res == meshtastic_Routing_Error_NO_CHANNEL) {
+            LOG_WARN("MAVLink mesh packet to 0x%08x rejected permanently (error=%d); dropping %u bytes", to, (int)res,
+                     (unsigned)len);
             mavlinkBridge->commitMeshPayload(len, now);
         }
         mavlinkBackoffStartMs = now;
@@ -541,6 +564,7 @@ bool SerialModuleRadio::sendMavlinkChunk()
         return false;
     }
     mavlinkBridge->commitMeshPayload(len, now);
+    mavlinkBridge->noteSubmitted(id, to, wantAck, len, now);
     mavlinkBackoffMs = 0;
     return true;
 }
@@ -554,6 +578,19 @@ bool SerialModuleRadio::sendMavlinkChunk()
  */
 ProcessMessage SerialModuleRadio::handleReceived(const meshtastic_MeshPacket &mp)
 {
+#if !MESHTASTIC_EXCLUDE_MAVLINK
+    // Routing ACK/NAK for one of our acknowledged MAVLink packets. Never consumed: RoutingModule
+    // and the router's own bookkeeping still need it.
+    if (mp.decoded.portnum == meshtastic_PortNum_ROUTING_APP) {
+        if (mavlinkBridge && mp.decoded.request_id && isToUs(&mp)) {
+            meshtastic_Routing routing = meshtastic_Routing_init_zero;
+            if (pb_decode_from_bytes(mp.decoded.payload.bytes, mp.decoded.payload.size, &meshtastic_Routing_msg, &routing) &&
+                routing.which_variant == meshtastic_Routing_error_reason_tag)
+                mavlinkBridge->handleRoutingResult(mp.decoded.request_id, getFrom(&mp), routing.error_reason, millis());
+        }
+        return ProcessMessage::CONTINUE;
+    }
+#endif
     if (moduleConfig.serial.enabled) {
         if (moduleConfig.serial.mode == meshtastic_ModuleConfig_SerialConfig_Serial_Mode_PROTO) {
             // in API mode we don't care about stuff from radio.
@@ -590,7 +627,8 @@ ProcessMessage SerialModuleRadio::handleReceived(const meshtastic_MeshPacket &mp
 #if !MESHTASTIC_EXCLUDE_MAVLINK
             if (moduleConfig.serial.mode == Serial_Mode_MAVLINK) {
                 if (mavlinkBridge)
-                    mavlinkBridge->ingestMeshPayload(getFrom(&mp), p.payload.bytes, p.payload.size, mp.rx_rssi, mp.rx_snr);
+                    mavlinkBridge->ingestMeshPayload(getFrom(&mp), p.payload.bytes, p.payload.size, mp.rx_rssi, mp.rx_snr,
+                                                     getHopsAway(mp));
                 return ProcessMessage::CONTINUE;
             }
 #endif
